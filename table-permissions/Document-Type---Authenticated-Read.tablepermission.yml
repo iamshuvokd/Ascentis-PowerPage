@@ -1,0 +1,16 @@
+adx_accountrelationship:
+adx_append: false
+adx_appendto: false
+adx_contactrelationship:
+adx_create: false
+adx_delete: false
+adx_entitylogicalname: asc_documenttype
+adx_entityname: Document Type - Authenticated Read
+adx_entitypermission_webrole:
+- a39db80e-a77a-4cca-b447-e2cffb65f8af
+adx_entitypermissionid: 68a32358-a35a-43f7-b10f-76d2da6037f5
+adx_parententitypermission:
+adx_parentrelationship:
+adx_read: true
+adx_scope: 756150000
+adx_write: false

@@ -1,0 +1,324 @@
+- adx_description: 'The amount of time the IP address will have to wait if Authentication/LoginThrottling/MaxInvaildAttemptsFromIPAddress occur within Authentication/LoginThrottling/MaxAttemptsTimeLimitTimeSpan amount of time. Default: 00:15:00 (15 mins)'
+  adx_name: Authentication/LoginThrottling/IpAddressTimeoutTimeSpan
+  adx_sitesettingid: 0604f832-de9c-447b-8ae0-c90ed53044ca
+  adx_value: 00:15:00
+- adx_name: Authentication/OpenAuth/Facebook/AppId
+  adx_sitesettingid: 0acc5b7e-3749-4571-8e1c-754e3f9f69e9
+- adx_name: Authentication/Registration/EmailConfirmationEnabled
+  adx_sitesettingid: 0e578662-8f59-4a9b-9844-d599b3485d45
+  adx_value: true
+- adx_description: 'The default number of unauthenticated login attempts from an IP address before the IP address is blocked for Authentication/LoginThrottling/IpAddressTimeoutTimeSpan if the attempts occur within Authentication/LoginThrottling/MaxAttemptsTimeLimitTimeSpan amount of time. Default: 5'
+  adx_name: Authentication/LoginThrottling/MaxInvaildAttemptsFromIPAddress
+  adx_sitesettingid: 0e842b9b-6c78-4c85-bf41-4a11385cb78c
+  adx_value: 5
+- adx_description: >-
+    A collection of search logical name filter options. Defining a value here will add dropdown filter options to site-wide search.
+
+
+    This value should be in the form of name/value pairs, with name and value separated by a colon, and pairs separated by a semicolon. For example: "Forums:adx_communityforum,adx_communityforumthread,adx_communityforumpost;Blogs:adx_blog,adx_blogpost,adx_blogpostcomment".
+  adx_name: search/filters
+  adx_sitesettingid: 1b1c0fb7-52e3-47e5-a9c3-ffd2fed17d73
+- adx_description: Set whether the header web template is output cached.
+  adx_name: Header/OutputCache/Enabled
+  adx_sitesettingid: 20fe9857-9ced-42be-a23c-8bbe909ee022
+  adx_value: True
+- adx_name: Search/Enabled
+  adx_sitesettingid: 247ee281-5b32-448b-9f9e-85fb97c373e1
+  adx_value: true
+- adx_name: Authentication/Registration/LoginButtonAuthenticationType
+  adx_sitesettingid: 2596c77b-e675-4398-9fc6-3154532ba397
+- adx_name: Profile/Enabled
+  adx_sitesettingid: 2a91e2d2-2eef-4d31-b92b-dda8b87c246f
+  adx_value: true
+- adx_name: OnlineDomains
+  adx_sitesettingid: 39bfeb6c-2bdb-49a1-b1e9-7b3db4c77381
+  adx_value: sharepoint.com;microsoftonline.com
+- adx_name: Site/BootstrapV5Enabled
+  adx_sitesettingid: 3eeb855e-daf0-4ca9-bbc1-33b70c12f629
+  adx_value: true
+- adx_name: ThemeFeature
+  adx_sitesettingid: 4403b2bf-79e8-499a-9828-376bd511403f
+- adx_name: Authentication/OpenAuth/LinkedIn/ConsumerKey
+  adx_sitesettingid: 4e80ab9a-7634-4544-b241-571afff5ecb8
+- adx_name: Authentication/OpenAuth/Twitter/ConsumerSecret
+  adx_sitesettingid: 53b77e84-fefa-4572-9780-131892e3d8e8
+- adx_name: Authentication/OpenAuth/LinkedIn/ConsumerSecret
+  adx_sitesettingid: 5687da23-9f7a-46bb-9307-4ed487589d03
+- adx_name: Search/IndexQueryName
+  adx_sitesettingid: 57ed6f10-9f9f-4f58-9c5a-fa974cf12d5e
+  adx_value: Portal Search
+- adx_name: Profile/ShowMarketingOptionsPanel
+  adx_sitesettingid: 5bab9a86-eb47-45a3-acdb-5ae775cda371
+  adx_value: True
+- adx_name: Authentication/OpenAuth/Microsoft/ClientSecret
+  adx_sitesettingid: 5d985324-7913-425a-b691-ec162edff0a4
+- adx_name: Search/IndexNotesAttachments
+  adx_sitesettingid: 6365fc8b-3d08-4eeb-9a11-7882be3250e4
+  adx_value: false
+- adx_description: Determines if faceted search is used for this portal.
+  adx_name: Search/FacetedView
+  adx_sitesettingid: 67c7b018-a095-4cf6-b17c-c512e60c91ae
+  adx_value: True
+- adx_description: Denies use of the portal to minors without parental consent. By default, it is set to false.
+  adx_name: Authentication/Registration/DenyMinorsWithoutParentalConsent
+  adx_sitesettingid: 681bcdd9-ef65-40ce-888a-85e794049053
+  adx_value: false
+- adx_description: Setting controls whether attachments will be displayed on Knowledge articles
+  adx_name: KnowledgeManagement/DisplayNotes
+  adx_sitesettingid: 6cb0d226-c932-4049-9cca-0bd1df945655
+  adx_value: false
+- adx_name: Authentication/OpenAuth/Facebook/AppSecret
+  adx_sitesettingid: 6ed1b195-174f-4c39-aff7-ec7c2c91e594
+- adx_description: A true or false value. If set to true, the Last Successful Login field on the portal user’s contact will be updated with the date and time when they successfully signed in.
+  adx_name: Authentication/LoginTrackingEnabled
+  adx_sitesettingid: 7129102e-e9bf-4645-b7c6-b6b961a702a5
+  adx_value: False
+- adx_name: Profile/ForceSignUp
+  adx_sitesettingid: 75f73849-4579-4ed7-adc9-370da53123b8
+  adx_value: False
+- adx_description: Sets whether or not the portal can redirect the user to the profile page after successful sign-in. By default, it is set to true.
+  adx_name: Authentication/Registration/ProfileRedirectEnabled
+  adx_sitesettingid: 7feacbd8-d3b7-46cd-b3b1-f4e232784d99
+  adx_value: true
+- adx_name: HTTP/X-Frame-Options
+  adx_sitesettingid: 8126b1d9-2c05-4714-a98a-5a3ce92666bd
+  adx_value: SAMEORIGIN
+- adx_description: 'Override query for site search, to apply additional weights and filters. @Query is the query text entered by a user. Lucene query syntax reference: http://lucene.apache.org/core/old_versioned_docs/versions/2_9_1/queryparsersyntax.html'
+  adx_name: search/query
+  adx_sitesettingid: 843e8423-be31-41ae-b2fa-c02c7ee6c140
+  adx_value: +(@Query) _title:(@Query) _logicalname:knowledgearticle~0.9^0.3 _logicalname:annotation~0.9^0.25 _logicalname:adx_webpage~0.9^0.2 -_logicalname:adx_webfile~0.9 adx_partialurl:(@Query) _logicalname:adx_blogpost~0.9^0.1 -_logicalname:adx_communityforumthread~0.9
+- adx_description: A true or false value. If set to true, the local account will be marked as deprecated. The portal user will be required to migrate to a non-deprecated account.
+  adx_name: Authentication/Registration/LocalLoginDeprecated
+  adx_sitesettingid: 972e3381-83c0-4e92-8560-2f3014a679d5
+  adx_value: False
+- adx_name: Authentication/OpenIdConnect/AzureAD/Caption
+  adx_sitesettingid: 97d35214-cfa9-f111-b373-6045bda553ef
+  adx_value: Microsoft Entra ID
+- adx_description: Specifies the default value for the SameSite attribute on HTTP cookies set by the portal.
+  adx_name: HTTP/SameSite/Default
+  adx_sitesettingid: 9f8f83cd-dbcc-4632-9e3f-27e0a1efa800
+  adx_value: Lax
+- adx_description: Site setting that determines if the language code is included in the portal URL.
+  adx_name: MultiLanguage/DisplayLanguageCodeInURL
+  adx_sitesettingid: a3c0a93a-c411-4a33-8e17-80a02903d46b
+  adx_value: False
+- adx_name: Authentication/Registration/ExternalLoginEnabled
+  adx_sitesettingid: a98eefb3-4536-4f98-85ed-7bfc69d63973
+  adx_value: true
+- adx_description: 'The Prefix entered here will be used to filter Notes Text, allowing you to control notes exposed on the Portal ex: *WEB*'
+  adx_name: KnowledgeManagement/NotesFilter
+  adx_sitesettingid: acb23cb4-1c56-4baf-8b72-e930603ce0a5
+  adx_value: '*WEB*'
+- adx_name: Authentication/OpenAuth/Microsoft/ClientId
+  adx_sitesettingid: b36b21c3-2c79-4c2a-af56-f17ea160cb9c
+- adx_description: A date/time value in GMT format to represent the effective date of the current published terms and conditions. If the terms agreement is enabled, portal users that have not accepted the terms after this date will be asked to accept them the next time they sign in. If the date is not provided, and the terms agreement is enabled, the terms will be presented every time portal users sign in.
+  adx_name: Authentication/Registration/TermsPublicationDate
+  adx_sitesettingid: b5671c17-af20-4733-9898-04d6a7b45b01
+- adx_description: Denies use of the portal to minors. By default, it is set to false.
+  adx_name: Authentication/Registration/DenyMinors
+  adx_sitesettingid: b8d66b4e-c384-4cfc-987a-2a632ba1005e
+  adx_value: false
+- adx_description: 'The amount of time the Authentication/LoginThrottling/MaxInvaildAttemptsFromIPAddress are to be within before the IP address has to wait Authentication/LoginThrottling/IpAddressTimeoutTimeSpan. Default: 00:05:00 (5 mins)'
+  adx_name: Authentication/LoginThrottling/MaxAttemptsTimeLimitTimeSpan
+  adx_sitesettingid: c13560e4-a815-412f-a630-9cbf75464c77
+  adx_value: 00:05:00
+- adx_name: Authentication/OpenAuth/Twitter/ConsumerKey
+  adx_sitesettingid: c6465f98-addd-45f0-b34c-bde1efb6c84e
+- adx_description: Set whether the footer web template is output cached.
+  adx_name: Footer/OutputCache/Enabled
+  adx_sitesettingid: c8d344bb-fe01-47cc-b348-5fa982a9c8f4
+  adx_value: True
+- adx_description: A true or false value. If set to true, the portal will display the terms and conditions of the site. Users must agree to the terms and conditions before they are considered authenticated and can use the site.
+  adx_name: Authentication/Registration/TermsAgreementEnabled
+  adx_sitesettingid: d78dda46-46d8-4a04-a548-efe0724dd58e
+  adx_value: false
+- adx_name: Authentication/Registration/Enabled
+  adx_sitesettingid: d8f7c2b8-fb7b-4ce4-9b77-c67a73254fc3
+  adx_value: true
+- adx_description: Site setting that controls the depth of the webpage hierarchy that’s cloned in a newly-added supported language. Web link sets and content snippets are cloned in the newly-added language when webpages are cloned.
+  adx_name: MultiLanguage/MaximumDepthToClone
+  adx_sitesettingid: e6727f68-ab71-428c-ba62-a92cafad2ccd
+  adx_value: 3
+- adx_name: Header/ShowAllProfileNavigationLinks
+  adx_sitesettingid: e6ffc2b2-6d3e-4ec1-9c48-eac4fe771f78
+  adx_value: false
+- adx_description: Enabling this setting will show all customer activity on the portal timeline.
+  adx_name: CustomerSupport/DisplayAllUserActivitiesOnTimeline
+  adx_sitesettingid: e8ed29b7-9f1b-4d89-9770-bdb3dac09037
+  adx_value: false
+- adx_description: Enables or disables Azure AD as an external identity provider. By default, it is set to true.
+  adx_name: Authentication/Registration/AzureADLoginEnabled
+  adx_sitesettingid: eb1521ef-afb1-4582-b331-6478881ffb05
+  adx_value: true
+- adx_name: Authentication/Registration/LocalLoginEnabled
+  adx_sitesettingid: ec1f4f56-5dc8-454d-99bf-852b4fe3cbad
+  adx_value: false
+- adx_description: Used to group a set of entities under an entry in the record type facet view.
+  adx_name: Search/RecordTypeFacetsEntities
+  adx_sitesettingid: f12c0eb2-0bff-4342-ad1b-8dfbe2481994
+  adx_value: Downloads:annotation,adx_webfile
+- adx_name: Authentication/Registration/InvitationEnabled
+  adx_sitesettingid: f8032fff-41e8-4fc8-ab07-5b6e28bbcd63
+  adx_value: true
+- adx_name: Authentication/Registration/OpenRegistrationEnabled
+  adx_sitesettingid: fc3a5682-2673-4c58-999a-71c93c4ddbd5
+  adx_value: true
+- adx_name: Authentication/OpenIdConnect/AzureAD/RebrandDisclaimerEnabled
+  adx_sitesettingid: fd4f531a-cfa9-f111-b373-6045bda553ef
+  adx_value: false
+- adx_description: 'Enables the Power Pages Web API for the Consultant table (asc_consultant), required by src/portal/scripts/services.js live write path.'
+  adx_name: Webapi/asc_consultant/enabled
+  adx_sitesettingid: 84b2eff3-bafe-4137-bbd0-32c252e553f9
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_consultant, matching every column written by src/portal/scripts/services.js (identity/BIM/revenue-by-region), plus the N:N relationship navigation property names used by $ref association calls - Power Pages checks those against this same allowlist. asc_status added 2026-10-08 - only ever written once, on first create (Active), after it became a required Choice column live; never written on update. Financial/Legal/Sustainability fields removed 2026-10-08 - those columns no longer exist on asc_consultant at all, moved to their own tables (see Webapi/asc_financialinformation|legalinformation|sustainabilityesg below).'
+  adx_name: Webapi/asc_consultant/fields
+  adx_sitesettingid: 82605f52-2ade-478a-8cde-d07ca2f50bc1
+  adx_value: asc_name,asc_website,asc_akaname,asc_bimcapability,asc_bimoperatorcount,asc_revenuepct_middleeast,asc_revenuepct_southasia,asc_revenuepct_europe,asc_revenuepct_africa,asc_revenuepct_other,asc_consultant_discipline,asc_consultant_sector,asc_consultant_region,asc_confackn,asc_confacknby,asc_confackndate,asc_firmtype_id,asc_status
+- adx_description: 'Enables the Power Pages Web API for the Financial Information child table (asc_financialinformation), 2026-10-08 - moved off asc_consultant live, see services.js saveChildTable()/loadExistingRecordSync().'
+  adx_name: Webapi/asc_financialinformation/enabled
+  adx_sitesettingid: 1e5a8c3f-7b2d-4f9a-8c6e-4d1b7f3a9e52
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_financialinformation.'
+  adx_name: Webapi/asc_financialinformation/fields
+  adx_sitesettingid: 6b9d2e4a-8f1c-4a7b-9d3e-5c8a2f6b1d94
+  adx_value: asc_financialinformationid,asc_effectiveyear,asc_fiscalformat,asc_backloginhand,asc_revenuen1,asc_revenuen2,asc_revenuen3,asc_consultant_id,_asc_consultant_id_value
+- adx_description: 'Enables the Power Pages Web API for the Legal Information child table (asc_legalinformation), 2026-10-08 - moved off asc_consultant live, see services.js saveChildTable()/loadExistingRecordSync().'
+  adx_name: Webapi/asc_legalinformation/enabled
+  adx_sitesettingid: 4a8c6e2d-9b3f-4c7a-8e1d-6f9b3a5c8e27
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_legalinformation.'
+  adx_name: Webapi/asc_legalinformation/fields
+  adx_sitesettingid: 7c3e9f5a-2d8b-4e6c-9a4f-8b2d6e1c9a53
+  adx_value: asc_legalinformationid,asc_indemnified,asc_indemnitydetails,asc_litigation,asc_litigationdetails,asc_holdspi,asc_piperoccurrence,asc_piaggregate,asc_consultant_id,_asc_consultant_id_value
+- adx_description: 'Enables the Power Pages Web API for the Sustainability & ESG child table (asc_sustainabilityesg), 2026-10-08 - moved off asc_consultant live, see services.js saveChildTable()/loadExistingRecordSync().'
+  adx_name: Webapi/asc_sustainabilityesg/enabled
+  adx_sitesettingid: 2f6b8d4c-5a9e-4b3f-8c7d-3e9a6b4f8c15
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_sustainabilityesg.'
+  adx_name: Webapi/asc_sustainabilityesg/fields
+  adx_sitesettingid: 8e4c2a6f-1b9d-4e8a-9c5f-6a3d8e2b4c79
+  adx_value: asc_sustainabilityesgid,asc_esgcert,asc_esgcertdetails,asc_esgreporting,asc_esgframework,asc_accreditedcount,asc_esgqa,asc_esgqadetails,asc_consultant_id,_asc_consultant_id_value
+- adx_description: 'Enables the Power Pages Web API for the Firm Type reference table (asc_firmtype), read-only, used to populate the Firm Type dropdown live and resolve the selected label to a GUID for the consultant lookup.'
+  adx_name: Webapi/asc_firmtype/enabled
+  adx_sitesettingid: d2d4910c-65dc-4ba2-b8d7-7b9026b3783a
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_firmtype (name lookup only).'
+  adx_name: Webapi/asc_firmtype/fields
+  adx_sitesettingid: 13d22e5e-9c04-410a-bcd3-c869370f1b99
+  adx_value: asc_name,asc_firmtypeid
+- adx_description: 'Enables the Power Pages Web API for the Consultant Contact table (asc_contact), required by src/portal/scripts/services.js live write path.'
+  adx_name: Webapi/asc_contact/enabled
+  adx_sitesettingid: e37d793a-88ba-42e1-9368-9195487e40b9
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_contact, matching every column written by src/portal/scripts/services.js.'
+  adx_name: Webapi/asc_contact/fields
+  adx_sitesettingid: 471acefa-e418-4fa6-addd-a6eaea874c6e
+  adx_value: asc_contactid,asc_number,asc_firstname,asc_lastname,asc_workemail,asc_phone,asc_jobtitle,asc_contacttype,asc_status,asc_regionid,asc_consultant_id,_asc_consultant_id_value
+- adx_description: 'Enables the Power Pages Web API for the BIM Project table (asc_bimproject), required by src/portal/scripts/services.js live write path.'
+  adx_name: Webapi/asc_bimproject/enabled
+  adx_sitesettingid: a104728e-b778-40a7-afb6-86a8582cf7a2
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_bimproject, matching every column written by src/portal/scripts/services.js.'
+  adx_name: Webapi/asc_bimproject/fields
+  adx_sitesettingid: ae3e78de-b480-48aa-90cb-1e0c7a1c208a
+  adx_value: asc_bimprojectid,asc_name,asc_location,asc_gfa,asc_consultant_id,_asc_consultant_id_value
+- adx_description: 'Enables the Power Pages Web API for the Discipline reference table (asc_discipline), read-only, used by src/portal/scripts/services.js to resolve discipline names to GUIDs for the consultant N:N association.'
+  adx_name: Webapi/asc_discipline/enabled
+  adx_sitesettingid: 7930d86c-a4f1-4998-b598-693ab2de3707
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_discipline (name lookup only).'
+  adx_name: Webapi/asc_discipline/fields
+  adx_sitesettingid: 902772bc-b0eb-4d97-9c2c-7233c509940a
+  adx_value: asc_name,asc_disciplineid,asc_consultant_discipline
+- adx_description: 'Enables the Power Pages Web API for the Country master list (asc_country), read-only, used to populate the Country dropdowns live.'
+  adx_name: Webapi/asc_country/enabled
+  adx_sitesettingid: d0941b36-71bd-4b4f-8add-53e0d2b7c324
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_country (name only).'
+  adx_name: Webapi/asc_country/fields
+  adx_sitesettingid: e6678124-fd09-45a3-996a-184ad9fac58b
+  adx_value: asc_countryid,asc_name
+- adx_description: 'Enables the Power Pages Web API for the Document Type master list (asc_documenttype), read-only, used to populate the Document type dropdown live.'
+  adx_name: Webapi/asc_documenttype/enabled
+  adx_sitesettingid: 07df2eac-255f-4e1d-9bb9-4093ec6a7117
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_documenttype (name only).'
+  adx_name: Webapi/asc_documenttype/fields
+  adx_sitesettingid: 6fde0c7c-c963-4d95-bc42-048c2596e298
+  adx_value: asc_documenttypeid,asc_name
+- adx_description: 'Enables the Power Pages Web API for the Project Type master list (asc_projecttype), read-only, used to populate the Project type dropdown live.'
+  adx_name: Webapi/asc_projecttype/enabled
+  adx_sitesettingid: 2e22bacd-a192-4920-9f4a-6a345abe0b00
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_projecttype (name only).'
+  adx_name: Webapi/asc_projecttype/fields
+  adx_sitesettingid: f425fded-b4f2-40de-ac24-7c07dbfabbaf
+  adx_value: asc_projecttypeid,asc_projecttypename
+- adx_description: 'Enables the Power Pages Web API for the Sector reference table (asc_sector), read-only, used to resolve sector names to GUIDs for the consultant N:N association.'
+  adx_name: Webapi/asc_sector/enabled
+  adx_sitesettingid: c66795a4-7e5e-4b0e-9b59-6f509530e600
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_sector (name lookup only).'
+  adx_name: Webapi/asc_sector/fields
+  adx_sitesettingid: ebc998d8-aeea-4d17-b69e-f98cbf585744
+  adx_value: asc_name,asc_sectorid,asc_consultant_sector
+- adx_description: 'Enables the Power Pages Web API for the Region reference table (asc_region), read-only, used to resolve region names to GUIDs for contacts and the consultant N:N association.'
+  adx_name: Webapi/asc_region/enabled
+  adx_sitesettingid: d63e3f4c-b48e-4efc-8245-69a5ba3ce0b1
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_region (name lookup only).'
+  adx_name: Webapi/asc_region/fields
+  adx_sitesettingid: 70ab38c7-641c-463b-85bc-d9abe0435bf6
+  adx_value: asc_name,asc_regionid,asc_consultant_region
+- adx_description: 'Enables the Power Pages Web API for the pre-existing asc_consultantdiscipline junction table (Consultant x Discipline), now used instead of the asc_consultant_discipline N:N relationship for storing this association as a real, queryable row.'
+  adx_name: Webapi/asc_consultantdiscipline/enabled
+  adx_sitesettingid: 0c4fd59c-e674-4710-bac9-118e84fe1ad9
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_consultantdiscipline. asc_ConsultantID/asc_DisciplineID must match the live column''s exact SchemaName casing - this allowlist check is case-sensitive, confirmed live 2026-10-08 via "Attribute asc_ConsultantID ... is not enabled for Web Api" after the lowercase form was rejected.'
+  adx_name: Webapi/asc_consultantdiscipline/fields
+  adx_sitesettingid: 3f025654-f7f1-4e44-bdc4-29a2ecbf7aa0
+  adx_value: asc_consultantdisciplineid,asc_number,asc_ConsultantID,asc_DisciplineID
+- adx_description: 'Enables the Power Pages Web API for the pre-existing asc_consultantsectors junction table (Consultant x Sector), now used instead of the asc_consultant_sector N:N relationship.'
+  adx_name: Webapi/asc_consultantsectors/enabled
+  adx_sitesettingid: d8589fe0-06bb-49c5-bc6a-372602fd2f1d
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_consultantsectors. asc_ConsultantID/asc_SectorID must match the live column''s exact SchemaName casing - see asc_consultantdiscipline/fields note.'
+  adx_name: Webapi/asc_consultantsectors/fields
+  adx_sitesettingid: 939a2c94-3a32-4495-9615-1e817dae07ff
+  adx_value: asc_consultantsectorsid,asc_number,asc_ConsultantID,asc_SectorID
+- adx_description: 'Enables the Power Pages Web API for the pre-existing asc_consultantregions junction table (Consultant x Region), now used instead of the asc_consultant_region N:N relationship.'
+  adx_name: Webapi/asc_consultantregions/enabled
+  adx_sitesettingid: b58512a7-d22b-48c2-aa1b-d61e5bb6b93b
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_consultantregions. asc_ConsultantID/asc_RegionID must match the live column''s exact SchemaName casing - see asc_consultantdiscipline/fields note.'
+  adx_name: Webapi/asc_consultantregions/fields
+  adx_sitesettingid: 1a8fcf98-5686-4806-b71c-a05227387a82
+  adx_value: asc_consultantregionsid,asc_number,asc_ConsultantID,asc_RegionID
+- adx_description: 'DEMO confidentiality statement PDF for the Download PDF button on the Confidentiality screen - a placeholder, not the real signed/authorised-signatory document required by URS FR-25. See web-files/Confidentiality-Statement-Demo.pdf.'
+  adx_name: ConsultantPortal/ConfidentialityPdfUrl
+  adx_sitesettingid: cfcd350e-146c-4a7c-a82b-396e1b27a91c
+  adx_value: /Confidentiality-Statement-Demo.pdf
+- adx_description: 'Enables the Power Pages Web API for the Portal Submission staging table (asc_portalsubmission), required by src/portal/scripts/services.js recordPortalSubmissions() - see docs/portal-submission-configuration.md.'
+  adx_name: Webapi/asc_portalsubmission/enabled
+  adx_sitesettingid: 6a1d9e3f-8c2b-4f5a-9d7e-1b3c5a8f2e64
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_portalsubmission, matching every column written/read by src/portal/scripts/services.js recordPortalSubmissions(). Includes asc_isreview, a required column added live 2026-09-30 after this table was first configured.'
+  adx_name: Webapi/asc_portalsubmission/fields
+  adx_sitesettingid: 9b4e2c7a-1f6d-4a3b-8e9c-5d7a2f4b6c81
+  adx_value: asc_portalsubmissionid,asc_tab,asc_before,asc_after,asc_status,asc_isreview,asc_submittedon,asc_consultant_id,_asc_consultant_id_value
+- adx_description: 'Enables the Power Pages Web API for the Audit Log table (asc_auditlog), required by src/portal/scripts/services.js logAuditEvent() - see docs/portal-submission-configuration.md.'
+  adx_name: Webapi/asc_auditlog/enabled
+  adx_sitesettingid: 2d6f8a1c-4b9e-4c7a-9f3d-8e1a6c5b2f74
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_auditlog, matching every column written by src/portal/scripts/services.js logAuditEvent(). asc_Actor is bound to a fixed Application User (Consultant DatabaseApp Service account) on every portal-originated row - see services.js for the GUID. Casing must match the live column''s exact SchemaName (asc_Actor, capital A) - confirmed live 2026-10-08 via "Attribute asc_Actor ... is not enabled for Web Api" after the lowercase asc_actor form was rejected, same case-sensitivity rule as the junction-table fields above.'
+  adx_name: Webapi/asc_auditlog/fields
+  adx_sitesettingid: 7b3e9d2a-5c1f-4a8b-9e6d-3f2a7c4b8e15
+  adx_value: asc_action,asc_eventtime,asc_object,asc_origin,asc_Actor
+- adx_description: 'EXPERIMENTAL 2026-10-08 - added to test whether the asc_actor@odata.bind to SystemUser in logAuditEvent() needs the bind TARGET entity web-api-enabled too, not just asc_auditlog (its own allowlist already has asc_actor). This was the one unconfirmed risk flagged when the Actor binding was built - a live 400 on the Audit Log write is what prompted actually testing it. Remove if it turns out not to be the cause.'
+  adx_name: Webapi/systemuser/enabled
+  adx_sitesettingid: 3c7e1a9d-6f4b-4d2a-8e5c-1b9f6a3d7c82
+  adx_value: true
+- adx_description: 'Minimal field list for the experimental Webapi/systemuser/enabled above - just the primary key, since nothing reads or writes any other SystemUser field, only binds to one fixed record by ID.'
+  adx_name: Webapi/systemuser/fields
+  adx_sitesettingid: 9d4f2b8e-3a7c-4e1d-9f6b-2c8e5a4d7b31
+  adx_value: systemuserid

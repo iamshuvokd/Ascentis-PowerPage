@@ -1,0 +1,16 @@
+adx_accountrelationship:
+adx_append: false
+adx_appendto: true
+adx_contactrelationship:
+adx_create: true
+adx_delete: false
+adx_entitylogicalname: asc_consultantdiscipline
+adx_entityname: Consultant Discipline  - Authenticated Test Access
+adx_entitypermission_webrole:
+- a39db80e-a77a-4cca-b447-e2cffb65f8af
+adx_entitypermissionid: 22dd76c2-baa8-48d2-8fc2-801944c83e4e
+adx_parententitypermission:
+adx_parentrelationship:
+adx_read: true
+adx_scope: 756150000
+adx_write: true

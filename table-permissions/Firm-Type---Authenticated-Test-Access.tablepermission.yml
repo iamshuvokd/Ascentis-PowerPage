@@ -1,0 +1,16 @@
+adx_accountrelationship: 
+adx_append: true
+adx_appendto: true
+adx_contactrelationship: 
+adx_create: false
+adx_delete: false
+adx_entitylogicalname: asc_firmtype
+adx_entityname: Firm Type - Authenticated Test Access
+adx_entitypermission_webrole:
+- a39db80e-a77a-4cca-b447-e2cffb65f8af
+adx_entitypermissionid: 59db736a-22a3-40db-917d-6bf963e6a761
+adx_parententitypermission: 
+adx_parentrelationship: 
+adx_read: true
+adx_scope: 756150000
+adx_write: false

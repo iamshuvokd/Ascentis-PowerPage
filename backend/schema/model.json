@@ -1,0 +1,2596 @@
+{
+  "version": 1,
+  "environment": "https://org84e19bfd.crm8.dynamics.com",
+  "solution": "ConsultantDatabaseSolution",
+  "publisher": "asc",
+  "tables": [
+    {
+      "key": "appuser",
+      "logicalName": "asc_appuser",
+      "entitySetName": "asc_appusers",
+      "label": "App User",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Full name"
+        },
+        {
+          "name": "asc_email",
+          "type": "varchar",
+          "required": true,
+          "unique": true,
+          "description": ""
+        },
+        {
+          "name": "asc_role",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "Admin / Lead Reviewer / Data editor / Rater / KAM Lead / Key Account Manager / All app users / Super User / Consultant Primary Contact"
+        },
+        {
+          "name": "asc_systemuser_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "systemuser",
+          "description": "lookup to systemuser — links this profile row to the native Dataverse user account"
+        }
+      ]
+    },
+    {
+      "key": "consultant",
+      "logicalName": "asc_consultant",
+      "entitySetName": "asc_consultants",
+      "label": "Consultant",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary column. Duplicate check by email domain."
+        },
+        {
+          "name": "asc_akaname",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_website",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_firmtype_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "firmtype",
+          "description": ""
+        },
+        {
+          "name": "asc_status",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Active / Inactive / Blacklisted. Live drift 2026-10-08: converted to a real required Choice column (global option set asc_consultantstatus, Active=751050000/Inactive=751050001/Blacklisted=751050002) - was previously free text. Admin/internal-controlled; the portal only ever sets Active, once, at Create - see services.js saveConsultant()."
+        },
+        {
+          "name": "asc_workedwithus",
+          "type": "boolean",
+          "required": false,
+          "unique": false,
+          "description": "calculated: true if any Engagement exists"
+        },
+        {
+          "name": "asc_completeness",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": "calculated across all fields"
+        },
+        {
+          "name": "asc_leadreviewer_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "systemuser",
+          "description": "lookup to systemuser — drives Access Team grant"
+        },
+        {
+          "name": "asc_kam_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "systemuser",
+          "description": "lookup to systemuser — optional"
+        },
+        {
+          "name": "asc_revenuepct_southasia",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_revenuepct_middleeast",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_revenuepct_africa",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_revenuepct_other",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_bimcapability",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "In-house / Outsourced"
+        },
+        {
+          "name": "asc_bimoperatorcount",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": "required if in-house"
+        },
+        {
+          "name": "asc_confackn",
+          "type": "boolean",
+          "required": false,
+          "unique": false,
+          "description": "confidentiality statement acknowledged"
+        },
+        {
+          "name": "asc_confacknby",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_confackndate",
+          "type": "datetime",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_lastupdated_overview",
+          "type": "datetime",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_lastupdated_financial",
+          "type": "datetime",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_lastupdated_legal",
+          "type": "datetime",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_lastupdated_esg",
+          "type": "datetime",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_revenuepct_europe",
+          "type": "decimal",
+          "description": "Europe revenue share, present in the supplied Financial screen."
+        }
+      ]
+    },
+    {
+      "key": "consultanttabupdate",
+      "logicalName": "asc_consultanttabupdate",
+      "entitySetName": "asc_consultanttabupdates",
+      "label": "Consultant Tab Update",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Record display name; generated by the trusted application service."
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": ""
+        },
+        {
+          "name": "asc_tab",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Which profile tab this record tracks"
+        },
+        {
+          "name": "asc_updatedby_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "systemuser",
+          "description": "lookup to systemuser"
+        },
+        {
+          "name": "asc_updatedon",
+          "type": "datetime",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "financialinformation",
+      "logicalName": "asc_financialinformation",
+      "entitySetName": "asc_financialinformations",
+      "label": "Financial Information",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": "",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_effectiveyear",
+          "type": "int",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Effective Year"
+        },
+        {
+          "name": "asc_fiscalformat",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "YYYY or YYYY/ZZ",
+          "label": "Fiscal Format"
+        },
+        {
+          "name": "asc_backloginhand",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": "Currency, USD-locked",
+          "label": "Backlog In Hand"
+        },
+        {
+          "name": "asc_revenuen1",
+          "type": "decimal",
+          "required": true,
+          "unique": false,
+          "description": "Currency, USD-locked",
+          "label": "Revenue N-1"
+        },
+        {
+          "name": "asc_revenuen2",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Revenue N-2"
+        },
+        {
+          "name": "asc_revenuen3",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Revenue N-3"
+        },
+        {
+          "name": "asc_backlogratio",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": "calculated %",
+          "label": "Backlog Ratio"
+        }
+      ]
+    },
+    {
+      "key": "financialrevenueregion",
+      "logicalName": "asc_financialrevenueregion",
+      "entitySetName": "asc_financialrevenueregions",
+      "label": "Financial Revenue by Region",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_financialinformation_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "financialinformation",
+          "description": "",
+          "label": "Financial Information"
+        },
+        {
+          "name": "asc_region_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "region",
+          "description": "",
+          "label": "Region"
+        },
+        {
+          "name": "asc_revenuepct",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Revenue Percent"
+        }
+      ]
+    },
+    {
+      "key": "legalinformation",
+      "logicalName": "asc_legalinformation",
+      "entitySetName": "asc_legalinformations",
+      "label": "Legal Information",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": true,
+          "target": "consultant",
+          "description": "1:1",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_indemnified",
+          "type": "boolean",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Indemnified"
+        },
+        {
+          "name": "asc_indemnitydetails",
+          "type": "text",
+          "required": false,
+          "unique": false,
+          "description": "required if indemnified = true",
+          "label": "Indemnity Details"
+        },
+        {
+          "name": "asc_litigation",
+          "type": "boolean",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Litigation"
+        },
+        {
+          "name": "asc_litigationdetails",
+          "type": "text",
+          "required": false,
+          "unique": false,
+          "description": "required if litigation = true",
+          "label": "Litigation Details"
+        },
+        {
+          "name": "asc_holdspi",
+          "type": "boolean",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Holds PI"
+        },
+        {
+          "name": "asc_piperoccurrence",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": "required if holdspi = true",
+          "label": "PI Per Occurrence"
+        },
+        {
+          "name": "asc_piaggregate",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": "required if holdspi = true",
+          "label": "PI Aggregate"
+        }
+      ]
+    },
+    {
+      "key": "biminformation",
+      "logicalName": "asc_biminformation",
+      "entitySetName": "asc_biminformations",
+      "label": "BIM Information",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": true,
+          "target": "consultant",
+          "description": "1:1",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_bimcapability",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "In-house / Outsourced. Plain text here - user will convert to a picklist manually in the maker portal afterward, as done on the original table.",
+          "label": "BIM Capability"
+        },
+        {
+          "name": "asc_bimdiscipline",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "discipline",
+          "description": "Live drift addition, not in the original design - preserved on rebuild to match the prior live shape.",
+          "label": "BIM Discipline"
+        },
+        {
+          "name": "asc_bimoperatorcount",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": "required if in-house",
+          "label": "BIM Operator Count"
+        }
+      ]
+    },
+    {
+      "key": "sustainabilityesg",
+      "logicalName": "asc_sustainabilityesg",
+      "entitySetName": "asc_sustainabilityesgs",
+      "label": "Sustainability & ESG",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": true,
+          "target": "consultant",
+          "description": "1:1",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_esgcert",
+          "type": "boolean",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "ESG Certified"
+        },
+        {
+          "name": "asc_esgcertdetails",
+          "type": "text",
+          "required": false,
+          "unique": false,
+          "description": "required if esgcert = true",
+          "label": "ESG Certification Details"
+        },
+        {
+          "name": "asc_esgreporting",
+          "type": "boolean",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "ESG Reporting"
+        },
+        {
+          "name": "asc_esgframework",
+          "type": "text",
+          "required": false,
+          "unique": false,
+          "description": "required if esgreporting = true",
+          "label": "ESG Framework"
+        },
+        {
+          "name": "asc_accreditedcount",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Accredited Count"
+        },
+        {
+          "name": "asc_esgqa",
+          "type": "boolean",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "ESG QA"
+        },
+        {
+          "name": "asc_esgqadetails",
+          "type": "text",
+          "required": false,
+          "unique": false,
+          "description": "required if esgqa = true",
+          "label": "ESG QA Details"
+        }
+      ]
+    },
+    {
+      "key": "office",
+      "logicalName": "asc_office",
+      "entitySetName": "asc_offices",
+      "label": "Office",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "description": "Record display name; generated by the trusted application service."
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": ""
+        },
+        {
+          "name": "asc_region_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "region",
+          "description": ""
+        },
+        {
+          "name": "asc_address",
+          "type": "text",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_country",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_headcount",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_leader1_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "contact",
+          "description": ""
+        },
+        {
+          "name": "asc_leader2_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "contact",
+          "description": ""
+        },
+        {
+          "name": "asc_leader3_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "contact",
+          "description": ""
+        },
+        {
+          "name": "asc_city",
+          "type": "varchar",
+          "description": "Office city shown in the supplied office screen."
+        },
+        {
+          "name": "asc_status",
+          "type": "varchar",
+          "description": "Active / Inactive; region eligibility."
+        }
+      ]
+    },
+    {
+      "key": "officeleader",
+      "logicalName": "asc_officeleader",
+      "entitySetName": "asc_officeleaders",
+      "label": "Office Leader",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Record display name; generated by the trusted application service."
+        },
+        {
+          "name": "asc_office_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "office",
+          "description": ""
+        },
+        {
+          "name": "asc_leadernumber",
+          "type": "int",
+          "required": true,
+          "unique": false,
+          "description": "1 to 3"
+        },
+        {
+          "name": "asc_position",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_email",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_phone",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "contact",
+      "logicalName": "asc_contact",
+      "entitySetName": "asc_contacts",
+      "label": "Consultant Contact",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": "",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_firstname",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "First Name"
+        },
+        {
+          "name": "asc_lastname",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Last Name"
+        },
+        {
+          "name": "asc_workemail",
+          "type": "varchar",
+          "required": true,
+          "unique": true,
+          "description": "",
+          "label": "Work Email"
+        },
+        {
+          "name": "asc_phone",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Phone"
+        },
+        {
+          "name": "asc_jobtitle",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Job Title"
+        },
+        {
+          "name": "asc_regionid",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "region",
+          "description": "Live drift: was free-text asc_region, replaced by this lookup. Preserved on rebuild to match the prior live shape.",
+          "label": "Region"
+        },
+        {
+          "name": "asc_contacttype",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Senior leader / Project contact / Primary contact. Plain text on rebuild - user will convert to a picklist manually in the maker portal afterward, as done on the original table.",
+          "label": "Contact Type"
+        },
+        {
+          "name": "asc_status",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Active / Inactive. Plain text on rebuild - user will convert to a picklist manually in the maker portal afterward, as done on the original table.",
+          "label": "Status"
+        }
+      ]
+    },
+    {
+      "key": "shareholder",
+      "logicalName": "asc_shareholder",
+      "entitySetName": "asc_shareholders",
+      "label": "Shareholder",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": ""
+        },
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_equitypct",
+          "type": "decimal",
+          "required": true,
+          "unique": false,
+          "description": "siblings should sum to ~100%"
+        }
+      ]
+    },
+    {
+      "key": "operatorapproval",
+      "logicalName": "asc_operatorapproval",
+      "entitySetName": "asc_operatorapprovals",
+      "label": "Operator Approval",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": "",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_operator_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "operator",
+          "description": "",
+          "label": "Operator"
+        },
+        {
+          "name": "asc_brands",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Brands"
+        }
+      ]
+    },
+    {
+      "key": "operatorapprovaldiscipline",
+      "logicalName": "asc_operatorapprovaldiscipline",
+      "entitySetName": "asc_operatorapprovaldisciplines",
+      "label": "Operator Approval Disciplines",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_operatorapproval_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "operatorapproval",
+          "description": "",
+          "label": "Operator Approval"
+        },
+        {
+          "name": "asc_disciplineid",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "discipline",
+          "description": "",
+          "label": "Discipline"
+        }
+      ]
+    },
+    {
+      "key": "projectreference",
+      "logicalName": "asc_projectreference",
+      "entitySetName": "asc_projectreferences",
+      "label": "Project Reference",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": ""
+        },
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_country",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_region_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "region",
+          "description": ""
+        },
+        {
+          "name": "asc_type",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Hotel / Mixed-use / Residential / Commercial / …"
+        },
+        {
+          "name": "asc_brand",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "hotels only"
+        },
+        {
+          "name": "asc_gfa",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": "mandatory for non-hotel"
+        },
+        {
+          "name": "asc_keys",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": "hotels only"
+        },
+        {
+          "name": "asc_projectstatus",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "In progress / Completed / On hold / Cancelled. Documentation-only rename to asc_projectstatus on 20 Sept 2026, matching an already-live rename observed via export - this file did not cause that live change and no live Dataverse write was made here."
+        },
+        {
+          "name": "asc_startyear",
+          "type": "int",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_completionyear",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": "required only when Completed"
+        },
+        {
+          "name": "asc_attachment_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "attachment",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "projectreferencetype",
+      "logicalName": "asc_projectreferencetype",
+      "entitySetName": "asc_projectreferencetypes",
+      "label": "Project Reference Type",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_projectreference_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "projectreference",
+          "description": "",
+          "label": "Project Reference"
+        },
+        {
+          "name": "asc_projecttype_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "projecttype",
+          "description": "",
+          "label": "Project Type"
+        }
+      ]
+    },
+    {
+      "key": "bimproject",
+      "logicalName": "asc_bimproject",
+      "entitySetName": "asc_bimprojects",
+      "label": "BIM Project",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": ""
+        },
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_location",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_gfa",
+          "type": "int",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_lod",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Level of Development"
+        }
+      ]
+    },
+    {
+      "key": "note",
+      "logicalName": "asc_note",
+      "entitySetName": "asc_notes",
+      "label": "Consultant Note",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "description": "Record display name; generated by the trusted application service."
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": ""
+        },
+        {
+          "name": "asc_category",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Strength / Weakness / Availability / General"
+        },
+        {
+          "name": "asc_comment",
+          "type": "text",
+          "required": true,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "attachment",
+      "logicalName": "asc_attachment",
+      "entitySetName": "asc_attachments",
+      "label": "Consultant Attachment",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "description": "Record display name; generated by the trusted application service."
+        },
+        {
+          "name": "asc_file",
+          "type": "file",
+          "required": true,
+          "unique": false,
+          "description": "File column, 25 MB cap"
+        },
+        {
+          "name": "asc_documenttype_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "documenttype",
+          "description": ""
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "consultant",
+          "description": "nullable — exactly one of consultant/contact/projectreference set"
+        },
+        {
+          "name": "asc_contact_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "contact",
+          "description": "nullable — exactly one of consultant/contact/projectreference set"
+        },
+        {
+          "name": "asc_projectreference_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "projectreference",
+          "description": "nullable — exactly one of consultant/contact/projectreference set. Additive column: aligns with URS §6.14/§6.8, which links the attachment to the owning project reference. The existing projectreference.asc_attachment_id reverse link is deprecated in favour of this forward link; remove it in a later cleanup once no data depends on it — not removed here."
+        },
+        {
+          "name": "asc_filename",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "Original uploaded file name. Additive column: URS §6.14 \"File / document type\"."
+        },
+        {
+          "name": "asc_filesizemb",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": "File size in MB. Additive column: URS §6.14 \"Uploader / date\", max 25 MB enforced at the trusted layer."
+        },
+        {
+          "name": "asc_uploadedby_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "systemuser",
+          "description": "lookup to systemuser — uploader. Additive column: URS §6.14 \"Uploader / date\"."
+        },
+        {
+          "name": "asc_uploadedon",
+          "type": "datetime",
+          "required": false,
+          "unique": false,
+          "description": "Upload timestamp. Additive column: URS §6.14 \"Uploader / date\"."
+        }
+      ]
+    },
+    {
+      "key": "engagement",
+      "logicalName": "asc_engagement",
+      "entitySetName": "asc_engagements",
+      "label": "Engagement",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "description": "Record display name; generated by the trusted application service."
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": ""
+        },
+        {
+          "name": "asc_projectname",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_clientname",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_country",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_city",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_status",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Ongoing / Completed"
+        },
+        {
+          "name": "asc_startdate",
+          "type": "date",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_enddate",
+          "type": "date",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "rating",
+      "logicalName": "asc_rating",
+      "entitySetName": "asc_ratings",
+      "label": "Rating",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "description": "Record display name; generated by the trusted application service."
+        },
+        {
+          "name": "asc_engagement_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "engagement",
+          "description": ""
+        },
+        {
+          "name": "asc_criteria1",
+          "type": "int",
+          "required": true,
+          "unique": false,
+          "description": "1-4, Adherence to timeline"
+        },
+        {
+          "name": "asc_criteria2",
+          "type": "int",
+          "required": true,
+          "unique": false,
+          "description": "1-4, Quality of drawings"
+        },
+        {
+          "name": "asc_criteria3",
+          "type": "int",
+          "required": true,
+          "unique": false,
+          "description": "1-4, Creativity / aesthetics"
+        },
+        {
+          "name": "asc_criteria4",
+          "type": "int",
+          "required": true,
+          "unique": false,
+          "description": "1-4, Functional optimization"
+        },
+        {
+          "name": "asc_criteria5",
+          "type": "int",
+          "required": true,
+          "unique": false,
+          "description": "1-4, Cost awareness"
+        },
+        {
+          "name": "asc_criteria6",
+          "type": "int",
+          "required": true,
+          "unique": false,
+          "description": "1-4, Lead role in coordination"
+        },
+        {
+          "name": "asc_criteria7",
+          "type": "int",
+          "required": true,
+          "unique": false,
+          "description": "1-4, Responsiveness"
+        },
+        {
+          "name": "asc_overallscore",
+          "type": "decimal",
+          "required": false,
+          "unique": false,
+          "description": "calculated: average of the 7, 1dp"
+        },
+        {
+          "name": "asc_comment",
+          "type": "text",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_rater_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "systemuser",
+          "description": "lookup to systemuser"
+        },
+        {
+          "name": "asc_ratertext",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "copied name — survives user deletion"
+        },
+        {
+          "name": "asc_ratingdate",
+          "type": "datetime",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_workflowstatus",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Submitted / Approved / To be Revised"
+        },
+        {
+          "name": "asc_locked",
+          "type": "boolean",
+          "required": false,
+          "unique": false,
+          "description": "calculated: true on approval"
+        }
+      ]
+    },
+    {
+      "key": "ratingscore",
+      "logicalName": "asc_ratingscore",
+      "entitySetName": "asc_ratingscores",
+      "label": "Rating Score",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Record display name; generated by the trusted application service."
+        },
+        {
+          "name": "asc_rating_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "rating",
+          "description": ""
+        },
+        {
+          "name": "asc_ratingcriterion_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "ratingcriterion",
+          "description": ""
+        },
+        {
+          "name": "asc_score",
+          "type": "int",
+          "required": true,
+          "unique": false,
+          "description": "1-4, Poor/Average/Good/Excellent"
+        }
+      ]
+    },
+    {
+      "key": "engagementcontact",
+      "logicalName": "asc_engagementcontact",
+      "entitySetName": "asc_engagementcontacts",
+      "label": "Engagement Contact",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_engagement_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "engagement",
+          "description": "",
+          "label": "Engagement"
+        },
+        {
+          "name": "asc_contactid",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "contact",
+          "description": "Live column name has no underscore before id, unlike this schema file's previous asc_contact_id - corrected to match reality on this rebuild.",
+          "label": "Contact"
+        },
+        {
+          "name": "asc_role",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "Role this contact played on the engagement — URS §6.11 \"Consultant contacts & roles\".",
+          "label": "Role"
+        }
+      ]
+    },
+    {
+      "key": "consultantdiscipline",
+      "logicalName": "asc_consultantdiscipline",
+      "entitySetName": "asc_consultantdisciplines",
+      "label": "Consultant Discipline",
+      "existing": true,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), generated on create. Do not supply a value when writing.",
+          "label": "Name"
+        },
+        {
+          "name": "asc_consultantid",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": "",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_disciplineid",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "discipline",
+          "description": "",
+          "label": "Discipline"
+        }
+      ]
+    },
+    {
+      "key": "consultantsectors",
+      "logicalName": "asc_consultantsectors",
+      "entitySetName": "asc_consultantsectorses",
+      "label": "Consultant Sectors",
+      "existing": true,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber, generated on create. Do not supply a value when writing.",
+          "label": "Name"
+        },
+        {
+          "name": "asc_consultantid",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": "",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_sectorid",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "sector",
+          "description": "",
+          "label": "Sector"
+        }
+      ]
+    },
+    {
+      "key": "consultantregions",
+      "logicalName": "asc_consultantregions",
+      "entitySetName": "asc_consultantregionses",
+      "label": "Consultant Regions",
+      "existing": true,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber, generated on create. Do not supply a value when writing.",
+          "label": "Name"
+        },
+        {
+          "name": "asc_consultantid",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": "",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_regionid",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "region",
+          "description": "",
+          "label": "Region"
+        }
+      ]
+    },
+    {
+      "key": "kamprofile",
+      "logicalName": "asc_kamprofile",
+      "entitySetName": "asc_kamprofiles",
+      "label": "KAM Profile",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "description": "Record display name; generated by the trusted application service."
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": true,
+          "target": "consultant",
+          "description": "1:1"
+        },
+        {
+          "name": "asc_designintegrity",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": "1-4"
+        },
+        {
+          "name": "asc_clientmanagement",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": "1-4"
+        },
+        {
+          "name": "asc_stakeholdermgmt",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": "1-4"
+        },
+        {
+          "name": "asc_commercialrecip",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": "1-4"
+        },
+        {
+          "name": "asc_comarketingdriver",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": "1-4"
+        }
+      ]
+    },
+    {
+      "key": "kamdriverrating",
+      "logicalName": "asc_kamdriverrating",
+      "entitySetName": "asc_kamdriverratings",
+      "label": "KAM Driver Rating",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": "",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_kamdriver_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "kamdriver",
+          "description": "",
+          "label": "KAM Driver"
+        },
+        {
+          "name": "asc_rating",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": "1 (not important) to 4 (very important)",
+          "label": "Rating"
+        }
+      ]
+    },
+    {
+      "key": "kamleadreceived",
+      "logicalName": "asc_kamleadreceived",
+      "entitySetName": "asc_kamleadreceiveds",
+      "label": "KAM Lead Received",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": "",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_leaddate",
+          "type": "date",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Lead Date"
+        },
+        {
+          "name": "asc_projectname",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Project Name"
+        },
+        {
+          "name": "asc_clientname",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Client Name"
+        },
+        {
+          "name": "asc_referraltype",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Referral Type"
+        },
+        {
+          "name": "asc_referralcomment",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Referral Comment"
+        },
+        {
+          "name": "asc_leadowner",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Lead Owner"
+        },
+        {
+          "name": "asc_services",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Services"
+        },
+        {
+          "name": "asc_leadstatus",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Lead Status"
+        }
+      ]
+    },
+    {
+      "key": "kamleadshared",
+      "logicalName": "asc_kamleadshared",
+      "entitySetName": "asc_kamleadshareds",
+      "label": "KAM Lead Shared",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": "",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_leaddate",
+          "type": "date",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Lead Date"
+        },
+        {
+          "name": "asc_projectname",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Project Name"
+        },
+        {
+          "name": "asc_referraltype",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "incl. Prequalification",
+          "label": "Referral Type"
+        },
+        {
+          "name": "asc_referralcomment",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Referral Comment"
+        },
+        {
+          "name": "asc_leadowner",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Lead Owner"
+        },
+        {
+          "name": "asc_servicesproposed",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Services Proposed"
+        },
+        {
+          "name": "asc_referralstatus",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Referral Status"
+        }
+      ]
+    },
+    {
+      "key": "kamcomarketing",
+      "logicalName": "asc_kamcomarketing",
+      "entitySetName": "asc_kamcomarketings",
+      "label": "KAM Co-marketing",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": "",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_description",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "",
+          "label": "Description"
+        },
+        {
+          "name": "asc_status",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Status"
+        },
+        {
+          "name": "asc_statusdate",
+          "type": "date",
+          "required": false,
+          "unique": false,
+          "description": "auto, set on entry",
+          "label": "Status Date"
+        }
+      ]
+    },
+    {
+      "key": "portalsubmission",
+      "logicalName": "asc_portalsubmission",
+      "entitySetName": "asc_portalsubmissions",
+      "label": "Portal Submission",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": "",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_tab",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "which of the 8 portal tabs",
+          "label": "Tab"
+        },
+        {
+          "name": "asc_before",
+          "type": "text",
+          "required": false,
+          "unique": false,
+          "description": "JSON snapshot",
+          "label": "Before"
+        },
+        {
+          "name": "asc_after",
+          "type": "text",
+          "required": false,
+          "unique": false,
+          "description": "JSON snapshot",
+          "label": "After"
+        },
+        {
+          "name": "asc_status",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Draft / Submitted / Accepted / Rejected",
+          "label": "Status"
+        },
+        {
+          "name": "asc_reviewedby_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "systemuser",
+          "description": "lookup to systemuser",
+          "label": "Reviewed By"
+        },
+        {
+          "name": "asc_revieweddate",
+          "type": "datetime",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Reviewed Date"
+        },
+        {
+          "name": "asc_submittedby_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "contact",
+          "description": "Required for Contact-scoped Table Permissions per docs/portal-submission-configuration.md Step 2.",
+          "label": "Submitted By"
+        },
+        {
+          "name": "asc_rejectreason",
+          "type": "text",
+          "required": false,
+          "unique": false,
+          "description": "docs/portal-submission-configuration.md specifies 500 chars; this build tooling only supports its standard 4000-char text columns (well within bounds, not exactly 500). Required only when asc_status = Rejected.",
+          "label": "Reject Reason"
+        }
+      ]
+    },
+    {
+      "key": "invitation",
+      "logicalName": "asc_invitation",
+      "entitySetName": "asc_invitations",
+      "label": "Consultant Invitation",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "description": "Record display name; generated by the trusted application service."
+        },
+        {
+          "name": "asc_consultant_id",
+          "type": "uuid",
+          "required": true,
+          "unique": false,
+          "target": "consultant",
+          "description": ""
+        },
+        {
+          "name": "asc_token",
+          "type": "varchar",
+          "required": true,
+          "unique": true,
+          "description": ""
+        },
+        {
+          "name": "asc_issuedon",
+          "type": "datetime",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_expireson",
+          "type": "datetime",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_revoked",
+          "type": "boolean",
+          "required": false,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_purpose",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Onboarding / Update / Revalidation"
+        }
+      ]
+    },
+    {
+      "key": "discipline",
+      "logicalName": "asc_discipline",
+      "entitySetName": "asc_disciplines",
+      "label": "Discipline",
+      "existing": true,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_sortorder",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "sector",
+      "logicalName": "asc_sector",
+      "entitySetName": "asc_sectors",
+      "label": "Sector",
+      "existing": true,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_sortorder",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "region",
+      "logicalName": "asc_region",
+      "entitySetName": "asc_regions",
+      "label": "Region",
+      "existing": true,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_sortorder",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "operator",
+      "logicalName": "asc_operator",
+      "entitySetName": "asc_operators",
+      "label": "Operator",
+      "existing": true,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_sortorder",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "service",
+      "logicalName": "asc_service",
+      "entitySetName": "asc_services",
+      "label": "Service",
+      "existing": true,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_sortorder",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "certificationtype",
+      "logicalName": "asc_certificationtype",
+      "entitySetName": "asc_certificationtypes",
+      "label": "Certification Type",
+      "existing": true,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_sortorder",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "firmtype",
+      "logicalName": "asc_firmtype",
+      "entitySetName": "asc_firmtypes",
+      "label": "Firm Type",
+      "existing": true,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_sortorder",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "documenttype",
+      "logicalName": "asc_documenttype",
+      "entitySetName": "asc_documenttypes",
+      "label": "Document Type",
+      "existing": true,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_sortorder",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "consultationcategory",
+      "logicalName": "asc_consultationcategory",
+      "entitySetName": "asc_consultationcategorys",
+      "label": "Consultation Category",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        }
+      ]
+    },
+    {
+      "key": "projecttype",
+      "logicalName": "asc_projecttype",
+      "entitySetName": "asc_projecttypes",
+      "label": "Project Type",
+      "existing": false,
+      "primaryName": "asc_projecttypename",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_projecttypename",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - single line text (not autonumber, unlike every other table rebuilt 2026-09-28), display name \"Project Type Name\". Holds the actual project-type value (e.g. Hotel, Residential, Mixed-use) directly, so this IS the real lookup target for projectreference.asc_type once seeded.",
+          "label": "Project Type Name"
+        }
+      ]
+    },
+    {
+      "key": "lod",
+      "logicalName": "asc_lod",
+      "entitySetName": "asc_lods",
+      "label": "LOD",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        }
+      ]
+    },
+    {
+      "key": "duplicateoverride",
+      "logicalName": "asc_duplicateoverride",
+      "entitySetName": "asc_duplicateoverrides",
+      "label": "Duplicate Override",
+      "existing": false,
+      "primaryName": "asc_number",
+      "primaryNameAutonumber": true,
+      "columns": [
+        {
+          "name": "asc_number",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": "Primary name field - Dataverse autonumber ({SEQNUM:4}), display name \"Number\", generated on create. Do not supply a value when writing.",
+          "label": "Number"
+        },
+        {
+          "name": "asc_consultantid",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "consultant",
+          "description": "Live column name has no underscore before id, unlike most other lookups in this schema - preserved exactly as found.",
+          "label": "Consultant"
+        },
+        {
+          "name": "asc_justification",
+          "type": "text",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Justification"
+        },
+        {
+          "name": "asc_matchedvalue",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "",
+          "label": "Matched Value"
+        },
+        {
+          "name": "asc_recordtype",
+          "type": "varchar",
+          "required": false,
+          "unique": false,
+          "description": "Live picklist on the original table - plain text on rebuild, user will convert to a picklist manually in the maker portal afterward, as done on the other rebuilt tables.",
+          "label": "Record Type"
+        }
+      ]
+    },
+    {
+      "key": "country",
+      "logicalName": "asc_country",
+      "entitySetName": "asc_countrys",
+      "label": "Country",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_region_id",
+          "type": "uuid",
+          "required": false,
+          "unique": false,
+          "target": "region",
+          "description": ""
+        },
+        {
+          "name": "asc_sortorder",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "ratingcriterion",
+      "logicalName": "asc_ratingcriterion",
+      "entitySetName": "asc_ratingcriterions",
+      "label": "Rating Criterion",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_sortorder",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "key": "kamdriver",
+      "logicalName": "asc_kamdriver",
+      "entitySetName": "asc_kamdrivers",
+      "label": "KAM Driver",
+      "existing": false,
+      "primaryName": "asc_name",
+      "primaryNameAutonumber": false,
+      "columns": [
+        {
+          "name": "asc_name",
+          "type": "varchar",
+          "required": true,
+          "unique": false,
+          "description": ""
+        },
+        {
+          "name": "asc_sortorder",
+          "type": "int",
+          "required": false,
+          "unique": false,
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "asc_consultant_discipline",
+      "left": "consultant",
+      "right": "discipline"
+    },
+    {
+      "name": "asc_consultant_sector",
+      "left": "consultant",
+      "right": "sector"
+    },
+    {
+      "name": "asc_consultant_region",
+      "left": "consultant",
+      "right": "region"
+    },
+    {
+      "name": "asc_operatorapproval_discipline",
+      "left": "operatorapproval",
+      "right": "discipline"
+    },
+    {
+      "name": "asc_operatorapproval_region",
+      "left": "operatorapproval",
+      "right": "region"
+    },
+    {
+      "name": "asc_projectreference_discipline",
+      "left": "projectreference",
+      "right": "discipline"
+    },
+    {
+      "name": "asc_bimproject_discipline",
+      "left": "bimproject",
+      "right": "discipline"
+    },
+    {
+      "name": "asc_engagement_discipline",
+      "left": "engagement",
+      "right": "discipline"
+    },
+    {
+      "name": "asc_consultant_bimdiscipline",
+      "left": "consultant",
+      "right": "discipline"
+    }
+  ]
+}

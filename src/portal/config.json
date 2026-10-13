@@ -1,0 +1,30 @@
+{
+  "views": [
+    "signin",
+    "confidentiality",
+    "profile",
+    "submit"
+  ],
+  "choices": {
+    "Disciplines": [
+      "Architecture",
+      "Interior design",
+      "Engineering",
+      "Landscape",
+      "MEP"
+    ],
+    "Sectors": [
+      "Hospitality",
+      "Mixed-use",
+      "Residential",
+      "Commercial"
+    ],
+    "Regions": [
+      "Middle East",
+      "South Asia",
+      "Europe",
+      "Africa",
+      "Other"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+adx_accountrelationship: 
+adx_append: false
+adx_appendto: true
+adx_contactrelationship: 
+adx_create: true
+adx_delete: false
+adx_entitylogicalname: asc_bimproject
+adx_entityname: BIM Project  - Authenticated Test Access
+adx_entitypermission_webrole:
+- a39db80e-a77a-4cca-b447-e2cffb65f8af
+adx_entitypermissionid: 2ed22733-38ee-4a60-bac1-7fd654bc3393
+adx_parententitypermission: 
+adx_parentrelationship: 
+adx_read: true
+adx_scope: 756150000
+adx_write: true

@@ -1,0 +1,535 @@
+{
+  "limits": {
+    "text": 200,
+    "details": 2000,
+    "fileBytes": 25000000,
+    "projects": 30,
+    "bimProjects": 10,
+    "leaders": 3
+  },
+  "documentTypes": [
+    "Company profile",
+    "References",
+    "Financials",
+    "Certificate",
+    "Insurance",
+    "Other"
+  ],
+  "sections": [
+    {
+      "id": "financial",
+      "panel": 1,
+      "title": "Financial",
+      "description": "Enter amounts in USD. Choose your fiscal year to label the three previous years.",
+      "fields": [
+        {
+          "key": "effectiveYear",
+          "label": "Effective year (N)",
+          "type": "year",
+          "required": true
+        },
+        {
+          "key": "yearFormat",
+          "label": "Fiscal-year format",
+          "type": "select",
+          "required": true,
+          "options": [
+            "YYYY (Jan–Dec)",
+            "YYYY/ZZ (Apr–Mar)"
+          ]
+        },
+        {
+          "key": "backlog",
+          "label": "Current backlog in hand",
+          "type": "money"
+        },
+        {
+          "key": "revenue1",
+          "label": "Revenue N−1",
+          "type": "money",
+          "required": true
+        },
+        {
+          "key": "revenue2",
+          "label": "Revenue N−2",
+          "type": "money",
+          "required": true
+        },
+        {
+          "key": "revenue3",
+          "label": "Revenue N−3",
+          "type": "money",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "legal",
+      "panel": 2,
+      "title": "Legal",
+      "description": "Choose Yes or No for each question. Additional information is required where applicable.",
+      "fields": [
+        {
+          "key": "indemnified",
+          "label": "Have you indemnified a client?",
+          "type": "yesno",
+          "required": true
+        },
+        {
+          "key": "indemnityDetails",
+          "label": "Indemnification details",
+          "type": "textarea",
+          "required": true,
+          "when": {
+            "key": "indemnified",
+            "value": "Yes"
+          }
+        },
+        {
+          "key": "litigation",
+          "label": "Have you lost litigation with a client?",
+          "type": "yesno",
+          "required": true
+        },
+        {
+          "key": "litigationDetails",
+          "label": "Litigation details",
+          "type": "textarea",
+          "required": true,
+          "when": {
+            "key": "litigation",
+            "value": "Yes"
+          }
+        },
+        {
+          "key": "insured",
+          "label": "Do you hold professional indemnity insurance?",
+          "type": "yesno",
+          "required": true
+        },
+        {
+          "key": "perOccurrence",
+          "label": "PI insurance — per occurrence",
+          "type": "money",
+          "required": true,
+          "when": {
+            "key": "insured",
+            "value": "Yes"
+          }
+        },
+        {
+          "key": "aggregate",
+          "label": "PI insurance — in aggregate",
+          "type": "money",
+          "required": true,
+          "when": {
+            "key": "insured",
+            "value": "Yes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bim",
+      "panel": 5,
+      "title": "BIM",
+      "description": "Tell us how you deliver building information modelling and add relevant projects.",
+      "fields": [
+        {
+          "key": "capability",
+          "label": "BIM capability",
+          "type": "select",
+          "required": true,
+          "options": [
+            "In-house",
+            "Outsourced"
+          ]
+        },
+        {
+          "key": "operators",
+          "label": "Number of BIM operators",
+          "type": "integer",
+          "required": true,
+          "when": {
+            "key": "capability",
+            "value": "In-house"
+          }
+        },
+        {
+          "key": "disciplines",
+          "label": "BIM disciplines",
+          "type": "multi",
+          "required": true,
+          "source": "Disciplines"
+        }
+      ]
+    },
+    {
+      "id": "sustainability",
+      "panel": 6,
+      "title": "Sustainability & ESG",
+      "description": "Share your environmental credentials, reporting practices, and quality assurance approach.",
+      "fields": [
+        {
+          "key": "certified",
+          "label": "Any environmental or sustainability certification?",
+          "type": "yesno",
+          "required": true
+        },
+        {
+          "key": "certificationDetails",
+          "label": "Certification details",
+          "type": "textarea",
+          "required": true,
+          "when": {
+            "key": "certified",
+            "value": "Yes"
+          }
+        },
+        {
+          "key": "reporting",
+          "label": "Formal ESG reporting?",
+          "type": "yesno",
+          "required": true
+        },
+        {
+          "key": "frameworkDetails",
+          "label": "ESG framework details",
+          "type": "textarea",
+          "required": true,
+          "when": {
+            "key": "reporting",
+            "value": "Yes"
+          }
+        },
+        {
+          "key": "professionals",
+          "label": "Number of accredited professionals",
+          "type": "integer",
+          "help": "For example, LEED AP or WELL AP."
+        },
+        {
+          "key": "qa",
+          "label": "Is sustainability part of your QA system?",
+          "type": "yesno",
+          "required": true
+        },
+        {
+          "key": "qaDetails",
+          "label": "Implementation details",
+          "type": "textarea",
+          "required": true,
+          "when": {
+            "key": "qa",
+            "value": "Yes"
+          }
+        }
+      ]
+    }
+  ],
+  "collections": [
+    {
+      "id": "contacts",
+      "panel": 3,
+      "title": "Contacts",
+      "singular": "contact",
+      "fields": [
+        {
+          "key": "firstName",
+          "label": "First name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "lastName",
+          "label": "Last name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "email",
+          "label": "Work email",
+          "type": "email",
+          "required": true
+        },
+        {
+          "key": "phone",
+          "label": "Phone",
+          "type": "tel",
+          "required": true
+        },
+        {
+          "key": "jobTitle",
+          "label": "Job title",
+          "type": "text"
+        },
+        {
+          "key": "region",
+          "label": "Region",
+          "type": "select",
+          "source": "Regions"
+        },
+        {
+          "key": "contactType",
+          "label": "Contact type",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Senior leader",
+            "Project contact",
+            "Primary contact"
+          ]
+        },
+        {
+          "key": "status",
+          "label": "Contact status",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Active",
+            "Inactive"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "offices",
+      "panel": 3,
+      "title": "Offices",
+      "singular": "office",
+      "fields": [
+        {
+          "key": "region",
+          "label": "Office region",
+          "type": "select",
+          "required": true,
+          "source": "Regions"
+        },
+        {
+          "key": "city",
+          "label": "City",
+          "type": "text"
+        },
+        {
+          "key": "country",
+          "label": "Office country",
+          "type": "select",
+          "required": true,
+          "source": "Countries"
+        },
+        {
+          "key": "address",
+          "label": "Office address",
+          "type": "textarea"
+        },
+        {
+          "key": "status",
+          "label": "Office status",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Active",
+            "Inactive"
+          ]
+        },
+        {
+          "key": "headcount",
+          "label": "Headcount",
+          "type": "integer"
+        },
+        {
+          "key": "leaders",
+          "label": "Office leaders (up to 3)",
+          "type": "multi",
+          "source": "contacts",
+          "help": "Add contacts above, then select their names here."
+        }
+      ]
+    },
+    {
+      "id": "projects",
+      "panel": 4,
+      "title": "Project references",
+      "singular": "project",
+      "limit": "projects",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Project name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "type": "select",
+          "required": true,
+          "source": "Countries"
+        },
+        {
+          "key": "region",
+          "label": "Region",
+          "type": "select",
+          "source": "Regions",
+          "required": true
+        },
+        {
+          "key": "disciplines",
+          "label": "Disciplines",
+          "type": "multi",
+          "source": "Disciplines",
+          "required": true
+        },
+        {
+          "key": "type",
+          "label": "Project type",
+          "type": "select",
+          "required": true,
+          "source": "ProjectTypes",
+          "options": [
+            "Hotel",
+            "Mixed-use",
+            "Residential",
+            "Commercial",
+            "Other"
+          ]
+        },
+        {
+          "key": "gfa",
+          "label": "Gross floor area (m²)",
+          "type": "integer",
+          "required": true,
+          "when": {
+            "key": "type",
+            "not": "Hotel"
+          }
+        },
+        {
+          "key": "keys",
+          "label": "Number of hotel keys",
+          "type": "integer",
+          "required": true,
+          "when": {
+            "key": "type",
+            "value": "Hotel"
+          }
+        },
+        {
+          "key": "status",
+          "label": "Project status",
+          "type": "select",
+          "required": true,
+          "options": [
+            "In progress",
+            "Completed",
+            "On hold",
+            "Cancelled"
+          ]
+        },
+        {
+          "key": "startYear",
+          "label": "Start year",
+          "type": "year",
+          "required": true
+        },
+        {
+          "key": "completionYear",
+          "label": "Completion year",
+          "type": "year",
+          "required": true,
+          "when": {
+            "key": "status",
+            "value": "Completed"
+          }
+        },
+        {
+          "key": "attachment",
+          "label": "Project attachment",
+          "type": "file",
+          "help": "Maximum 25 MB. Also listed under Attachments."
+        }
+      ]
+    },
+    {
+      "id": "bimProjects",
+      "panel": 5,
+      "title": "BIM projects",
+      "singular": "BIM project",
+      "limit": "bimProjects",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Project name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "location",
+          "label": "Location",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "gfa",
+          "label": "Gross floor area (m²)",
+          "type": "integer",
+          "required": true
+        },
+        {
+          "key": "lod",
+          "label": "Level of development (LOD)",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "disciplines",
+          "label": "BIM project disciplines",
+          "type": "multi",
+          "source": "Disciplines"
+        }
+      ]
+    }
+  ],
+  "countryCodes": [
+    "AE",
+    "AU",
+    "BD",
+    "BH",
+    "CA",
+    "CH",
+    "CN",
+    "DE",
+    "EG",
+    "ES",
+    "FR",
+    "GB",
+    "HK",
+    "ID",
+    "IN",
+    "IT",
+    "JP",
+    "KE",
+    "KW",
+    "LK",
+    "MA",
+    "MU",
+    "MV",
+    "MY",
+    "NG",
+    "NL",
+    "NP",
+    "NZ",
+    "OM",
+    "PH",
+    "PK",
+    "PT",
+    "QA",
+    "SA",
+    "SG",
+    "TH",
+    "TR",
+    "US",
+    "VN",
+    "ZA"
+  ]
+}

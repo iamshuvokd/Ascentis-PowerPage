@@ -1,0 +1,11 @@
+:root {
+  --portal-background: #faf9ec;
+  --portal-text: #00143e;
+  --portal-accent: #287d17;
+  --portal-input-border: #b8bfd3;
+  --portal-muted: #8898b8;
+  --portal-secondary: #697fa5;
+  --portal-button-background: #ebf7e4;
+  --portal-button-border: #99de80;
+  --portal-content-width: 912px;
+}

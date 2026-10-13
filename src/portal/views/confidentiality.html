@@ -1,0 +1,17 @@
+    <section class="confidentiality-card" data-view="confidentiality" hidden aria-labelledby="confidentiality-title">
+      <h1 id="confidentiality-title" tabindex="-1">Confidentiality statement</h1>
+      <p class="portal-intro">You must acknowledge the confidentiality statement before any data entry. The acknowledgement (name, OTP identity, timestamp) is recorded.</p>
+      <p class="portal-notice">Signed PDF is auto-addressed, dated, and includes the authorised signatory’s signature image. Downloadable for your records.</p>
+      <form id="confidentiality-form">
+        <label class="portal-consent" for="confidentiality-agreement">
+          <input id="confidentiality-agreement" name="agreement" type="checkbox" required aria-describedby="confidentiality-status">
+          <span>I acknowledge and agree to the confidentiality statement.</span>
+        </label>
+        <div class="portal-actions">
+          <button class="portal-button portal-button-secondary" id="download-confidentiality" type="button" data-pdf-url="{{ settings['ConsultantPortal/ConfidentialityPdfUrl'] | escape }}">Download PDF</button>
+          <button class="portal-button portal-button-primary" type="submit">Acknowledge and continue</button>
+        </div>
+        <p id="confidentiality-status" class="portal-status" role="status" aria-live="polite" hidden></p>
+        <noscript><p>Please enable JavaScript to use the acknowledgement controls.</p></noscript>
+      </form>
+    </section>

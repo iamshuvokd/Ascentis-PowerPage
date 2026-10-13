@@ -1,0 +1,16 @@
+adx_accountrelationship:
+adx_append: false
+adx_appendto: true
+adx_contactrelationship:
+adx_create: true
+adx_delete: false
+adx_entitylogicalname: asc_auditlog
+adx_entityname: Audit Log - Authenticated Test Access
+adx_entitypermission_webrole:
+- a39db80e-a77a-4cca-b447-e2cffb65f8af
+adx_entitypermissionid: 4f8a2c6e-9b3d-4e1a-8c7f-6d2e9a4b5f13
+adx_parententitypermission:
+adx_parentrelationship:
+adx_read: false
+adx_scope: 756150000
+adx_write: false

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="{{ website.selected_language.code | default: 'en' | escape }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title | default: 'Ascentis consultant portal' | escape }}</title>
+  <style id="consultant-portal-styles">
+<!-- portal:css -->
+  </style>
+</head>
+<body>
+  <main id="mainContent">
+    {% editable page 'adx_copy' type: 'html', liquid: true %}
+  </main>
+  <noscript><p>Please enable JavaScript to use the consultant portal.</p></noscript>
+  <script id="consultant-portal-script">
+<!-- portal:js -->
+  </script>
+</body>
+</html>

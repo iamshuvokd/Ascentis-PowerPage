@@ -1,0 +1,17 @@
+adx_accountrelationship:
+adx_append: false
+adx_appendto: true
+adx_contactrelationship:
+adx_create: true
+adx_delete: false
+adx_entitylogicalname: asc_portalsubmission
+adx_entityname: Portal Submission - Authenticated Test Access
+adx_entitypermission_webrole:
+- a39db80e-a77a-4cca-b447-e2cffb65f8af
+- 3f7c9f0a-6b6e-4a3c-9c2c-3a8e9f3a2b41
+adx_entitypermissionid: 7c2f4e8a-5d1b-4a6c-9f0e-2b8c6d4a1f37
+adx_parententitypermission:
+adx_parentrelationship:
+adx_read: true
+adx_scope: 756150000
+adx_write: true

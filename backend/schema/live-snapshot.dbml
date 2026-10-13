@@ -1,0 +1,520 @@
+// Ascentis Consultant Database - LIVE snapshot from CDB Development
+// Generated from a fresh pac solution export - reflects ACTUAL live structure, not design intent.
+// Snapshot date: 2026-09-20. Paste into https://dbdiagram.io to visualize.
+
+Table systemuser {
+  id uuid [pk]
+  Note: 'Native Dataverse table - not part of this solution, shown only as a ref target.'
+}
+
+Table asc_appuser {
+  id uuid [pk]
+  asc_email varchar [not null]
+  asc_name varchar [not null]
+  asc_role varchar
+  asc_systemuser_id uuid [ref: > systemuser.id]
+  Note: 'EntitySet: asc_appusers | Display: App User'
+}
+
+Table asc_attachment {
+  id uuid [pk]
+  asc_consultant_id uuid [ref: > asc_consultant.id]
+  asc_contact_id uuid [ref: > asc_contact.id]
+  asc_documenttype_id uuid [ref: > asc_documenttype.id]
+  asc_filename varchar
+  asc_filesizemb decimal
+  asc_name varchar [not null]
+  asc_projectreference_id uuid [ref: > asc_projectreference.id]
+  asc_uploadedby_id uuid [ref: > systemuser.id]
+  asc_uploadedon datetime
+  Note: 'EntitySet: asc_attachments | Display: Consultant Attachment'
+}
+
+Table asc_biminformation {
+  id uuid [pk]
+  asc_bimcapability varchar [not null, note: 'BIM Capability - choice/picklist']
+  asc_bimoperatorcount int [note: 'Bim Operator Count']
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_name varchar [not null]
+  Note: 'EntitySet: asc_biminformations | Display: BIM Information'
+}
+
+Table asc_bimproject {
+  id uuid [pk]
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_gfa int [not null, note: 'Gross Floor Area']
+  asc_location varchar [not null, note: 'Project Name / Location']
+  asc_name varchar [not null]
+  Note: 'EntitySet: asc_bimprojects | Display: BIM Project'
+}
+
+Table asc_certificationtype {
+  id uuid [pk]
+  asc_name varchar [not null]
+  Note: 'EntitySet: asc_certificationtypes | Display: Certification Type'
+}
+
+Table asc_consultant {
+  id uuid [pk]
+  asc_accreditedcount int
+  asc_akaname varchar [note: 'Also Known As Name']
+  asc_backloginhand decimal
+  asc_backlogratio decimal
+  asc_bimcapability varchar [not null]
+  asc_bimoperatorcount int
+  asc_completeness decimal [note: 'Data Completeness']
+  asc_confackn boolean [note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_consultant_asc_confackn")']
+  asc_confacknby varchar
+  asc_confackndate datetime
+  asc_effectiveyear int
+  asc_esgcert boolean [not null, note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_consultant_asc_esgcert")']
+  asc_esgcertdetails text
+  asc_esgframework text
+  asc_esgqa boolean [not null, note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_consultant_asc_esgqa")']
+  asc_esgqadetails text
+  asc_esgreporting boolean [not null, note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_consultant_asc_esgreporting")']
+  asc_firmtype_id uuid [ref: > asc_firmtype.id, note: 'Firm Type ID']
+  asc_fiscalformat varchar
+  asc_holdspi boolean [not null, note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_consultant_asc_holdspi")']
+  asc_indemnified boolean [not null, note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_consultant_asc_indemnified")']
+  asc_indemnitydetails text
+  asc_kam_id uuid [ref: > systemuser.id]
+  asc_lastupdated_esg datetime
+  asc_lastupdated_financial datetime
+  asc_lastupdated_legal datetime
+  asc_lastupdated_overview datetime
+  asc_leadreviewer_id uuid [ref: > systemuser.id]
+  asc_litigation boolean [not null, note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_consultant_asc_litigation")']
+  asc_litigationdetails text
+  asc_name varchar [not null]
+  asc_piaggregate decimal
+  asc_piperoccurrence decimal
+  asc_revenuen1 decimal [not null]
+  asc_revenuen2 decimal
+  asc_revenuen3 decimal
+  asc_revenuepct_africa decimal
+  asc_revenuepct_europe decimal
+  asc_revenuepct_middleeast decimal
+  asc_revenuepct_other decimal
+  asc_revenuepct_southasia decimal
+  asc_status varchar [not null, note: 'choice/picklist']
+  asc_statuscomment text [note: 'Status Comment']
+  asc_website varchar
+  asc_workedwithus boolean [note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_consultant_asc_workedwithus")']
+  Note: 'EntitySet: asc_consultants | Display: Consultant'
+}
+
+Table asc_consultanttabupdate {
+  id uuid [pk]
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_name varchar [not null]
+  asc_tab varchar [not null]
+  asc_updatedby_id uuid [ref: > systemuser.id]
+  asc_updatedon datetime
+  Note: 'EntitySet: asc_consultanttabupdates | Display: Consultant Tab Update'
+}
+
+Table asc_consultationcategory {
+  id uuid [pk]
+  asc_newcolumn varchar [not null, note: 'Name']
+  Note: 'EntitySet: asc_consultationcategories | Display: Consultation Category'
+}
+
+Table asc_contact {
+  id uuid [pk]
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_contacttype varchar [not null, note: 'Contact Type - choice/picklist']
+  asc_firstname varchar [not null, note: 'First Name']
+  asc_jobtitle varchar [note: 'Job Title']
+  asc_lastname varchar [not null, note: 'Last Name']
+  asc_name varchar [not null]
+  asc_phone varchar [not null]
+  asc_regionid uuid [ref: > asc_region.id, note: 'Region ID']
+  asc_status varchar [not null, note: 'choice/picklist']
+  asc_workemail varchar [not null, note: 'Work Email']
+  Note: 'EntitySet: asc_contacts | Display: Consultant Contact'
+}
+
+Table asc_country {
+  id uuid [pk]
+  asc_name varchar [not null]
+  asc_region_id uuid [ref: > asc_region.id]
+  Note: 'EntitySet: asc_countrys | Display: Country'
+}
+
+Table asc_discipline {
+  id uuid [pk]
+  asc_name varchar [not null]
+  asc_sortorder int
+  Note: 'EntitySet: asc_disciplines | Display: Discipline'
+}
+
+Table asc_documenttype {
+  id uuid [pk]
+  asc_name varchar [not null]
+  Note: 'EntitySet: asc_documenttypes | Display: Document Type'
+}
+
+Table asc_engagement {
+  id uuid [pk]
+  asc_city varchar [not null]
+  asc_clientname varchar [not null, note: 'Client Name']
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_countryid uuid [ref: > asc_country.id, note: 'Country ID']
+  asc_enddate datetime [note: 'End Date']
+  asc_name varchar [not null]
+  asc_projectname varchar [not null, note: 'Project Name']
+  asc_startdate datetime [note: 'Start Date']
+  asc_status varchar [not null, note: 'choice/picklist']
+  Note: 'EntitySet: asc_engagements | Display: Engagement'
+}
+
+Table asc_engagementcontact {
+  id uuid [pk]
+  asc_contact_id uuid [not null, ref: > asc_contact.id, note: 'Consultant Contact ID']
+  asc_engagement_id uuid [not null, ref: > asc_engagement.id]
+  asc_name varchar [not null]
+  asc_role varchar
+  Note: 'EntitySet: asc_engagementcontacts | Display: Engagement Contact'
+}
+
+Table asc_financialinformation {
+  id uuid [pk]
+  asc_backloginhand decimal [note: 'Backlog in Hand']
+  asc_backlogratio decimal [note: 'Backlog/N-1 Revenue']
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_effectiveyear int [not null, note: 'Effective Year']
+  asc_fiscalformat varchar [note: 'Fiscal Format']
+  asc_name varchar [not null]
+  asc_revenuebyregion decimal [note: 'Revenue By Region']
+  asc_revenuen1 decimal [not null, note: 'Revenue N1']
+  asc_revenuen2 decimal [note: 'Revenue N2']
+  asc_revenuen3 decimal [note: 'Revenue N3']
+  Note: 'EntitySet: asc_financialinformations | Display: Financial Information'
+}
+
+Table asc_financialrevenueregion {
+  id uuid [pk]
+  asc_financialinformation_id uuid [not null, ref: > asc_financialinformation.id]
+  asc_name varchar [not null]
+  asc_region_id uuid [not null, ref: > asc_region.id]
+  asc_revenuepct decimal
+  Note: 'EntitySet: asc_financialrevenueregions | Display: Financial Revenue by Region'
+}
+
+Table asc_firmtype {
+  id uuid [pk]
+  asc_name varchar [not null]
+  Note: 'EntitySet: asc_firmtypes | Display: Firm Type'
+}
+
+Table asc_invitation {
+  id uuid [pk]
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_expireson datetime [not null]
+  asc_issuedon datetime [not null]
+  asc_name varchar [not null]
+  asc_purpose varchar [not null]
+  asc_revoked boolean [note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_invitation_asc_revoked")']
+  asc_token varchar [not null]
+  Note: 'EntitySet: asc_invitations | Display: Consultant Invitation'
+}
+
+Table asc_kamcomarketing {
+  id uuid [pk]
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_description varchar [not null, note: 'Activity Description']
+  asc_name varchar [not null]
+  asc_status varchar [note: 'Activity Status']
+  asc_statusdate datetime [note: 'Status Date']
+  Note: 'EntitySet: asc_kamcomarketings | Display: KAM Co-marketing'
+}
+
+Table asc_kamdriver {
+  id uuid [pk]
+  asc_name varchar [not null]
+  Note: 'EntitySet: asc_kamdrivers | Display: KAM Driver'
+}
+
+Table asc_kamdriverrating {
+  id uuid [pk]
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_kamdriver_id uuid [not null, ref: > asc_kamdriver.id]
+  asc_name varchar [not null]
+  asc_rating int
+  Note: 'EntitySet: asc_kamdriverratings | Display: KAM Driver Rating'
+}
+
+Table asc_kamleadreceived {
+  id uuid [pk]
+  asc_clientname varchar [not null, note: 'Lead Client Name']
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_leaddate datetime [not null, note: 'Lead Date']
+  asc_leadowner varchar [not null, note: 'Lead Owner']
+  asc_leadstatus varchar [note: 'Lead Status']
+  asc_name varchar [not null]
+  asc_projectname varchar [not null, note: 'Project Name']
+  asc_referralcomment varchar [note: 'Referral Type Comment']
+  asc_referraltype varchar [not null, note: 'Referral Type - choice/picklist']
+  asc_services varchar [note: 'Services Offered']
+  Note: 'EntitySet: asc_kamleadreceiveds | Display: KAM Lead Received'
+}
+
+Table asc_kamleadshared {
+  id uuid [pk]
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_leaddate datetime [not null, note: 'Lead Date']
+  asc_leadowner varchar [not null, note: 'Lead Owner']
+  asc_name varchar [not null]
+  asc_projectname varchar [not null, note: 'Lead Project Name']
+  asc_referralcomment varchar [note: 'Referral Type Comment']
+  asc_referralstatus varchar [note: 'Referral Status']
+  asc_referraltype varchar [not null, note: 'Referral Type - choice/picklist']
+  asc_servicesproposed varchar [note: 'Services Proposed']
+  Note: 'EntitySet: asc_kamleadshareds | Display: KAM Lead Shared'
+}
+
+Table asc_kamprofile {
+  id uuid [pk]
+  asc_clientmanagement int
+  asc_comarketingdriver int
+  asc_commercialrecip int
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_designintegrity int
+  asc_name varchar [not null]
+  asc_stakeholdermgmt int
+  Note: 'EntitySet: asc_kamprofiles | Display: KAM Profile'
+}
+
+Table asc_legalinformation {
+  id uuid [pk]
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_holdspi boolean [not null, note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_legalinformation_asc_holdspi")']
+  asc_indemnified boolean [not null, note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_legalinformation_asc_indemnified")']
+  asc_indemnitydetails text [note: 'Indemnity Details']
+  asc_litigation boolean [not null, note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_legalinformation_asc_litigation")']
+  asc_litigationdetails text [note: 'Litigation Details']
+  asc_name varchar [not null]
+  asc_piaggregate decimal [note: 'PI Aggregate']
+  asc_piperoccurrence decimal [note: 'PI Per Occurrence']
+  Note: 'EntitySet: asc_legalinformations | Display: Legal Information'
+}
+
+Table asc_note {
+  id uuid [pk]
+  asc_authorid uuid [not null, ref: > systemuser.id, note: 'Author ID']
+  asc_categoryid uuid [not null, ref: > asc_consultationcategory.id, note: 'Category ID']
+  asc_comment text [not null]
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_name varchar [not null]
+  Note: 'EntitySet: asc_notes | Display: Consultant Note'
+}
+
+Table asc_office {
+  id uuid [pk]
+  asc_address text
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_countryid uuid [not null, ref: > asc_country.id, note: 'Country ID']
+  asc_headcount int
+  asc_name varchar [not null]
+  asc_officeleaderid uuid [not null, ref: > asc_officeleader.id, note: 'Office Leader ID']
+  asc_region_id uuid [not null, ref: > asc_region.id]
+  Note: 'EntitySet: asc_offices | Display: Office'
+}
+
+Table asc_officeleader {
+  id uuid [pk]
+  asc_email varchar
+  asc_leadernumber int [not null, note: 'Leader Number']
+  asc_name varchar [not null]
+  asc_office_id uuid [not null, ref: > asc_office.id]
+  asc_phone varchar
+  asc_position varchar
+  Note: 'EntitySet: asc_officeleaders | Display: Office Leader'
+}
+
+Table asc_operator {
+  id uuid [pk]
+  asc_name varchar [not null]
+  asc_sortorder int
+  Note: 'EntitySet: asc_operators | Display: Operator'
+}
+
+Table asc_operatorapproval {
+  id uuid [pk]
+  asc_brands varchar
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_name varchar [not null]
+  asc_operator_id uuid [not null, ref: > asc_operator.id]
+  Note: 'EntitySet: asc_operatorapprovals | Display: Operator Approval'
+}
+
+Table asc_portalsubmission {
+  id uuid [pk]
+  asc_after text
+  asc_before text
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_name varchar [not null]
+  asc_reviewedby_id uuid [ref: > systemuser.id]
+  asc_revieweddate datetime
+  asc_status varchar [not null]
+  asc_tab varchar [not null]
+  Note: 'EntitySet: asc_portalsubmissions | Display: Portal Submission'
+}
+
+Table asc_projectreference {
+  id uuid [pk]
+  asc_attachment_id uuid [ref: > asc_attachment.id]
+  asc_brand varchar
+  asc_completionyear datetime [note: 'Completion Year']
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_countryid uuid [not null, ref: > asc_country.id, note: 'Country ID']
+  asc_gfa int [note: 'Gross Floor Area']
+  asc_keys int [note: 'No of Keys']
+  asc_name varchar [not null]
+  asc_projectstatus varchar [not null, note: 'Project Status - choice/picklist']
+  asc_region_id uuid [not null, ref: > asc_region.id]
+  asc_startyear datetime [not null, note: 'Start Year']
+  asc_type uuid [not null, ref: > asc_projecttype.id, note: 'Project Type ID']
+  Note: 'EntitySet: asc_projectreferences | Display: Project Reference'
+}
+
+Table asc_projecttype {
+  id uuid [pk]
+  asc_newcolumn varchar [not null, note: 'New column']
+  Note: 'EntitySet: asc_projecttypes | Display: Project Type'
+}
+
+Table asc_rating {
+  id uuid [pk]
+  asc_comment text [not null]
+  asc_engagement_id uuid [not null, ref: > asc_engagement.id]
+  asc_locked boolean [note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_rating_asc_locked")']
+  asc_name varchar [not null]
+  asc_overallscore decimal [note: 'Overall Score']
+  asc_rater_id uuid [ref: > systemuser.id, note: 'Rater User ID']
+  asc_ratingdate datetime [note: 'Rating Date']
+  asc_workflowstatus varchar [not null, note: 'Workflow Status - choice/picklist']
+  Note: 'EntitySet: asc_ratings | Display: Rating'
+}
+
+Table asc_ratingcriterion {
+  id uuid [pk]
+  asc_name varchar [not null]
+  asc_sortorder int [note: 'Sort Order']
+  Note: 'EntitySet: asc_ratingcriterions | Display: Rating Criterion'
+}
+
+Table asc_ratingscore {
+  id uuid [pk]
+  asc_name varchar [not null]
+  asc_rating_id uuid [not null, ref: > asc_rating.id]
+  asc_ratingcriterion_id uuid [not null, ref: > asc_ratingcriterion.id, note: 'Rating Criterion ID']
+  asc_score int [not null]
+  Note: 'EntitySet: asc_ratingscores | Display: Rating Score'
+}
+
+Table asc_region {
+  id uuid [pk]
+  asc_name varchar [not null]
+  Note: 'EntitySet: asc_regions | Display: Region'
+}
+
+Table asc_sector {
+  id uuid [pk]
+  asc_name varchar [not null]
+  Note: 'EntitySet: asc_sectors | Display: Sector'
+}
+
+Table asc_service {
+  id uuid [pk]
+  asc_name varchar [not null]
+  Note: 'EntitySet: asc_services | Display: Service'
+}
+
+Table asc_shareholder {
+  id uuid [pk]
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_equitypct decimal [not null, note: 'Equity %']
+  asc_name varchar [not null]
+  Note: 'EntitySet: asc_shareholders | Display: Shareholder'
+}
+
+Table asc_sustainabilityesg {
+  id uuid [pk]
+  asc_accreditedcount int [note: 'Accredited Professionals Count']
+  asc_consultant_id uuid [not null, ref: > asc_consultant.id]
+  asc_esgcert boolean [not null, note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_sustainabilityesg_asc_esgcert")']
+  asc_esgcertdetails text [note: 'Certification Details']
+  asc_esgframework text [note: 'Framework Details']
+  asc_esgqa boolean [not null, note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_sustainabilityesg_asc_esgqa")']
+  asc_esgqadetails text [note: 'Implementation Details']
+  asc_esgreporting boolean [not null, note: 'DISPLAY NAME NEEDS FIXING (currently: "asc_sustainabilityesg_asc_esgreporting")']
+  asc_name varchar [not null]
+  Note: 'EntitySet: asc_sustainabilityesgs | Display: Sustainability &amp; ESG'
+}
+
+Table asc_userrole {
+  id uuid [pk]
+  asc_isadmin boolean [not null, note: 'Is Admin']
+  asc_iskamlead boolean [not null, note: 'is KAM Lead']
+  asc_issuperuser boolean [not null, note: 'Is Super User']
+  asc_user uuid [not null, ref: > systemuser.id]
+  asc_userrolesnumber varchar [not null, note: 'User Roles Number']
+  Note: 'EntitySet: asc_userroles | Display: User Role'
+}
+
+//////////////////////////////////////////////
+// N:N JUNCTIONS (live)
+//////////////////////////////////////////////
+
+Table asc_bimproject_discipline {
+  asc_bimproject_id uuid [ref: > asc_bimproject.id]
+  asc_discipline_id uuid [ref: > asc_discipline.id]
+}
+
+Table asc_consultant_bimdiscipline {
+  asc_consultant_id uuid [ref: > asc_consultant.id]
+  asc_discipline_id uuid [ref: > asc_discipline.id]
+}
+
+Table asc_consultant_discipline {
+  asc_consultant_id uuid [ref: > asc_consultant.id]
+  asc_discipline_id uuid [ref: > asc_discipline.id]
+}
+
+Table asc_consultant_region {
+  asc_consultant_id uuid [ref: > asc_consultant.id]
+  asc_region_id uuid [ref: > asc_region.id]
+}
+
+Table asc_consultant_sector {
+  asc_consultant_id uuid [ref: > asc_consultant.id]
+  asc_sector_id uuid [ref: > asc_sector.id]
+}
+
+Table asc_engagement_contact {
+  asc_engagement_id uuid [ref: > asc_engagement.id]
+  asc_contact_id uuid [ref: > asc_contact.id]
+}
+
+Table asc_engagement_discipline {
+  asc_engagement_id uuid [ref: > asc_engagement.id]
+  asc_discipline_id uuid [ref: > asc_discipline.id]
+}
+
+Table asc_operatorapproval_discipline {
+  asc_operatorapproval_id uuid [ref: > asc_operatorapproval.id]
+  asc_discipline_id uuid [ref: > asc_discipline.id]
+}
+
+Table asc_operatorapproval_region {
+  asc_operatorapproval_id uuid [ref: > asc_operatorapproval.id]
+  asc_region_id uuid [ref: > asc_region.id]
+}
+
+Table asc_projectreference_discipline {
+  asc_projectreference_id uuid [ref: > asc_projectreference.id]
+  asc_discipline_id uuid [ref: > asc_discipline.id]
+}
+

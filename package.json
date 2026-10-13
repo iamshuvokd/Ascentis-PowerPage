@@ -1,0 +1,16 @@
+{
+  "name": "ascentis-consultant-portal",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  },
+  "scripts": {
+    "build": "node scripts/build-portal.cjs",
+    "check": "node scripts/build-portal.cjs --check && node --test tests/portal.test.cjs tests/rules.test.cjs tests/mapping.test.cjs tests/portal-submission.test.cjs",
+    "check:browser": "node tests/browser.cjs"
+  }
+}

@@ -1,0 +1,16 @@
+adx_accountrelationship:
+adx_append: false
+adx_appendto: true
+adx_contactrelationship:
+adx_create: true
+adx_delete: false
+adx_entitylogicalname: asc_financialinformation
+adx_entityname: Financial Information - Authenticated Test Access
+adx_entitypermission_webrole:
+- a39db80e-a77a-4cca-b447-e2cffb65f8af
+adx_entitypermissionid: 1a9c5e3f-7d2b-4f8a-9c6e-5b3d8a2f6c17
+adx_parententitypermission:
+adx_parentrelationship:
+adx_read: true
+adx_scope: 756150000
+adx_write: true

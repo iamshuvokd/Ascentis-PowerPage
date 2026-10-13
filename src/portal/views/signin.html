@@ -1,0 +1,13 @@
+  <section class="signin-card" data-view="signin" hidden aria-labelledby="signin-title">
+  <h1 id="signin-title" tabindex="-1">Sign in to update your profile</h1>
+  <form id="signin-form">
+    <label for="registered-email">Registered email</label>
+    <input id="registered-email" type="email" autocomplete="email" required>
+    <button class="portal-button portal-button-primary full-width" id="send-code" type="button">Send me a code</button>
+    <label class="code-label" id="code-label">Enter the 6-digit code</label>
+    <div class="otp-fields" role="group" aria-labelledby="code-label"><input aria-label="Digit 1" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="one-time-code" required><input aria-label="Digit 2" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 3" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 4" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 5" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 6" inputmode="numeric" pattern="[0-9]" maxlength="1"  required></div>
+    <button class="portal-button portal-button-primary full-width" type="submit">Verify and continue</button>
+    <p class="portal-status" id="signin-status" role="status" hidden></p>
+    <a class="live-signin" href="{{ website.sign_in_url_substitution | escape }}">Continue with Power Pages sign in</a>
+  </form>
+</section>

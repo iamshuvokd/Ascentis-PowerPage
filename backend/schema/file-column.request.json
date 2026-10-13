@@ -1,0 +1,13 @@
+{
+  "method": "POST",
+  "path": "/api/data/v9.2/EntityDefinitions(LogicalName='asc_attachment')/Attributes",
+  "headers": {"MSCRM.SolutionUniqueName":"ConsultantDatabaseSolution"},
+  "body": {
+    "@odata.type": "Microsoft.Dynamics.CRM.FileAttributeMetadata",
+    "AttributeTypeName": {"Value":"FileType"},
+    "SchemaName": "asc_file",
+    "MaxSizeInKB": 24415,
+    "DisplayName": {"LocalizedLabels":[{"Label":"File","LanguageCode":1033}]},
+    "Description": {"LocalizedLabels":[{"Label":"Consultant attachment. Trusted upload validation enforces 25,000,000 bytes.","LanguageCode":1033}]}
+  }
+}
