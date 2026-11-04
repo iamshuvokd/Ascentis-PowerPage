@@ -11,14 +11,14 @@ const preExisting = ['consultantdiscipline','consultantsectors','consultantregio
 // Overrides for tables whose real live entity set name or primary name field don't follow this
 // script's usual 'asc_<key>s' / 'asc_name' conventions.
 const entitySetNameOverrides = {consultantsectors:'asc_consultantsectorses',consultantregions:'asc_consultantregionses'};
-const primaryNameOverrides = {consultantdiscipline:'asc_number',consultantsectors:'asc_number',consultantregions:'asc_number',biminformation:'asc_number',contact:'asc_number',consultationcategory:'asc_number',portalsubmission:'asc_number',projecttype:'asc_projecttypename',lod:'asc_number',duplicateoverride:'asc_number',financialinformation:'asc_number',financialrevenueregion:'asc_number',kamcomarketing:'asc_number',kamleadreceived:'asc_number',kamleadshared:'asc_number',legalinformation:'asc_number',kamdriverrating:'asc_number',operatorapproval:'asc_number',operatorapprovaldiscipline:'asc_number',sustainabilityesg:'asc_number',projectreferencetype:'asc_number',engagementcontact:'asc_number'};
+const primaryNameOverrides = {consultantdiscipline:'asc_number',consultantsectors:'asc_number',consultantregions:'asc_number',biminformation:'asc_number',contact:'asc_number',consultationcategory:'asc_number',portalsubmission:'asc_number',projecttype:'asc_projecttypename',lod:'asc_number',duplicateoverride:'asc_number',financialinformation:'asc_number',financialrevenueregion:'asc_number',kamcomarketing:'asc_number',kamleadreceived:'asc_number',kamleadshared:'asc_number',legalinformation:'asc_number',kamdriverrating:'asc_number',operatorapproval:'asc_number',operatorapprovaldiscipline:'asc_number',sustainabilityesg:'asc_number',projectreferencetype:'asc_number',engagementcontact:'asc_number',invitation:'asc_number'};
 // Tables whose primary name column is a Dataverse autonumber ({SEQNUM:4}) rather than
 // free text. Build-Solution.ps1 sets this on brand-new tables only (the 3 pre-existing
 // junction tables above never go through table creation, so this is documentation for them).
 // NOTE: projecttype is deliberately NOT in this list - its primary (asc_projecttypename) is
 // plain single-line text, not autonumber, per explicit user request 2026-09-28 (its second
 // rebuild that same day, overriding the first rebuild's asc_number/autonumber choice).
-const primaryNameAutonumberTables = ['consultantdiscipline','consultantsectors','consultantregions','biminformation','contact','consultationcategory','portalsubmission','lod','duplicateoverride','financialinformation','financialrevenueregion','kamcomarketing','kamleadreceived','kamleadshared','legalinformation','kamdriverrating','operatorapproval','operatorapprovaldiscipline','sustainabilityesg','projectreferencetype','engagementcontact'];
+const primaryNameAutonumberTables = ['consultantdiscipline','consultantsectors','consultantregions','biminformation','contact','consultationcategory','portalsubmission','lod','duplicateoverride','financialinformation','financialrevenueregion','kamcomarketing','kamleadreceived','kamleadshared','legalinformation','kamdriverrating','operatorapproval','operatorapprovaldiscipline','sustainabilityesg','projectreferencetype','engagementcontact','invitation'];
 const labels = {appuser:'App User',consultant:'Consultant',consultanttabupdate:'Consultant Tab Update',financialinformation:'Financial Information',financialrevenueregion:'Financial Revenue by Region',legalinformation:'Legal Information',biminformation:'BIM Information',sustainabilityesg:'Sustainability & ESG',office:'Office',officeleader:'Office Leader',contact:'Consultant Contact',shareholder:'Shareholder',operatorapproval:'Operator Approval',projectreference:'Project Reference',bimproject:'BIM Project',note:'Consultant Note',attachment:'Consultant Attachment',engagement:'Engagement',rating:'Rating',ratingscore:'Rating Score',engagementcontact:'Engagement Contact',consultantdiscipline:'Consultant Discipline',consultantsectors:'Consultant Sectors',consultantregions:'Consultant Regions',kamprofile:'KAM Profile',kamdriverrating:'KAM Driver Rating',kamleadreceived:'KAM Lead Received',kamleadshared:'KAM Lead Shared',kamcomarketing:'KAM Co-marketing',portalsubmission:'Portal Submission',invitation:'Consultant Invitation',discipline:'Discipline',sector:'Sector',region:'Region',country:'Country',operator:'Operator',service:'Service',certificationtype:'Certification Type',firmtype:'Firm Type',documenttype:'Document Type',ratingcriterion:'Rating Criterion',kamdriver:'KAM Driver',consultationcategory:'Consultation Category',projecttype:'Project Type',lod:'LOD',duplicateoverride:'Duplicate Override',operatorapprovaldiscipline:'Operator Approval Disciplines',projectreferencetype:'Project Reference Type'};
 const tables = [], relationships = [];
 for (const match of source.matchAll(/^Table (\w+) \{([\s\S]*?)^\}/gm)) {
@@ -86,6 +86,16 @@ const columnLabels = {
     asc_esgqadetails: 'ESG QA Details'
   },
   lod: { asc_number: 'Number' },
+  invitation: {
+    asc_number: 'Number',
+    asc_consultant_id: 'Consultant',
+    asc_email: 'Email',
+    asc_token: 'Token',
+    asc_issuedon: 'Issued On',
+    asc_expireson: 'Expires On',
+    asc_revoked: 'Revoked',
+    asc_purpose: 'Purpose'
+  },
   duplicateoverride: {
     asc_number: 'Number',
     asc_consultantid: 'Consultant',

@@ -78,3 +78,26 @@ This portal is not built on native Power Pages Basic/Entity Forms at all — `do
 - [x] **2026-10-07, confirmed with the project owner:** the S7 review/Accept-Reject screen is a separate app, not built in this repository. This repo's remaining job is to keep `asc_portalsubmission`'s schema/data correct and hand off a precise automation spec — done, see `docs/portal-submission-automation-spec.md`.
 - [x] **2026-10-07, confirmed with the project owner:** Attachments staging stays metadata-only (file bytes still blocked by the pre-existing, unrelated `asc_attachment.asc_file` gap — see `backend/README.md`). Not revisited until that's resolved.
 - [ ] Server-side write-lock (Step 2) and the Accept/Reject automation (Step 6) both need a Dataverse plugin or Power Automate/classic-workflow build — this repository/session can't build either (no .NET SDK, no designer GUI access). Spec handed off in `docs/portal-submission-automation-spec.md` for whoever has that access.
+
+## Prefill now reads `asc_after` — 2026-10-24
+
+Correction to the opening premise for **reads**: on login the portal no longer prefills from the live `asc_consultant` tables. For each of the 8 tabs it loads the consultant's most recent `asc_portalsubmission` row (any status) and uses its `asc_after` JSON (`loadPrefillRecordSync()` in `services.js`; `profile.js` consumes `prefillRecord`).
+
+| Latest row for the tab | Loads | Editable |
+| --- | --- | --- |
+| Draft | `asc_after` | Yes |
+| Submitted | `asc_after` | **No** — "Pending review" banner, inputs inert, no unlock action (no Withdraw button, by decision) |
+| Rejected / Accepted | `asc_after` | Yes — next Save draft creates a new Draft row seeded with the form (existing create-vs-update logic, no copy-forward code) |
+| none | blank form | Yes |
+
+- Verified against a fresh `pac solution export` (2026-10-24): `asc_powerpagestatuschoice` = Draft 751050000 / Submitted 751050001 / Accepted 751050002 / Rejected 751050003; `asc_consultantprofiletabchoice` values unchanged.
+- `createdon` added to `Webapi/asc_portalsubmission/fields` (system fields are not assumed exempt). Read is two-step: a light listing (no `asc_after`; `$orderby=createdon desc` tried first, plain listing as fallback, client-side sort regardless) then one `asc_after` GET per selected row. Consultant filtering is client-side (Global scope).
+- `tabSnapshot()` Financial now includes `revenueByRegion`. Rows written before this fix have none and show empty revenue shares.
+- Staged rows now carry live row IDs (`stampLiveIds`); older rows missing them adopt a unique live match by contact email / BIM project name.
+- Offices and Project references now prefill too (they were never loadable from live tables). Office leaders are remapped to the regenerated contact row ids.
+- **Attachments are not prefilled**: `asc_after` stores metadata only, and a `File` can't be reconstructed. A Submitted Attachments tab is still locked.
+- Locked (Submitted) tabs are skipped by `recordPortalSubmissions`, so Save draft / Submit never create or revert a row for them. In-session Submit locks the tabs too.
+- **Live writes (`saveConsultant` etc.) are unchanged** pending the owner's decision (the internal Canvas App reads live `asc_consultant`). The live read still runs to supply `asc_before`, junction diffing and child-row ID caches.
+- Not unit-testable: the sync-XHR loader and the lock UI (no DOM/network in `tests/portal-submission.test.cjs`); selection and reconstruction logic are tested.
+
+- **Seeded (751050004), added 2026-10-27:** written by the Power Apps seeding app for initial consultant data. Prefill treats it like Accepted (loads `asc_after`, editable; next Save draft creates a Draft row). Reviewer app should treat Seeded rows as already-live data, not queue items.

@@ -1,0 +1,17 @@
+adx_accountrelationship:
+adx_append: false
+adx_appendto: false
+adx_contactrelationship:
+adx_create: false
+adx_delete: false
+adx_entitylogicalname: asc_invitation
+adx_entityname: Consultant Invitation - Anonymous and Authenticated Read
+adx_entitypermission_webrole:
+- ae259521-0b26-4925-ad05-18df67b992f2
+- a39db80e-a77a-4cca-b447-e2cffb65f8af
+adx_entitypermissionid: 6f3a8d5c-2b7e-4f9a-8c1d-5e3b7a9f2c46
+adx_parententitypermission:
+adx_parentrelationship:
+adx_read: true
+adx_scope: 756150000
+adx_write: false

@@ -39,3 +39,35 @@ test('every mapped scalar column exists in the compiled Dataverse model',()=>{
  for(const collection of Object.values(map.collections))check(collection.table,collection.fields);
  for(const [key,entry] of Object.entries(map.childTables))if(key!=='_comment')check(entry.table,entry.fields);
 });
+
+test('BIM child table: capability Choice maps to option values and back, operators stay integers', () => {
+  const body = prepareChildTable('bim', { sections: { bim: { capability: 'Outsourced', operators: '' } } });
+  assert.equal(body.asc_bimcapability, 751050001);
+  assert.equal(body.asc_bimoperatorcount, null);
+  assert.equal(prepareChildTable('bim', { sections: { bim: { capability: 'In-house', operators: '4' } } }).asc_bimoperatorcount, 4);
+  const back = context.dataverseMapping.reverseChildTable('bim', { asc_bimcapability: 751050000, asc_bimoperatorcount: 4 });
+  assert.equal(back.capability, 'In-house');
+  assert.equal(back.operators, '4');
+  assert.throws(() => prepareChildTable('bim', { sections: { bim: { capability: 'Nope' } } }));
+});
+
+test('project years are sent as 1 January UTC dates, read back as the year, and bad years are rejected',()=>{
+ // asc_startyear/asc_completionyear are Date and Time columns live (fresh export 2026-10-29) while the
+ // form collects a plain year.
+ const payload=base();payload.collections.projects=[{id:'p1',name:'Tower',startYear:'2024',completionYear:'2026',status:'In progress',gfa:'1200'}];
+ const row=prepare(payload).collections.projects[0];
+ assert.equal(row.fields.asc_startyear,'2024-01-01T00:00:00Z');
+ assert.equal(row.fields.asc_completionyear,'2026-01-01T00:00:00Z');
+ assert.equal(row.fields.asc_projectstatus,751050000);
+ assert.equal(row.fields.asc_gfa,1200);
+ const reversed=context.dataverseMapping.reverseRow('projects',{asc_name:'Tower',asc_startyear:'2024-01-01T00:00:00Z',asc_completionyear:null,asc_projectstatus:751050001});
+ assert.equal(reversed.startYear,'2024');
+ assert.equal(reversed.completionYear,undefined);
+ assert.equal(reversed.status,'Completed');
+ for(const bad of ['24','2024-01','abcd','1800','2200']){
+  const p=base();p.collections.projects=[{id:'p1',name:'T',startYear:bad}];
+  assert.throws(()=>prepare(p),/Invalid year/,bad);
+ }
+ const unset=base();unset.collections.projects=[{id:'p1',name:'T'}];
+ assert.equal(prepare(unset).collections.projects[0].fields.asc_startyear,null);
+});

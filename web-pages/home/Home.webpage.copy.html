@@ -3,7 +3,7 @@
   <header class="portal-header">
     <a class="portal-brand" href="/">Ascentis — consultant portal</a>
     <div class="portal-account">
-      <span id="account-name">{% if user %}{{ user.fullname | escape }}{% endif %}</span><a id="sign-out" href="{{ website.sign_out_url_substitution | escape }}">sign out</a>
+      <span id="account-name">{% if user %}{{ user.fullname | escape }}{% endif %}</span><a id="sign-out" href="{{ website.sign_out_url_substitution | escape }}">sign out</a><span id="account-email" hidden>{% if user %}{{ user.emailaddress1 | escape }}{% endif %}</span><span id="account-consultant" hidden>{% if user %}{{ user.asc_consultantid.id | escape }}{% endif %}</span>
     </div>
   </header>
 <section class="signin-card" data-view="signin" hidden aria-labelledby="signin-title">
@@ -11,12 +11,12 @@
   <form id="signin-form">
     <label for="registered-email">Registered email</label>
     <input id="registered-email" type="email" autocomplete="email" required>
-    <button class="portal-button portal-button-primary full-width" id="send-code" type="button">Send me a code</button>
-    <label class="code-label" id="code-label">Enter the 6-digit code</label>
-    <div class="otp-fields" role="group" aria-labelledby="code-label"><input aria-label="Digit 1" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="one-time-code" required><input aria-label="Digit 2" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 3" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 4" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 5" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 6" inputmode="numeric" pattern="[0-9]" maxlength="1"  required></div>
-    <button class="portal-button portal-button-primary full-width" type="submit">Verify and continue</button>
+    <button class="portal-button portal-button-primary full-width" id="send-code" type="button" hidden>Send me a code</button>
+    <label class="code-label" id="code-label" hidden>Enter the 6-digit code</label>
+    <div class="otp-fields" role="group" aria-labelledby="code-label" hidden><input aria-label="Digit 1" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="one-time-code" required><input aria-label="Digit 2" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 3" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 4" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 5" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 6" inputmode="numeric" pattern="[0-9]" maxlength="1"  required></div>
+    <button class="portal-button portal-button-primary full-width" id="signin-verify" type="submit" hidden>Verify and continue</button>
     <p class="portal-status" id="signin-status" role="status" hidden></p>
-    <a class="live-signin" href="{{ website.sign_in_url_substitution | escape }}">Continue with Power Pages sign in</a>
+    <a class="portal-button portal-button-primary full-width live-signin" href="{{ website.sign_in_url_substitution | escape }}">Continue with Power Pages sign in</a>
   </form>
 </section>
 <div class="portal-content">
@@ -38,7 +38,7 @@
           <span>I acknowledge and agree to the confidentiality statement.</span>
         </label>
         <div class="portal-actions">
-          <button class="portal-button portal-button-secondary" id="download-confidentiality" type="button" data-pdf-url="{{ settings['ConsultantPortal/ConfidentialityPdfUrl'] | escape }}">Download PDF</button>
+          <button class="portal-button portal-button-secondary" id="download-confidentiality" type="button" data-pdf-url="{{ settings['ConsultantPortal/ConfidentialityPdfUrl'] | escape }}" data-flow-id="{{ settings['ConsultantPortal/ConfidentialityFlowId'] | escape }}">Download PDF</button>
           <button class="portal-button portal-button-primary" type="submit">Acknowledge and continue</button>
         </div>
         <p id="confidentiality-status" class="portal-status" role="status" aria-live="polite" hidden></p>

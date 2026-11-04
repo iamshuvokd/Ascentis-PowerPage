@@ -158,6 +158,14 @@ Table officeleader {
   Note: 'New table. Flexible named-leader child per URS §6.3, alongside the existing office.asc_leader1/2/3_id lookup-to-contact fields (left in place, not removed, pending a later cleanup decision). Use this table where a leader needs their own position/email/phone rather than being an existing Contact record.'
 }
 
+// NOTE (15 Oct 2026): the native Dataverse `contact` table (the one Power Pages authentication
+// binds `{% if user %}` to - NOT this `contact` table below, which is the custom asc_contact
+// business-contact child table) gained a new custom lookup field `asc_consultantid` -> consultant,
+// added directly in the maker portal (ConsultantDatabaseSolution) since this dbml/build-model.cjs
+// pipeline only generates brand-new asc_ custom tables, not columns on pre-existing native ones.
+// Used by src/portal/scripts/services.js's resolveInvitationConsultant() to tie a signed-in
+// visitor (via Power Pages' native "Invite contacts" feature) to the asc_consultant record they
+// were invited to edit, superseding the earlier asc_invitation token table below.
 Table contact {
   id uuid [pk]
   asc_number varchar [not null, note: 'Primary name field - Dataverse autonumber ({SEQNUM:4}), display name "Number", generated on create. Do not supply a value when writing.']
@@ -435,12 +443,16 @@ Table portalsubmission {
 
 Table invitation {
   id uuid [pk]
+  asc_number varchar [not null, note: 'Primary name field - Dataverse autonumber ({SEQNUM:4}), display name "Number", generated on create. Do not supply a value when writing.']
   asc_consultant_id uuid [not null, ref: > consultant.id]
+  asc_email varchar [note: 'Secure self-service invitation link / Entra External ID sign-in is matched against this email after authentication - see docs/portal-submission-configuration.md-adjacent invitation flow in services.js. Added 2026-10-13; the admin "Self-service invitations" screen (a separate app) collects this but the live table had no column for it yet.']
   asc_token varchar [not null, unique]
   asc_issuedon datetime [not null]
   asc_expireson datetime [not null]
   asc_revoked boolean
   asc_purpose varchar [not null, note: 'Onboarding / Update / Revalidation']
+
+  Note: 'Recreated 2026-10-13 (delete + recreate, not a rename) to fix the primary column (was asc_name/"Name", required free text - now asc_number/autonumber/"Number", matching this project''s standard convention) in the same pass as adding asc_email, which the live table never had. Deleted live by the user in the maker portal; this defines its replacement.'
 }
 
 //////////////////////////////////////////////

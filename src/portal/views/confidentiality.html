@@ -8,7 +8,7 @@
           <span>I acknowledge and agree to the confidentiality statement.</span>
         </label>
         <div class="portal-actions">
-          <button class="portal-button portal-button-secondary" id="download-confidentiality" type="button" data-pdf-url="{{ settings['ConsultantPortal/ConfidentialityPdfUrl'] | escape }}">Download PDF</button>
+          <button class="portal-button portal-button-secondary" id="download-confidentiality" type="button" data-pdf-url="{{ settings['ConsultantPortal/ConfidentialityPdfUrl'] | escape }}" data-flow-id="{{ settings['ConsultantPortal/ConfidentialityFlowId'] | escape }}">Download PDF</button>
           <button class="portal-button portal-button-primary" type="submit">Acknowledge and continue</button>
         </div>
         <p id="confidentiality-status" class="portal-status" role="status" aria-live="polite" hidden></p>

@@ -2,7 +2,7 @@
   "limits": {
     "text": 200,
     "details": 2000,
-    "fileBytes": 25000000,
+    "fileBytes": 16000000,
     "projects": 30,
     "bimProjects": 10,
     "leaders": 3
@@ -446,7 +446,7 @@
           "key": "attachment",
           "label": "Project attachment",
           "type": "file",
-          "help": "Maximum 25 MB. Also listed under Attachments."
+          "help": "Maximum 16 MB. Also listed under Attachments."
         }
       ]
     },

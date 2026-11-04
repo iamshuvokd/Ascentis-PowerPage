@@ -21,9 +21,12 @@ new vm.Script(js, {filename:'portal.js'});
 const previewHtml = html
   .replace('{% if user %}true{% else %}false{% endif %}', 'false')
   .replace('{% if user %}{{ user.fullname | escape }}{% endif %}', 'Studio Vermeer Architects')
+  .replace('{% if user %}{{ user.emailaddress1 | escape }}{% endif %}', 'contact@studiovermeer.com')
+  .replace('{% if user %}{{ user.asc_consultantid.id | escape }}{% endif %}', '')
   .replaceAll('{{ website.sign_out_url_substitution | escape }}', '#signin')
   .replaceAll('{{ website.sign_in_url_substitution | escape }}', '#signin')
   .replaceAll("{{ settings['ConsultantPortal/ConfidentialityPdfUrl'] | escape }}", '')
+  .replaceAll("{{ settings['ConsultantPortal/ConfidentialityFlowId'] | escape }}", '')
   .replace('class="consultant-portal"', 'class="consultant-portal" data-preview="true"');
 if (/\{%|\{\{/.test(previewHtml)) throw new Error('Add an explicit preview substitution for the new Liquid expression.');
 if (html.includes('data-preview=')) throw new Error('Preview mode must never be enabled in deployment HTML.');

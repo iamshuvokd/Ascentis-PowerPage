@@ -155,7 +155,7 @@ No table or column was removed or deleted, live or local, in this pass.
 
 - [ ] Add `asc_attachment.asc_file` using `FileAttributeMetadata`, max size 24,415 KB (25,000,960 bytes); enforce the exact UI limit of 25,000,000 bytes in the trusted upload service. Do not substitute a text/base64 column. Test upload/download over 16 MB and partial failure cleanup.
 - [ ] Create and verify alternate keys for contact email, invitation token and KAM consultant (1:1). Native lookup relationships alone do not enforce uniqueness.
-- [ ] Configure external email-code identity provider and associate native authenticated contacts with authorized consultants. Never infer access from submitted email/domain or custom business contact ID.
+- [x] Configure external email-code identity provider and associate native authenticated contacts with authorized consultants. Never infer access from submitted email/domain or custom business contact ID. — Done 15 Oct 2026 via Power Pages' native "Invite contacts" feature: a new `asc_consultantid` lookup on the native `contact` table (added in the maker portal, not via this repo's dbml pipeline — see `backend/schema/phase-1.dbml`'s note above the custom `contact`/asc_contact table) ties the signed-in native Contact to its `asc_consultant` record. Read in `src/portal/scripts/services.js`'s `resolveInvitationConsultant()` via `#account-consultant` (rendered by `shell.html` from `user.asc_consultantid`). Supersedes the earlier custom `asc_invitation` token table (left in place, unused — not deleted without explicit sign-off).
 - [ ] Add draft/bundle storage, actor/version/concurrency fields and staged attachments. `portalsubmission` has no Draft state in the supplied design.
 - [ ] Build trusted acknowledgement/PDF, draft, submit and reviewer accept/reject operations. Bind actor to authenticated identity; enforce acknowledgement before entry, per-tab metadata, row limits, region eligibility, conditional fields, attachment XOR parent and delete-own rules.
 - [ ] Restrict direct writes to published consultant records. External changes must remain pending until accepted. Enforce status transitions on the server; disabling a UI control is insufficient.
@@ -176,3 +176,7 @@ Schema creation alone does not implement these requirements. Live save, submissi
 - [Entra External ID for Power Pages](https://learn.microsoft.com/en-us/power-pages/security/authentication/entra-external-id)
 
 The standalone page owns its full document because the standard website header/footer is disabled. Preserve explicit CSS/JS loading. Before adding a Web API client, integrate and verify the supported session/CSRF-token mechanism; the standard `shell.getTokenDeferred` sample cannot be assumed available in this custom wrapper.
+
+## Attachment file column
+
+The live file column on `asc_attachment` is **`asc_attachedfile`** (32 MB), not the designed `asc_file`; `Add-FileColumn.ps1` / `schema/file-column.request.json` are therefore unnecessary and should not be run. Consultant-level upload is wired in `services.js`; project-level is blocked pending `asc_projectreference.asc_type`. Required: `Webapi/asc_attachment/*` site settings, Attachment=Append To, Document Type=Append.

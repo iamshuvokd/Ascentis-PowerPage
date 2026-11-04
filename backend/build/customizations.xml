@@ -1,23 +1,23 @@
 <ImportExportXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26084.142" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.26084.00142">
   <Entities>
     <Entity>
-      <Name LocalizedName="Engagement Contact" OriginalName="Engagement Contact">asc_engagementcontact</Name>
+      <Name LocalizedName="Consultant Invitation" OriginalName="Consultant Invitation">asc_invitation</Name>
       <EntityInfo>
-        <entity Name="asc_engagementcontact">
+        <entity Name="asc_invitation">
           <LocalizedNames>
-            <LocalizedName description="Engagement Contact" languagecode="1033" />
+            <LocalizedName description="Consultant Invitation" languagecode="1033" />
           </LocalizedNames>
           <LocalizedCollectionNames>
-            <LocalizedCollectionName description="Engagement Contacts" languagecode="1033" />
+            <LocalizedCollectionName description="Consultant Invitations" languagecode="1033" />
           </LocalizedCollectionNames>
           <Descriptions>
-            <Description description="Phase 1 consultant database: Engagement Contact" languagecode="1033" />
+            <Description description="Phase 1 consultant database: Consultant Invitation" languagecode="1033" />
           </Descriptions>
           <attributes>
-            <attribute PhysicalName="asc_engagementcontactId">
+            <attribute PhysicalName="asc_invitationId">
               <Type>primarykey</Type>
-              <Name>asc_engagementcontactid</Name>
-              <LogicalName>asc_engagementcontactid</LogicalName>
+              <Name>asc_invitationid</Name>
+              <LogicalName>asc_invitationid</LogicalName>
               <RequiredLevel>systemrequired</RequiredLevel>
               <DisplayMask>ValidForAdvancedFind|RequiredForGrid</DisplayMask>
               <ImeMode>auto</ImeMode>
@@ -46,7 +46,7 @@
               <IsRetrievable>1</IsRetrievable>
               <IsLocalizable>0</IsLocalizable>
               <displaynames>
-                <displayname description="Engagement Contact" languagecode="1033" />
+                <displayname description="Consultant Invitation" languagecode="1033" />
               </displaynames>
               <Descriptions>
                 <Description description="Unique identifier for entity instances" languagecode="1033" />
@@ -611,7 +611,7 @@
               <IsFilterable>1</IsFilterable>
               <IsRetrievable>0</IsRetrievable>
               <IsLocalizable>0</IsLocalizable>
-              <optionset Name="asc_engagementcontact_statecode">
+              <optionset Name="asc_invitation_statecode">
                 <OptionSetType>state</OptionSetType>
                 <IntroducedVersion>1.0</IntroducedVersion>
                 <IsCustomizable>1</IsCustomizable>
@@ -619,7 +619,7 @@
                   <displayname description="Status" languagecode="1033" />
                 </displaynames>
                 <Descriptions>
-                  <Description description="Status of the Engagement Contact" languagecode="1033" />
+                  <Description description="Status of the Consultant Invitation" languagecode="1033" />
                 </Descriptions>
                 <states>
                   <state value="0" defaultstatus="1" invariantname="Active" IsHidden="0">
@@ -638,7 +638,7 @@
                 <displayname description="Status" languagecode="1033" />
               </displaynames>
               <Descriptions>
-                <Description description="Status of the Engagement Contact" languagecode="1033" />
+                <Description description="Status of the Consultant Invitation" languagecode="1033" />
               </Descriptions>
             </attribute>
             <attribute PhysicalName="statuscode">
@@ -672,7 +672,7 @@
               <IsFilterable>0</IsFilterable>
               <IsRetrievable>0</IsRetrievable>
               <IsLocalizable>0</IsLocalizable>
-              <optionset Name="asc_engagementcontact_statuscode">
+              <optionset Name="asc_invitation_statuscode">
                 <OptionSetType>status</OptionSetType>
                 <IntroducedVersion>1.0</IntroducedVersion>
                 <IsCustomizable>1</IsCustomizable>
@@ -680,7 +680,7 @@
                   <displayname description="Status Reason" languagecode="1033" />
                 </displaynames>
                 <Descriptions>
-                  <Description description="Reason for the status of the Engagement Contact" languagecode="1033" />
+                  <Description description="Reason for the status of the Consultant Invitation" languagecode="1033" />
                 </Descriptions>
                 <statuses>
                   <status value="1" state="0" IsHidden="0">
@@ -699,7 +699,7 @@
                 <displayname description="Status Reason" languagecode="1033" />
               </displaynames>
               <Descriptions>
-                <Description description="Reason for the status of the Engagement Contact" languagecode="1033" />
+                <Description description="Reason for the status of the Consultant Invitation" languagecode="1033" />
               </Descriptions>
             </attribute>
             <attribute PhysicalName="TimeZoneRuleVersionNumber">
@@ -784,10 +784,10 @@
                 <Description description="Time zone code that was in use when the record was created." languagecode="1033" />
               </Descriptions>
             </attribute>
-            <attribute PhysicalName="asc_engagement_id">
+            <attribute PhysicalName="asc_consultant_id">
               <Type>lookup</Type>
-              <Name>asc_engagement_id</Name>
-              <LogicalName>asc_engagement_id</LogicalName>
+              <Name>asc_consultant_id</Name>
+              <LogicalName>asc_consultant_id</LogicalName>
               <RequiredLevel>required</RequiredLevel>
               <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
               <ImeMode>auto</ImeMode>
@@ -818,56 +818,16 @@
               <LookupStyle>single</LookupStyle>
               <LookupTypes />
               <displaynames>
-                <displayname description="Engagement" languagecode="1033" />
+                <displayname description="Consultant" languagecode="1033" />
               </displaynames>
               <Descriptions>
                 <Description description="" languagecode="1033" />
               </Descriptions>
             </attribute>
-            <attribute PhysicalName="asc_contactid">
-              <Type>lookup</Type>
-              <Name>asc_contactid</Name>
-              <LogicalName>asc_contactid</LogicalName>
-              <RequiredLevel>required</RequiredLevel>
-              <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-              <ImeMode>auto</ImeMode>
-              <ValidForUpdateApi>1</ValidForUpdateApi>
-              <ValidForReadApi>1</ValidForReadApi>
-              <ValidForCreateApi>1</ValidForCreateApi>
-              <IsCustomField>1</IsCustomField>
-              <IsAuditEnabled>1</IsAuditEnabled>
-              <IsSecured>0</IsSecured>
-              <IntroducedVersion>1.0</IntroducedVersion>
-              <IsCustomizable>1</IsCustomizable>
-              <IsRenameable>1</IsRenameable>
-              <CanModifySearchSettings>1</CanModifySearchSettings>
-              <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-              <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-              <SourceType>0</SourceType>
-              <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-              <IsSortableEnabled>0</IsSortableEnabled>
-              <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-              <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-              <IsDataSourceSecret>0</IsDataSourceSecret>
-              <AutoNumberFormat>
-              </AutoNumberFormat>
-              <IsSearchable>0</IsSearchable>
-              <IsFilterable>0</IsFilterable>
-              <IsRetrievable>0</IsRetrievable>
-              <IsLocalizable>0</IsLocalizable>
-              <LookupStyle>single</LookupStyle>
-              <LookupTypes />
-              <displaynames>
-                <displayname description="Contact" languagecode="1033" />
-              </displaynames>
-              <Descriptions>
-                <Description description="Live column name has no underscore before id, unlike this schema file's previous asc_contact_id - corrected to match reality on this rebuild." languagecode="1033" />
-              </Descriptions>
-            </attribute>
-            <attribute PhysicalName="asc_role">
+            <attribute PhysicalName="asc_email">
               <Type>nvarchar</Type>
-              <Name>asc_role</Name>
-              <LogicalName>asc_role</LogicalName>
+              <Name>asc_email</Name>
+              <LogicalName>asc_email</LogicalName>
               <RequiredLevel>none</RequiredLevel>
               <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
               <ImeMode>auto</ImeMode>
@@ -899,14 +859,234 @@
               <MaxLength>200</MaxLength>
               <Length>400</Length>
               <displaynames>
-                <displayname description="Role" languagecode="1033" />
+                <displayname description="Email" languagecode="1033" />
               </displaynames>
               <Descriptions>
-                <Description description="Role this contact played on the engagement — URS §6.11 &quot;Consultant contacts &amp; roles&quot;." languagecode="1033" />
+                <Description description="Secure self-service invitation link / Entra External ID sign-in is matched against this email after authentication - see docs/portal-submission-configuration.md-adjacent invitation flow in services.js. Added 2026-10-13; the admin &quot;Self-service invitations&quot; screen (a separate app) collects this but the live table had no column for it yet." languagecode="1033" />
+              </Descriptions>
+            </attribute>
+            <attribute PhysicalName="asc_token">
+              <Type>nvarchar</Type>
+              <Name>asc_token</Name>
+              <LogicalName>asc_token</LogicalName>
+              <RequiredLevel>required</RequiredLevel>
+              <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
+              <ImeMode>auto</ImeMode>
+              <ValidForUpdateApi>1</ValidForUpdateApi>
+              <ValidForReadApi>1</ValidForReadApi>
+              <ValidForCreateApi>1</ValidForCreateApi>
+              <IsCustomField>1</IsCustomField>
+              <IsAuditEnabled>1</IsAuditEnabled>
+              <IsSecured>0</IsSecured>
+              <IntroducedVersion>1.0</IntroducedVersion>
+              <IsCustomizable>1</IsCustomizable>
+              <IsRenameable>1</IsRenameable>
+              <CanModifySearchSettings>1</CanModifySearchSettings>
+              <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
+              <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
+              <SourceType>0</SourceType>
+              <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
+              <IsSortableEnabled>0</IsSortableEnabled>
+              <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
+              <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
+              <IsDataSourceSecret>0</IsDataSourceSecret>
+              <AutoNumberFormat>
+              </AutoNumberFormat>
+              <IsSearchable>1</IsSearchable>
+              <IsFilterable>0</IsFilterable>
+              <IsRetrievable>1</IsRetrievable>
+              <IsLocalizable>0</IsLocalizable>
+              <Format>text</Format>
+              <MaxLength>200</MaxLength>
+              <Length>400</Length>
+              <displaynames>
+                <displayname description="Token" languagecode="1033" />
+              </displaynames>
+              <Descriptions>
+                <Description description="" languagecode="1033" />
+              </Descriptions>
+            </attribute>
+            <attribute PhysicalName="asc_issuedon">
+              <Type>datetime</Type>
+              <Name>asc_issuedon</Name>
+              <LogicalName>asc_issuedon</LogicalName>
+              <RequiredLevel>required</RequiredLevel>
+              <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
+              <ImeMode>inactive</ImeMode>
+              <ValidForUpdateApi>1</ValidForUpdateApi>
+              <ValidForReadApi>1</ValidForReadApi>
+              <ValidForCreateApi>1</ValidForCreateApi>
+              <IsCustomField>1</IsCustomField>
+              <IsAuditEnabled>1</IsAuditEnabled>
+              <IsSecured>0</IsSecured>
+              <IntroducedVersion>1.0</IntroducedVersion>
+              <IsCustomizable>1</IsCustomizable>
+              <IsRenameable>1</IsRenameable>
+              <CanModifySearchSettings>1</CanModifySearchSettings>
+              <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
+              <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
+              <SourceType>0</SourceType>
+              <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
+              <IsSortableEnabled>0</IsSortableEnabled>
+              <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
+              <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
+              <IsDataSourceSecret>0</IsDataSourceSecret>
+              <AutoNumberFormat>
+              </AutoNumberFormat>
+              <IsSearchable>0</IsSearchable>
+              <IsFilterable>1</IsFilterable>
+              <IsRetrievable>1</IsRetrievable>
+              <IsLocalizable>0</IsLocalizable>
+              <Format>datetime</Format>
+              <CanChangeDateTimeBehavior>0</CanChangeDateTimeBehavior>
+              <Behavior>1</Behavior>
+              <displaynames>
+                <displayname description="Issued On" languagecode="1033" />
+              </displaynames>
+              <Descriptions>
+                <Description description="" languagecode="1033" />
+              </Descriptions>
+            </attribute>
+            <attribute PhysicalName="asc_expireson">
+              <Type>datetime</Type>
+              <Name>asc_expireson</Name>
+              <LogicalName>asc_expireson</LogicalName>
+              <RequiredLevel>required</RequiredLevel>
+              <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
+              <ImeMode>inactive</ImeMode>
+              <ValidForUpdateApi>1</ValidForUpdateApi>
+              <ValidForReadApi>1</ValidForReadApi>
+              <ValidForCreateApi>1</ValidForCreateApi>
+              <IsCustomField>1</IsCustomField>
+              <IsAuditEnabled>1</IsAuditEnabled>
+              <IsSecured>0</IsSecured>
+              <IntroducedVersion>1.0</IntroducedVersion>
+              <IsCustomizable>1</IsCustomizable>
+              <IsRenameable>1</IsRenameable>
+              <CanModifySearchSettings>1</CanModifySearchSettings>
+              <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
+              <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
+              <SourceType>0</SourceType>
+              <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
+              <IsSortableEnabled>0</IsSortableEnabled>
+              <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
+              <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
+              <IsDataSourceSecret>0</IsDataSourceSecret>
+              <AutoNumberFormat>
+              </AutoNumberFormat>
+              <IsSearchable>0</IsSearchable>
+              <IsFilterable>1</IsFilterable>
+              <IsRetrievable>1</IsRetrievable>
+              <IsLocalizable>0</IsLocalizable>
+              <Format>datetime</Format>
+              <CanChangeDateTimeBehavior>0</CanChangeDateTimeBehavior>
+              <Behavior>1</Behavior>
+              <displaynames>
+                <displayname description="Expires On" languagecode="1033" />
+              </displaynames>
+              <Descriptions>
+                <Description description="" languagecode="1033" />
+              </Descriptions>
+            </attribute>
+            <attribute PhysicalName="asc_revoked">
+              <Type>bit</Type>
+              <Name>asc_revoked</Name>
+              <LogicalName>asc_revoked</LogicalName>
+              <RequiredLevel>none</RequiredLevel>
+              <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
+              <ImeMode>auto</ImeMode>
+              <ValidForUpdateApi>1</ValidForUpdateApi>
+              <ValidForReadApi>1</ValidForReadApi>
+              <ValidForCreateApi>1</ValidForCreateApi>
+              <IsCustomField>1</IsCustomField>
+              <IsAuditEnabled>1</IsAuditEnabled>
+              <IsSecured>0</IsSecured>
+              <IntroducedVersion>1.0</IntroducedVersion>
+              <IsCustomizable>1</IsCustomizable>
+              <IsRenameable>1</IsRenameable>
+              <CanModifySearchSettings>1</CanModifySearchSettings>
+              <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
+              <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
+              <SourceType>0</SourceType>
+              <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
+              <IsSortableEnabled>0</IsSortableEnabled>
+              <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
+              <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
+              <IsDataSourceSecret>0</IsDataSourceSecret>
+              <AutoNumberFormat>
+              </AutoNumberFormat>
+              <IsSearchable>1</IsSearchable>
+              <IsFilterable>0</IsFilterable>
+              <IsRetrievable>1</IsRetrievable>
+              <IsLocalizable>0</IsLocalizable>
+              <displaynames>
+                <displayname description="Revoked" languagecode="1033" />
+              </displaynames>
+              <Descriptions>
+                <Description description="" languagecode="1033" />
+              </Descriptions>
+              <AppDefaultValue>0</AppDefaultValue>
+              <optionset Name="asc_invitation_asc_revoked">
+                <OptionSetType>bit</OptionSetType>
+                <IsGlobal>0</IsGlobal>
+                <IsCustomizable>1</IsCustomizable>
+                <options>
+                  <option value="0">
+                    <labels>
+                      <label description="No" languagecode="1033" />
+                    </labels>
+                  </option>
+                  <option value="1">
+                    <labels>
+                      <label description="Yes" languagecode="1033" />
+                    </labels>
+                  </option>
+                </options>
+              </optionset>
+            </attribute>
+            <attribute PhysicalName="asc_purpose">
+              <Type>nvarchar</Type>
+              <Name>asc_purpose</Name>
+              <LogicalName>asc_purpose</LogicalName>
+              <RequiredLevel>required</RequiredLevel>
+              <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
+              <ImeMode>auto</ImeMode>
+              <ValidForUpdateApi>1</ValidForUpdateApi>
+              <ValidForReadApi>1</ValidForReadApi>
+              <ValidForCreateApi>1</ValidForCreateApi>
+              <IsCustomField>1</IsCustomField>
+              <IsAuditEnabled>1</IsAuditEnabled>
+              <IsSecured>0</IsSecured>
+              <IntroducedVersion>1.0</IntroducedVersion>
+              <IsCustomizable>1</IsCustomizable>
+              <IsRenameable>1</IsRenameable>
+              <CanModifySearchSettings>1</CanModifySearchSettings>
+              <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
+              <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
+              <SourceType>0</SourceType>
+              <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
+              <IsSortableEnabled>0</IsSortableEnabled>
+              <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
+              <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
+              <IsDataSourceSecret>0</IsDataSourceSecret>
+              <AutoNumberFormat>
+              </AutoNumberFormat>
+              <IsSearchable>1</IsSearchable>
+              <IsFilterable>0</IsFilterable>
+              <IsRetrievable>1</IsRetrievable>
+              <IsLocalizable>0</IsLocalizable>
+              <Format>text</Format>
+              <MaxLength>200</MaxLength>
+              <Length>400</Length>
+              <displaynames>
+                <displayname description="Purpose" languagecode="1033" />
+              </displaynames>
+              <Descriptions>
+                <Description description="Onboarding / Update / Revalidation" languagecode="1033" />
               </Descriptions>
             </attribute>
           </attributes>
-          <EntitySetName>asc_engagementcontacts</EntitySetName>
+          <EntitySetName>asc_invitations</EntitySetName>
           <IsDuplicateCheckSupported>1</IsDuplicateCheckSupported>
           <IsBusinessProcessEnabled>0</IsBusinessProcessEnabled>
           <IsRequiredOffline>0</IsRequiredOffline>
@@ -1523,17 +1703,17 @@
         </Descriptions>
       </RelationshipDescription>
     </EntityRelationship>
-    <EntityRelationship Name="asc_engagementcontact_engagement_id">
+    <EntityRelationship Name="asc_invitation_consultant_id">
       <EntityRelationshipType>OneToMany</EntityRelationshipType>
       <IsCustomizable>1</IsCustomizable>
-      <ReferencingEntityName>asc_engagementcontact</ReferencingEntityName>
-      <ReferencedEntityName>asc_engagement</ReferencedEntityName>
+      <ReferencingEntityName>asc_invitation</ReferencingEntityName>
+      <ReferencedEntityName>asc_consultant</ReferencedEntityName>
       <CascadeAssign>NoCascade</CascadeAssign>
       <CascadeDelete>Restrict</CascadeDelete>
       <CascadeReparent>NoCascade</CascadeReparent>
       <CascadeShare>NoCascade</CascadeShare>
       <CascadeUnshare>NoCascade</CascadeUnshare>
-      <ReferencingAttributeName>asc_engagement_id</ReferencingAttributeName>
+      <ReferencingAttributeName>asc_consultant_id</ReferencingAttributeName>
       <RelationshipDescription>
         <Descriptions>
           <Description description="Phase 1 consultant database relationship" languagecode="1033" />
@@ -1544,41 +1724,11 @@
           <NavPaneDisplayOption>UseCollectionName</NavPaneDisplayOption>
           <NavPaneArea>Details</NavPaneArea>
           <NavPaneOrder>10000</NavPaneOrder>
-          <NavigationPropertyName>asc_engagement_id</NavigationPropertyName>
+          <NavigationPropertyName>asc_consultant_id</NavigationPropertyName>
           <RelationshipRoleType>1</RelationshipRoleType>
         </EntityRelationshipRole>
         <EntityRelationshipRole>
-          <NavigationPropertyName>asc_engagementcontact_engagement_id</NavigationPropertyName>
-          <RelationshipRoleType>0</RelationshipRoleType>
-        </EntityRelationshipRole>
-      </EntityRelationshipRoles>
-    </EntityRelationship>
-    <EntityRelationship Name="asc_engagementcontact_contactid">
-      <EntityRelationshipType>OneToMany</EntityRelationshipType>
-      <IsCustomizable>1</IsCustomizable>
-      <ReferencingEntityName>asc_engagementcontact</ReferencingEntityName>
-      <ReferencedEntityName>asc_contact</ReferencedEntityName>
-      <CascadeAssign>NoCascade</CascadeAssign>
-      <CascadeDelete>Restrict</CascadeDelete>
-      <CascadeReparent>NoCascade</CascadeReparent>
-      <CascadeShare>NoCascade</CascadeShare>
-      <CascadeUnshare>NoCascade</CascadeUnshare>
-      <ReferencingAttributeName>asc_contactid</ReferencingAttributeName>
-      <RelationshipDescription>
-        <Descriptions>
-          <Description description="Phase 1 consultant database relationship" languagecode="1033" />
-        </Descriptions>
-      </RelationshipDescription>
-      <EntityRelationshipRoles>
-        <EntityRelationshipRole>
-          <NavPaneDisplayOption>UseCollectionName</NavPaneDisplayOption>
-          <NavPaneArea>Details</NavPaneArea>
-          <NavPaneOrder>10000</NavPaneOrder>
-          <NavigationPropertyName>asc_contactid</NavigationPropertyName>
-          <RelationshipRoleType>1</RelationshipRoleType>
-        </EntityRelationshipRole>
-        <EntityRelationshipRole>
-          <NavigationPropertyName>asc_engagementcontact_contactid</NavigationPropertyName>
+          <NavigationPropertyName>asc_invitation_consultant_id</NavigationPropertyName>
           <RelationshipRoleType>0</RelationshipRoleType>
         </EntityRelationshipRole>
       </EntityRelationshipRoles>

@@ -1,5 +1,5 @@
 adx_accountrelationship:
-adx_append: false
+adx_append: true
 adx_appendto: false
 adx_contactrelationship:
 adx_create: false

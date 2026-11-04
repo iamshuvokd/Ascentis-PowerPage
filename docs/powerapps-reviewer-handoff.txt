@@ -1,0 +1,248 @@
+ASCENTIS CONSULTANT PORTAL - DATA FORMAT FOR THE POWER APPS REVIEWER SCREENS
+=============================================================================
+
+SOURCE TABLE
+  Table:        asc_portalsubmission  (ConsultantDatabaseSolution)
+  Environment:  CDB Development - https://org84e19bfd.crm8.dynamics.com
+  The Consultant Portal creates one row each time a consultant saves a tab.
+
+COLUMNS
+  asc_consultant_id     Lookup -> asc_consultant
+  asc_tab               Choice (asc_consultantprofiletabchoice)
+  asc_status            Choice (asc_powerpagestatuschoice)
+  asc_before            JSON text - snapshot of the LIVE data when the row was created
+  asc_after             JSON text - what the consultant entered (formats below)
+  asc_submittedon       DateTime - set when submitted
+  asc_reviewedby_id     Lookup -> systemuser (set by your review action)
+  asc_revieweddate      DateTime (set by your review action)
+  asc_rejectreason      Multiline text (required when rejecting)
+  asc_isreview          Yes/No, required (portal always sends false)
+  createdon             use it to find the newest row
+
+CHOICE VALUES
+  asc_tab:
+    751050000 Identity (shown as "Overview")
+    751050001 Financial
+    751050002 Legal
+    751050003 Offices & contacts
+    751050004 Project references
+    751050006 BIM
+    751050007 Sustainability & ESG
+    751050010 Attachments
+  asc_status:
+    751050000 Draft
+    751050001 Submitted   
+    751050002 Accepted
+    751050003 Rejected
+    751050004 Seeded      (written by the Power Apps seeding app; confirmed in a fresh export 2026-10-27)
+
+RULES
+  1. Review queue = rows with status Submitted (751050001).
+  2. Per consultant and tab, the NEWEST row by createdon is what the consultant sees.
+     A Submitted row locks that tab in the portal. Accepted / Rejected unlock it.
+  3. Never edit or delete old rows - they are the history.
+  4. Reject: status = Rejected, set asc_reviewedby_id, asc_revieweddate and a
+     required asc_rejectreason.
+  5. Accept: status = Accepted, then copy asc_after into the live tables
+     (mapping: docs/portal-submission-automation-spec.md). The portal also writes the
+     live tables directly on every save, so the data may already be there.
+  6. Do NOT change asc_after when accepting. The portal re-reads it as the starting
+     point for the consultant's next edit.
+
+asc_after FORMAT (a JSON string, one per tab)
+  - Numbers and money are strings, e.g. "1000000".
+  - Multi-select values are arrays of text (display names, not GUIDs).
+  - Keys for conditional fields are MISSING when they do not apply.
+  - "id" is a temporary row id. "liveId" is the real Dataverse GUID or null.
+  - Values below are examples.
+
+--- Identity (asc_tab 751050000) ---
+{
+  "firmName": "Studio Vermeer",
+  "website": "studio.com",
+  "firmType": "Private",
+  "alias": "SV",
+  "disciplines": ["Architecture"],
+  "sectors": ["Hospitality"],
+  "regions": ["Europe"]
+}
+
+--- Financial (751050001) --- revenueByRegion holds only regions that were filled in
+{
+  "effectiveYear": "2026",
+  "yearFormat": "FY",
+  "backlog": "5000000",
+  "revenue1": "1000000",
+  "revenue2": "900000",
+  "revenue3": "800000",
+  "revenueByRegion": { "Europe": "60", "Middle East": "40" }
+}
+
+--- Legal (751050002) ---
+{
+  "indemnified": "No",
+  "indemnityDetails": "",
+  "litigation": "No",
+  "litigationDetails": "",
+  "insured": "Yes",
+  "perOccurrence": "1000000",
+  "aggregate": "2000000"
+}
+
+--- Offices & contacts (751050003) --- offices[].leaders lists contacts[].id values
+{
+  "offices": [
+    {
+      "id": "offices-2", "liveId": null,
+      "region": "Europe", "city": "Paris", "country": "France", "address": "",
+      "status": "Active", "headcount": "40",
+      "leaders": ["contacts-1"]
+    }
+  ],
+  "contacts": [
+    {
+      "id": "contacts-1", "liveId": "GUID-or-null",
+      "firstName": "A", "lastName": "B", "email": "a@x.com", "phone": "",
+      "jobTitle": "Partner", "region": "Europe",
+      "contactType": "Primary", "status": "Active"
+    }
+  ]
+}
+
+--- Project references (751050004) --- a bare ARRAY, not an object
+[
+  {
+    "id": "projects-1", "liveId": null,
+    "name": "Tower", "country": "France", "region": "Europe",
+    "disciplines": ["Architecture"], "type": "Hotel",
+    "gfa": "", "keys": "200",
+    "status": "Completed", "startYear": "2020", "completionYear": "2024"
+  }
+]
+
+--- BIM (751050006) ---
+{
+  "bim": { "capability": "Yes", "operators": "5", "disciplines": ["MEP"] },
+  "bimProjects": [
+    {
+      "id": "bimProjects-1", "liveId": "GUID-or-null",
+      "name": "Hub", "location": "Paris", "gfa": "12000", "lod": "300",
+      "disciplines": ["MEP"]
+    }
+  ]
+}
+
+--- Sustainability (751050007) ---
+{
+  "certified": "No",
+  "certificationDetails": "",
+  "reporting": "No",
+  "frameworkDetails": "",
+  "professionals": "0",
+  "qa": "No",
+  "qaDetails": ""
+}
+
+--- Attachments (751050010) --- metadata only, NOT the file bytes; a bare ARRAY
+[
+  { "documentType": "Certificate", "projectId": null, "name": "cert.pdf" }
+]
+
+asc_before FORMAT
+  Same shape as asc_after, built from the live tables when the row was created.
+  Difference: its contacts and bimProjects are { "liveId": "...", "fields": { ... } }
+  instead of flat rows. Use it to compare against asc_after.
+
+READING IT IN POWER APPS
+  Set(j, ParseJSON(ThisItem.asc_after));
+  Coalesce(Text(j.firmName), "")
+  ForAll(Table(j.disciplines), Text(ThisRecord.Value))
+  ForAll(Table(j.contacts), {Name: Text(ThisRecord.Value.firstName) & " " & Text(ThisRecord.Value.lastName)})
+  Value(j.revenue1)
+  Project references / Attachments are arrays: Table(ParseJSON(ThisItem.asc_after))
+
+KNOWN GAPS
+  - Attachments hold metadata only (no file bytes).
+  - Offices, Project references and Attachments cannot yet be copied into the live
+    tables (asc_office.asc_officeleaderid mismatch; asc_ProjectType has no rows).
+  - No server-side check blocks consultant edits once a row is Submitted.
+
+=============================================================================
+PART 2 - HOW THE PORTAL AND POWER APPS EXCHANGE DATA (SEEDING + REVIEW)
+=============================================================================
+
+END-TO-END FLOW
+  1. Admin app creates the invited NATIVE Dataverse Contact (emailaddress1 = invitee's
+     email) with its asc_consultantid lookup set to the consultant they may edit
+     (this is NOT the asc_contact business-contact table).
+  2. Admin app sends the Power Pages invitation (native "Invite contacts" feature).
+  3. Admin app seeds the consultant's data: ONE asc_portalsubmission row PER TAB
+     (8 tabs), see "SEEDING A ROW" below.
+  4. Invitee redeems the link and signs in. The portal reads the signed-in contact's
+     asc_consultantid, then loads the NEWEST asc_portalsubmission row per tab for
+     that consultant and shows its asc_after in the form.
+  5. Consultant edits and clicks Save draft -> portal creates a NEW row (status
+     Draft) with the full tab JSON in asc_after and the earlier live data in
+     asc_before. Submit for review -> status Submitted; the tab becomes read-only
+     in the portal ("Pending review").
+  6. Reviewer app shows asc_before vs asc_after, then Accepts or Rejects (Part 1,
+     rules 4-6).
+
+WHAT THE PORTAL SHOWS PER TAB (newest row by createdon, any status)
+  Draft      -> asc_after loaded, editable
+  Submitted  -> asc_after loaded, LOCKED (read-only, no unlock action)
+  Rejected   -> asc_after loaded, editable (next save creates a new Draft row)
+  Accepted   -> asc_after loaded, editable (next save creates a new Draft row)
+  Seeded     -> asc_after loaded, editable (next save creates a new Draft row)
+  no row     -> blank form
+  If asc_after is empty or not valid JSON, that one tab simply shows blank.
+
+SEEDING A ROW (what the Power Apps developer writes)
+  asc_consultant_id   the consultant (lookup)                      REQUIRED
+  asc_tab             tab number (751050000 ... 751050010)        REQUIRED
+  asc_status          751050004 (Seeded) when seeding existing     REQUIRED
+                      data, so the tab opens editable.
+                      Do NOT seed as Submitted: that locks the tab.
+  asc_after           the tab JSON (formats in Part 1), as TEXT    REQUIRED
+  asc_before          same JSON, or empty                          optional
+                      (the portal never reads it; it is only for the reviewer's
+                      comparison. Treat empty as "no earlier version".)
+  asc_isreview        false                                        REQUIRED
+
+  Power Fx example:
+    Patch('Portal Submissions', Defaults('Portal Submissions'), {
+      Consultant: ThisConsultant,
+      Tab: 751050000,
+      Status: 751050004,
+      'Is Review': false,
+      Before: jsonText,
+      After: jsonText
+    })
+  (jsonText is a text variable holding the JSON; column/table names depend on how
+   the table appears in Power Apps.)
+
+RULES
+  - Always create a NEW row; never edit or delete old rows. Newest createdon wins.
+  - Seed all 8 tabs, or the missing ones show blank.
+  - Keep keys exactly as in Part 1; a missing key shows blank.
+  - Include the real "liveId" GUID on contacts and bimProjects rows. Without it the
+    next consultant save creates duplicate live rows.
+  - Use display names (not GUIDs) for choices/lookups, e.g. "region": "Europe".
+  - Money/numbers are strings ("1000000"); multi-selects are arrays of text.
+  - asc_after is a text column: build it with JSON() or by hand and write as text.
+    NOTE: Power Fx JSON() turns a text table into [{"Value":"x"}]; the portal needs
+    plain arrays like ["x"]. Build those arrays as text yourself (Concat).
+
+BEFORE / AFTER WRITTEN BY THE PORTAL ITSELF
+  asc_after  = that tab's slice of what the consultant has on screen when saving.
+  asc_before = the same shape taken from the LIVE tables when the row was created.
+               Its contacts/bimProjects are { "liveId", "fields": {...} } instead of
+               flat rows. It is frozen at creation and never updated.
+
+SECURITY / KNOWN LIMITS
+  - Table permissions are Global scope: the portal's API returns all consultants'
+    rows and filters to the signed-in consultant in the browser. Server-side
+    isolation and a write-lock on Submitted rows are not built.
+  - The portal also still writes the live tables (asc_consultant etc.) directly on
+    every save. The reviewer app's Accept step is meant to copy asc_after into the
+    live tables.

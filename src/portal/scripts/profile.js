@@ -6,17 +6,20 @@
     var busy = false;
     if (!preview) { try { loadLiveChoicesSync(); } catch (ignored) { /* keep the config.json fallback list */ } }
     if (!preview) { try { loadExistingRecordSync(); } catch (ignored) { /* start from a blank form */ } }
+    // Form values come from each tab's latest asc_portalsubmission row; existingRecord (live tables)
+    // is still loaded above for asc_before, junction diffing and live-row ID caches.
+    if (!preview) { try { loadPrefillRecordSync(); } catch (ignored) { prefillRecord = null; /* blank form */ } }
     var choices = portalConfig.choices;
     var selected = {
-      Disciplines: (existingRecord && existingRecord.identity.disciplines) || [],
-      Sectors: (existingRecord && existingRecord.identity.sectors) || [],
-      Regions: (existingRecord && existingRecord.identity.regions) || []
+      Disciplines: (prefillRecord && prefillRecord.identity.disciplines.slice()) || [],
+      Sectors: (prefillRecord && prefillRecord.identity.sectors.slice()) || [],
+      Regions: (prefillRecord && prefillRecord.identity.regions.slice()) || []
     };
-    if (existingRecord) {
-      if (existingRecord.identity.firmName) form.elements.firmName.value = existingRecord.identity.firmName;
-      if (existingRecord.identity.website) form.elements.website.value = existingRecord.identity.website;
-      if (existingRecord.identity.alias) form.elements.alias.value = existingRecord.identity.alias;
-      if (existingRecord.identity.firmType) form.elements.firmType.value = existingRecord.identity.firmType;
+    if (prefillRecord) {
+      if (prefillRecord.identity.firmName) form.elements.firmName.value = prefillRecord.identity.firmName;
+      if (prefillRecord.identity.website) form.elements.website.value = prefillRecord.identity.website;
+      if (prefillRecord.identity.alias) form.elements.alias.value = prefillRecord.identity.alias;
+      if (prefillRecord.identity.firmType) form.elements.firmType.value = prefillRecord.identity.firmType;
     }
 
     function activate(index, focus) {
@@ -44,7 +47,7 @@
       panel.appendChild(element('p', 'section-description', definition.description));
       panel.dataset.section = definition.id;
       panel.prepend(element('p', 'required-legend', '* required field'));
-      sections[definition.id] = createFields(panel, definition.fields, existingRecord && existingRecord.sections[definition.id]);
+      sections[definition.id] = createFields(panel, definition.fields, prefillRecord && prefillRecord.sections[definition.id]);
     });
 
     function fieldIn(group, key) {
@@ -134,7 +137,7 @@
         });
         return;
       }
-      var table = dataTable(id === 'projects' ? ['Project', 'Country / region', 'Disciplines', 'Type', 'GFA / Keys', 'Status', 'Years'] : ['Name', 'Location', 'GFA', 'LOD']);
+      var table = dataTable(id === 'projects' ? ['Project', 'Country / region', 'Disciplines', 'Type', 'GFA / Keys', 'Status', 'Years'] : ['Name', 'Location', 'GFA', 'LOD', 'Disciplines']);
       collection.rows.forEach(function (row) {
         var values = readFields(row.group.node);
         var tr = element('tr');
@@ -148,7 +151,7 @@
           ? [[values.country, values.region].filter(Boolean).join(' / '), (values.disciplines || []).join(', '), values.type,
             values.type === 'Hotel' ? (values.keys || '—') + ' keys' : (values.gfa ? Number(values.gfa).toLocaleString('en-US') : '—') + ' m²',
             values.status, [values.startYear, values.status === 'Completed' ? values.completionYear : ''].filter(Boolean).join('–')]
-          : [values.location, values.gfa ? Number(values.gfa).toLocaleString('en-US') : '—', values.lod];
+          : [values.location, values.gfa ? Number(values.gfa).toLocaleString('en-US') : '—', values.lod, (values.disciplines || []).join(', ')];
         cells.forEach(function (value) { tr.appendChild(element('td', '', value || '—')); });
         table.body.appendChild(tr);
       });
@@ -228,12 +231,30 @@
     collections.contacts.section.querySelector('h2').textContent = 'Contacts — click a name to view or edit';
     document.getElementById('panel-4').appendChild(element('p', 'region-help', 'GFA (m²) is required for non-hotel projects; Keys is required for hotels. Completion year is required only once a project is Completed.'));
 
-    // Prefill previously-saved Contacts and BIM projects. Offices/Project references are not
-    // included - saving those is blocked live (see services.js header), so there is nothing to
-    // load back either.
-    if (existingRecord) {
-      existingRecord.contacts.forEach(function (row) { addRecord('contacts', row.fields, false, row.liveId); });
-      existingRecord.bimProjects.forEach(function (row) { addRecord('bimProjects', row.fields, false, row.liveId); });
+    // Prefill every collection from the staged asc_after rows. Contacts go first: offices
+    // reference them as leaders by local row id, which is regenerated on load, so the old ids are
+    // remapped to the new ones.
+    if (prefillRecord) {
+      var contactIdMap = {};
+      prefillRecord.contacts.forEach(function (row) {
+        var added = addRecord('contacts', row.fields, false, row.liveId);
+        if (added && row.localId) contactIdMap[row.localId] = added.id;
+      });
+      prefillRecord.offices.forEach(function (row) {
+        var fields = Object.assign({}, row.fields);
+        var leaders = (Array.isArray(fields.leaders) ? fields.leaders : []).map(function (id) { return contactIdMap[id]; }).filter(Boolean);
+        delete fields.leaders;
+        var added = addRecord('offices', fields, false, row.liveId);
+        var control = added && fieldIn(added.group, 'leaders');
+        if (control) {
+          // Leader options only exist once contacts are registered (updateContacts), so select after.
+          Array.from(control.options).forEach(function (option) { option.selected = leaders.includes(option.value); });
+          if (control.refreshMulti) control.refreshMulti();
+          refreshCollection(collections.offices);
+        }
+      });
+      prefillRecord.projects.forEach(function (row) { addRecord('projects', row.fields, false, row.liveId); });
+      prefillRecord.bimProjects.forEach(function (row) { addRecord('bimProjects', row.fields, false, row.liveId); });
     }
 
     // Financial derived values are display-only; the server must calculate them again.
@@ -254,7 +275,7 @@
     var revenueRegionNames = Object.keys(portalConfig.dataverseMap.revenueRegions);
     var revenueShareInitial = {};
     revenueRegionNames.forEach(function (region, index) {
-      var value = existingRecord && existingRecord.revenueByRegion[region];
+      var value = prefillRecord && prefillRecord.revenueByRegion[region];
       if (value) revenueShareInitial['region-' + index] = value;
     });
     var regionShares = createFields(financialPanel, revenueRegionNames.map(function (region, index) {
@@ -347,8 +368,8 @@
 
     // File objects remain in this browser until a future authenticated upload service accepts them.
     var attachmentPanel = document.getElementById('panel-7');
-    attachmentPanel.appendChild(element('h2', '', 'Attachments (max 25 MB each)'));
-    attachmentPanel.appendChild(element('p', 'section-description', 'Add supporting documents, up to 25 MB per file. Project attachments also appear here.'));
+    attachmentPanel.appendChild(element('h2', '', 'Attachments (max 16 MB each)'));
+    attachmentPanel.appendChild(element('p', 'section-description', 'Add supporting documents, up to 16 MB per file. Project attachments also appear here.'));
     var uploadLabel = element('label', '', 'Choose supporting documents');
     uploadLabel.htmlFor = 'profile-files';
     uploadLabel.className = 'visually-hidden';
@@ -370,7 +391,7 @@
     attachmentPanel.appendChild(attachmentMessage);
     var attachmentList = element('div', 'attachment-list');
     attachmentPanel.appendChild(attachmentList);
-    attachmentPanel.appendChild(element('p', 'region-help', 'You may delete files you uploaded yourself. Uploads and deletions will be recorded when saving is connected.'));
+    attachmentPanel.appendChild(element('p', 'region-help', 'Saved files show their review status. Files marked locked (Accepted, Rejected or Seeded) are set by our team and cannot be changed here.'));
     var attachmentSequence = 0;
 
     function allFiles() {
@@ -384,8 +405,21 @@
     function renderAttachments() {
       if (!attachmentList) return;
       attachmentList.replaceChildren();
-      var files = allFiles();
-      var table = dataTable(['File', 'Document type', 'Uploaded', 'Size', '']);
+      // Files already uploaded by a save show as saved rows below, not again as pending local files.
+      var files = allFiles().filter(function (item) { return !(typeof uploadedAttachmentFiles !== 'undefined' && uploadedAttachmentFiles.has(item.file)); });
+      var table = dataTable(['File', 'Document type', 'Uploaded', 'Status', 'Size', '']);
+      // Files already saved to Dataverse: read-only, with the status the reviewer app/portal set.
+      (typeof existingAttachments !== 'undefined' ? existingAttachments : []).forEach(function (saved) {
+        var tr = element('tr');
+        tr.appendChild(element('td', '', saved.name || '(unnamed file)'));
+        tr.appendChild(element('td', '', saved.documentType || '—'));
+        tr.appendChild(element('td', '', saved.uploadedOn ? new Date(saved.uploadedOn).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'));
+        var locked = saved.status === 'Accepted' || saved.status === 'Rejected' || saved.status === 'Seeded';
+        tr.appendChild(element('td', '', (saved.status || '—') + (locked ? ' (locked)' : '')));
+        tr.appendChild(element('td', '', saved.sizeMb ? saved.sizeMb.toFixed(1) + ' MB' : '—'));
+        tr.appendChild(element('td'));
+        table.body.appendChild(tr);
+      });
       files.forEach(function (item) {
         var tr = element('tr');
         var fileCell = element('td');
@@ -413,6 +447,7 @@
         select.addEventListener('change', function () { item.documentType = this.value; });
         typeCell.appendChild(select); tr.appendChild(typeCell);
         tr.appendChild(element('td', '', item.exampleDate || 'Not uploaded'));
+        tr.appendChild(element('td', '', 'Not saved yet'));
         tr.appendChild(element('td', '', (item.file.size / 1000000).toFixed(1) + ' MB'));
         var action = element('td');
         var remove = element('button', 'text-button', 'Delete');
@@ -427,7 +462,7 @@
         action.appendChild(remove); tr.appendChild(action); table.body.appendChild(tr);
       });
       attachmentList.appendChild(table.wrap);
-      if (!files.length) attachmentList.appendChild(element('p', 'empty-state', 'No documents selected.'));
+      if (!files.length && !(typeof existingAttachments !== 'undefined' && existingAttachments.length)) attachmentList.appendChild(element('p', 'empty-state', 'No documents selected.'));
     }
 
     uploadInput.addEventListener('change', function () {
@@ -438,7 +473,7 @@
         else attachments.push({ id: 'local-' + (++attachmentSequence), file: file, documentType: '' });
       });
       uploadInput.value = '';
-      attachmentMessage.textContent = errors.join(' ') || 'Files selected. They will be uploaded when saving is connected.';
+      attachmentMessage.textContent = errors.join(' ') || 'Files selected. They will be uploaded when you save.';
       renderAttachments();
     });
 
@@ -579,7 +614,7 @@
     }
 
     async function persist(action) {
-      if (busy || !validateProfile(action === 'saveDraft')) return;
+      if (busy || allTabsLocked() || !validateProfile(action === 'saveDraft')) return;
       busy = true;
       var buttons = Array.from(form.querySelectorAll('.profile-actions button'));
       buttons.forEach(function (button) { button.disabled = true; });
@@ -597,6 +632,7 @@
           var row = collections.bimProjects.rows.find(function (r) { return r.id === item.clientId; });
           if (row && item.liveId) row.liveId = item.liveId;
         });
+        if (!result.preview) renderAttachments();
         if (action === 'saveDraft') {
           report('profile-status', result.preview ? 'Preview draft captured in memory for this session only. Reloading clears it; no data was sent to Dataverse.' : 'Draft saved.');
         } else {
@@ -607,15 +643,55 @@
           }
           document.getElementById('next-revalidation-date').textContent = dateText;
           document.getElementById('submission-preview-note').hidden = !result.preview;
+          report('profile-status', result.preview ? 'Example submission only. No data was sent.' : 'Submitted for review. Submitted sections are locked until the review is complete.');
           show('submit', true);
+          if (!result.preview) applyTabLocks();
         }
       } catch (error) {
         report('profile-status', error.message || 'The request failed. Your entered details remain on this screen. Please try again.');
       } finally {
         busy = false;
-        buttons.forEach(function (button) { button.disabled = false; });
         form.setAttribute('aria-busy', 'false');
+        refreshActionState();
       }
+    }
+
+    // A tab whose latest submission is Submitted is pending review: read-only, no unlock action.
+    // inert (not disabled) so readFields() still collects its values and record cards stay openable.
+    // With every tab Submitted there is nothing left to save, so both actions are disabled.
+    function allTabsLocked() {
+      return PORTAL_SUBMISSION_TABS.every(function (tab) { return submissionTabStatus[tab] === 'Submitted'; });
+    }
+    function refreshActionState() {
+      var locked = allTabsLocked();
+      form.querySelectorAll('.profile-actions button').forEach(function (button) { button.disabled = locked || busy; });
+      if (locked && !busy) report('profile-status', 'All sections have been submitted and are pending review. Nothing left to save.');
+    }
+    function applyTabLocks() {
+      PORTAL_SUBMISSION_TABS.forEach(function (tab, index) {
+        var panel = document.getElementById('panel-' + index);
+        if (submissionTabStatus[tab] !== 'Submitted' || !panel || panel.dataset.locked === 'true') return;
+        panel.dataset.locked = 'true';
+        panel.classList.add('tab-locked');
+        var banner = element('p', 'pending-review-banner', 'Pending review — this section has been submitted and cannot be edited until the review is complete.');
+        banner.setAttribute('role', 'status');
+        panel.prepend(banner);
+        Array.from(panel.children).forEach(function (child) {
+          if (child === banner) return;
+          if (child.classList.contains('collection-section')) {
+            child.querySelectorAll('.form-field, .add-record, .remove-record').forEach(function (node) { node.setAttribute('inert', ''); });
+            // Record cards open in a modal dialog: keep only its Done button live so a submitted
+            // record can be viewed but nothing inside it (fields, pickers, Remove) can change.
+            child.querySelectorAll('.record-card').forEach(function (card) {
+              Array.from(card.children).forEach(function (part) {
+                if (part.tagName !== 'LEGEND' && !part.classList.contains('close-editor')) part.setAttribute('inert', '');
+              });
+            });
+          }
+          else child.setAttribute('inert', '');
+        });
+      });
+      refreshActionState();
     }
 
     form.noValidate = true;
@@ -623,5 +699,6 @@
     form.addEventListener('submit', function (event) { event.preventDefault(); persist('submit'); });
     document.getElementById('done').addEventListener('click', function () { show('profile', true); });
     Object.keys(choices).forEach(renderTags);
+    applyTabLocks();
     refreshFinancial();
     renderAttachments();

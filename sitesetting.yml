@@ -79,7 +79,7 @@
 - adx_description: Sets whether or not the portal can redirect the user to the profile page after successful sign-in. By default, it is set to true.
   adx_name: Authentication/Registration/ProfileRedirectEnabled
   adx_sitesettingid: 7feacbd8-d3b7-46cd-b3b1-f4e232784d99
-  adx_value: true
+  adx_value: false
 - adx_name: HTTP/X-Frame-Options
   adx_sitesettingid: 8126b1d9-2c05-4714-a98a-5a3ce92666bd
   adx_value: SAMEORIGIN
@@ -173,7 +173,7 @@
 - adx_description: 'Fields exposed via the Web API for asc_consultant, matching every column written by src/portal/scripts/services.js (identity/BIM/revenue-by-region), plus the N:N relationship navigation property names used by $ref association calls - Power Pages checks those against this same allowlist. asc_status added 2026-10-08 - only ever written once, on first create (Active), after it became a required Choice column live; never written on update. Financial/Legal/Sustainability fields removed 2026-10-08 - those columns no longer exist on asc_consultant at all, moved to their own tables (see Webapi/asc_financialinformation|legalinformation|sustainabilityesg below).'
   adx_name: Webapi/asc_consultant/fields
   adx_sitesettingid: 82605f52-2ade-478a-8cde-d07ca2f50bc1
-  adx_value: asc_name,asc_website,asc_akaname,asc_bimcapability,asc_bimoperatorcount,asc_revenuepct_middleeast,asc_revenuepct_southasia,asc_revenuepct_europe,asc_revenuepct_africa,asc_revenuepct_other,asc_consultant_discipline,asc_consultant_sector,asc_consultant_region,asc_confackn,asc_confacknby,asc_confackndate,asc_firmtype_id,asc_status
+  adx_value: asc_name,asc_website,asc_akaname,asc_revenuepct_middleeast,asc_revenuepct_southasia,asc_revenuepct_europe,asc_revenuepct_africa,asc_revenuepct_other,asc_consultant_discipline,asc_consultant_sector,asc_consultant_region,asc_confackn,asc_confacknby,asc_confackndate,asc_firmtype_id,asc_status
 - adx_description: 'Enables the Power Pages Web API for the Financial Information child table (asc_financialinformation), 2026-10-08 - moved off asc_consultant live, see services.js saveChildTable()/loadExistingRecordSync().'
   adx_name: Webapi/asc_financialinformation/enabled
   adx_sitesettingid: 1e5a8c3f-7b2d-4f9a-8c6e-4d1b7f3a9e52
@@ -213,7 +213,7 @@
 - adx_description: 'Fields exposed via the Web API for asc_contact, matching every column written by src/portal/scripts/services.js.'
   adx_name: Webapi/asc_contact/fields
   adx_sitesettingid: 471acefa-e418-4fa6-addd-a6eaea874c6e
-  adx_value: asc_contactid,asc_number,asc_firstname,asc_lastname,asc_workemail,asc_phone,asc_jobtitle,asc_contacttype,asc_status,asc_regionid,asc_consultant_id,_asc_consultant_id_value
+  adx_value: asc_contactid,asc_number,asc_firstname,asc_lastname,asc_workemail,asc_phone,asc_jobtitle,asc_contacttype,asc_ContactType,_asc_contacttype_value,asc_status,asc_regionid,asc_consultant_id,_asc_consultant_id_value
 - adx_description: 'Enables the Power Pages Web API for the BIM Project table (asc_bimproject), required by src/portal/scripts/services.js live write path.'
   adx_name: Webapi/asc_bimproject/enabled
   adx_sitesettingid: a104728e-b778-40a7-afb6-86a8582cf7a2
@@ -277,35 +277,39 @@
 - adx_description: 'Fields exposed via the Web API for asc_consultantdiscipline. asc_ConsultantID/asc_DisciplineID must match the live column''s exact SchemaName casing - this allowlist check is case-sensitive, confirmed live 2026-10-08 via "Attribute asc_ConsultantID ... is not enabled for Web Api" after the lowercase form was rejected.'
   adx_name: Webapi/asc_consultantdiscipline/fields
   adx_sitesettingid: 3f025654-f7f1-4e44-bdc4-29a2ecbf7aa0
-  adx_value: asc_consultantdisciplineid,asc_number,asc_ConsultantID,asc_DisciplineID
+  adx_value: asc_consultantdisciplineid,asc_number,asc_ConsultantID,asc_DisciplineID,asc_consultantid,asc_disciplineid,_asc_consultantid_value
 - adx_description: 'Enables the Power Pages Web API for the pre-existing asc_consultantsectors junction table (Consultant x Sector), now used instead of the asc_consultant_sector N:N relationship.'
   adx_name: Webapi/asc_consultantsectors/enabled
   adx_sitesettingid: d8589fe0-06bb-49c5-bc6a-372602fd2f1d
   adx_value: true
-- adx_description: 'Fields exposed via the Web API for asc_consultantsectors. asc_ConsultantID/asc_SectorID must match the live column''s exact SchemaName casing - see asc_consultantdiscipline/fields note.'
+- adx_description: 'Fields exposed via the Web API for asc_consultantsectors. asc_ConsultantID/asc_SectorID must match the live column''s exact SchemaName casing - see asc_consultantdiscipline/fields note. [re-pushed 2026-10-28c]'
   adx_name: Webapi/asc_consultantsectors/fields
   adx_sitesettingid: 939a2c94-3a32-4495-9615-1e817dae07ff
-  adx_value: asc_consultantsectorsid,asc_number,asc_ConsultantID,asc_SectorID
+  adx_value: asc_consultantsectorsid,asc_number,asc_ConsultantID,asc_SectorID,asc_consultantid,asc_sectorid,_asc_consultantid_value
 - adx_description: 'Enables the Power Pages Web API for the pre-existing asc_consultantregions junction table (Consultant x Region), now used instead of the asc_consultant_region N:N relationship.'
   adx_name: Webapi/asc_consultantregions/enabled
   adx_sitesettingid: b58512a7-d22b-48c2-aa1b-d61e5bb6b93b
   adx_value: true
-- adx_description: 'Fields exposed via the Web API for asc_consultantregions. asc_ConsultantID/asc_RegionID must match the live column''s exact SchemaName casing - see asc_consultantdiscipline/fields note.'
+- adx_description: 'Fields exposed via the Web API for asc_consultantregions. asc_ConsultantID/asc_RegionID must match the live column''s exact SchemaName casing - see asc_consultantdiscipline/fields note. [re-pushed 2026-10-28]'
   adx_name: Webapi/asc_consultantregions/fields
   adx_sitesettingid: 1a8fcf98-5686-4806-b71c-a05227387a82
-  adx_value: asc_consultantregionsid,asc_number,asc_ConsultantID,asc_RegionID
+  adx_value: asc_consultantregionsid,asc_number,asc_ConsultantID,asc_RegionID,asc_consultantid,asc_regionid,_asc_consultantid_value
 - adx_description: 'DEMO confidentiality statement PDF for the Download PDF button on the Confidentiality screen - a placeholder, not the real signed/authorised-signatory document required by URS FR-25. See web-files/Confidentiality-Statement-Demo.pdf.'
   adx_name: ConsultantPortal/ConfidentialityPdfUrl
   adx_sitesettingid: cfcd350e-146c-4a7c-a82b-396e1b27a91c
   adx_value: /Confidentiality-Statement-Demo.pdf
+- adx_description: 'ID of the registered Power Pages cloud flow (ASC - Confidentiality statement PDF) that returns the personalised PDF as base64. When set, the Download PDF button calls it; when blank it falls back to ConsultantPortal/ConfidentialityPdfUrl.'
+  adx_name: ConsultantPortal/ConfidentialityFlowId
+  adx_sitesettingid: 6f1b7c52-3d0e-4a8b-9c64-2e5a1d7b9f03
+  adx_value: e1670522-f9b1-49e1-8b3e-6cfb7c617286
 - adx_description: 'Enables the Power Pages Web API for the Portal Submission staging table (asc_portalsubmission), required by src/portal/scripts/services.js recordPortalSubmissions() - see docs/portal-submission-configuration.md.'
   adx_name: Webapi/asc_portalsubmission/enabled
   adx_sitesettingid: 6a1d9e3f-8c2b-4f5a-9d7e-1b3c5a8f2e64
   adx_value: true
-- adx_description: 'Fields exposed via the Web API for asc_portalsubmission, matching every column written/read by src/portal/scripts/services.js recordPortalSubmissions(). Includes asc_isreview, a required column added live 2026-09-30 after this table was first configured.'
+- adx_description: 'Fields exposed via the Web API for asc_portalsubmission, matching every column written/read by src/portal/scripts/services.js recordPortalSubmissions(). Includes asc_isreview, a required column added live 2026-09-30 after this table was first configured. createdon is read by the prefill (latest submission per tab). [re-pushed 2026-10-28]'
   adx_name: Webapi/asc_portalsubmission/fields
   adx_sitesettingid: 9b4e2c7a-1f6d-4a3b-8e9c-5d7a2f4b6c81
-  adx_value: asc_portalsubmissionid,asc_tab,asc_before,asc_after,asc_status,asc_isreview,asc_submittedon,asc_consultant_id,_asc_consultant_id_value
+  adx_value: asc_portalsubmissionid,asc_tab,asc_before,asc_after,asc_status,asc_isreview,asc_submittedon,asc_consultant_id,_asc_consultant_id_value,createdon
 - adx_description: 'Enables the Power Pages Web API for the Audit Log table (asc_auditlog), required by src/portal/scripts/services.js logAuditEvent() - see docs/portal-submission-configuration.md.'
   adx_name: Webapi/asc_auditlog/enabled
   adx_sitesettingid: 2d6f8a1c-4b9e-4c7a-9f3d-8e1a6c5b2f74
@@ -322,3 +326,59 @@
   adx_name: Webapi/systemuser/fields
   adx_sitesettingid: 9d4f2b8e-3a7c-4e1d-9f6b-2c8e5a4d7b31
   adx_value: systemuserid
+- adx_description: 'Enables the Power Pages Web API for asc_invitation, required by src/portal/scripts/services.js loadInvitationFromUrlSync() (secure self-service invitation flow, 2026-10-13). Read-only, granted to BOTH Anonymous and Authenticated Users - the token lookup happens before the visitor signs in.'
+  adx_name: Webapi/asc_invitation/enabled
+  adx_sitesettingid: 4b8e2c6a-9f3d-4a7c-8e1b-6d9a3f5c8b27
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_invitation - read-only, matching every column read by loadInvitationFromUrlSync(). Note: Anonymous Read means these fields (including asc_email and asc_token) are not access-controlled beyond possessing/guessing the exact token - same already-accepted Global-scope risk posture as every other table in this project, just extended here to unauthenticated visitors specifically because the lookup must happen pre-sign-in.'
+  adx_name: Webapi/asc_invitation/fields
+  adx_sitesettingid: 7a4c9e3b-5d8f-4b2a-9c6e-3f8b5a2d9c74
+  adx_value: asc_invitationid,asc_email,asc_token,asc_expireson,asc_revoked,asc_consultant_id,_asc_consultant_id_value
+- adx_description: 'Enables the Power Pages Web API for the Attachment table (asc_attachment), required by src/portal/scripts/services.js saveAttachments() (consultant-level document upload, 2026-10-24).'
+  adx_name: Webapi/asc_attachment/enabled
+  adx_sitesettingid: 5e1b7d3a-2c9f-4b6e-8a4d-7f3c1e9b5a62
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_attachment, matching every column written by saveAttachments(). asc_attachedfile is the live file column (Attached File, 32 MB) - NOT asc_file. All lookups on this table have all-lowercase schema names (confirmed via fresh pac solution export 2026-10-24), so bind keys equal LogicalNames. asc_projectreference_id is listed ready for project-level uploads (blocked until project references are writable).'
+  adx_name: Webapi/asc_attachment/fields
+  adx_sitesettingid: 8c4a6f2e-1d7b-4e3a-9b5c-2a8d6f1e4c73
+  adx_value: asc_attachmentid,asc_name,asc_documenttype_id,asc_consultant_id,asc_projectreference_id,asc_filename,asc_filesizemb,asc_uploadedby_id,asc_uploadedon,asc_attachedfile,asc_status,asc_origin,_asc_consultant_id_value,_asc_documenttype_id_value,_asc_projectreference_id_value
+- adx_description: 'Enables the Power Pages Web API for the BIM Information child table (asc_biminformation) - BIM capability/operators moved off asc_consultant live (found 2026-10-28), see services.js saveChildTable()/loadExistingRecordSync().'
+  adx_name: Webapi/asc_biminformation/enabled
+  adx_sitesettingid: 3f7a1c9e-6b2d-4e8a-9c5f-1d4b8e2a7c36
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_biminformation. asc_bimcapability is a Choice (In-house=751050000, Outsourced=751050001).'
+  adx_name: Webapi/asc_biminformation/fields
+  adx_sitesettingid: 9b2e5d8a-4c1f-4a7e-8d3b-6f9c2a5e1b84
+  adx_value: asc_biminformationid,asc_number,asc_bimcapability,asc_bimoperatorcount,asc_consultant_id,_asc_consultant_id_value
+- adx_description: 'Enables the Power Pages Web API for the Contact Type list (asc_contacttype), read-only - asc_contact.asc_contacttype became a lookup to it (found 2026-10-28).'
+  adx_name: Webapi/asc_contacttype/enabled
+  adx_sitesettingid: 6c2d8f4a-1e9b-4a7d-8c3f-5b1a9e7d2f48
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_contacttype (name only).'
+  adx_name: Webapi/asc_contacttype/fields
+  adx_sitesettingid: 2a9e6b1d-7f3c-4d8a-9b5e-4c1f8a3d6e75
+  adx_value: asc_contacttypeid,asc_contacttypename
+- adx_description: 'Enables the Power Pages Web API for the Project Reference table (asc_projectreference), required by src/portal/scripts/services.js project save path.'
+  adx_name: Webapi/asc_projectreference/enabled
+  adx_sitesettingid: def8ab78-beb0-4455-8aa9-3706a3ef1a54
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_projectreference. Both the logical name and the exact SchemaName casing are listed because this allowlist is case-sensitive (lookup binds use the SchemaName: asc_CountryID, asc_region_id, asc_consultant_id).'
+  adx_name: Webapi/asc_projectreference/fields
+  adx_sitesettingid: ffffbc55-9352-4d0f-a32b-024d86857e81
+  adx_value: asc_projectreferenceid,asc_name,asc_Name,asc_brand,asc_gfa,asc_keys,asc_projectstatus,asc_ProjectStatus,asc_startyear,asc_StartYear,asc_completionyear,asc_CompletionYear,asc_countryid,asc_CountryID,_asc_countryid_value,asc_region_id,_asc_region_id_value,asc_consultant_id,_asc_consultant_id_value
+- adx_description: 'Enables the Power Pages Web API for the Project Reference Discipline junction table (asc_projectreferencediscipline).'
+  adx_name: Webapi/asc_projectreferencediscipline/enabled
+  adx_sitesettingid: e42055c6-632b-4b98-834a-011db45fe31e
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_projectreferencediscipline (SchemaName casing: asc_ProjectReferenceID, asc_DisciplineID).'
+  adx_name: Webapi/asc_projectreferencediscipline/fields
+  adx_sitesettingid: 3c92252f-6e87-4176-8883-d5117f2677da
+  adx_value: asc_projectreferencedisciplineid,asc_projectreferencedisciplinenumber,asc_ProjectReferenceID,asc_projectreferenceid,_asc_projectreferenceid_value,asc_DisciplineID,asc_disciplineid,_asc_disciplineid_value
+- adx_description: 'Enables the Power Pages Web API for the Project Reference Type junction table (asc_projectreferencetype).'
+  adx_name: Webapi/asc_projectreferencetype/enabled
+  adx_sitesettingid: 5cd4b362-dde1-49a7-b0b2-0d312ea599c7
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_projectreferencetype (all-lowercase schema names).'
+  adx_name: Webapi/asc_projectreferencetype/fields
+  adx_sitesettingid: 0846046d-544c-42f0-b4d0-0d65e130730a
+  adx_value: asc_projectreferencetypeid,asc_number,asc_projectreference_id,_asc_projectreference_id_value,asc_projecttype_id,_asc_projecttype_id_value

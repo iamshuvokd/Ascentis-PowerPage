@@ -1,27 +1,30 @@
 {
   "version": 1,
   "consultant": {
-    "identity": {"firmName":"asc_name","website":"asc_website","alias":"asc_akaname"},
-    "bim": {"capability":"asc_bimcapability","operators":"asc_bimoperatorcount"}
+    "identity": {"firmName":"asc_name","website":"asc_website","alias":"asc_akaname"}
   },
   "childTables": {
     "_comment": "2026-10-08 live drift: financial/legal/sustainability were removed from asc_consultant entirely and moved into these dedicated 1:1 child tables (asc_financialinformation/asc_legalinformation/asc_sustainabilityesg - placeholder tables added 16 Sept 2026, never wired up until now actually gaining real columns). Same {table, fields} shape as collections below, but exactly one row per consultant, not a list - see saveChildTable()/loadExistingRecordSync() in services.js.",
     "financial": {"table":"asc_financialinformation","fields":{"effectiveYear":"asc_effectiveyear","yearFormat":"asc_fiscalformat","backlog":"asc_backloginhand","revenue1":"asc_revenuen1","revenue2":"asc_revenuen2","revenue3":"asc_revenuen3"}},
     "legal": {"table":"asc_legalinformation","fields":{"indemnified":"asc_indemnified","indemnityDetails":"asc_indemnitydetails","litigation":"asc_litigation","litigationDetails":"asc_litigationdetails","insured":"asc_holdspi","perOccurrence":"asc_piperoccurrence","aggregate":"asc_piaggregate"}},
+    "bim": {"table":"asc_biminformation","fields":{"capability":"asc_bimcapability","operators":"asc_bimoperatorcount"}},
     "sustainability": {"table":"asc_sustainabilityesg","fields":{"certified":"asc_esgcert","certificationDetails":"asc_esgcertdetails","reporting":"asc_esgreporting","frameworkDetails":"asc_esgframework","professionals":"asc_accreditedcount","qa":"asc_esgqa","qaDetails":"asc_esgqadetails"}}
   },
   "collections": {
-    "contacts": {"table":"asc_contact","fields":{"firstName":"asc_firstname","lastName":"asc_lastname","email":"asc_workemail","phone":"asc_phone","jobTitle":"asc_jobtitle","contactType":"asc_contacttype","status":"asc_status"}},
+    "contacts": {"table":"asc_contact","fields":{"firstName":"asc_firstname","lastName":"asc_lastname","email":"asc_workemail","phone":"asc_phone","jobTitle":"asc_jobtitle","status":"asc_status"}},
     "offices": {"table":"asc_office","fields":{"city":"asc_city","address":"asc_address","status":"asc_status","headcount":"asc_headcount"}},
     "projects": {"table":"asc_projectreference","fields":{"name":"asc_name","brand":"asc_brand","gfa":"asc_gfa","keys":"asc_keys","status":"asc_projectstatus","startYear":"asc_startyear","completionYear":"asc_completionyear"}},
     "bimProjects": {"table":"asc_bimproject","fields":{"name":"asc_name","location":"asc_location","gfa":"asc_gfa","lod":"asc_lod"}}
   },
   "referenceLookupColumns": {
     "_comment": "Fields moved out of the scalar 'fields' maps above because Dataverse now stores them as lookups, not free text. Carried in dataverseMapping's per-row 'references' object (label/local value) for a trusted service to resolve to the GUID column named here - never written directly as a string.",
+    "contacts.contactType": {"column":"asc_ContactType","targetTable":"asc_contacttype","note":"Now a lookup to asc_ContactType (name column asc_contacttypename), found 2026-10-28."},
     "contacts.region": {"column":"asc_regionid","targetTable":"asc_region"},
     "offices.country": {"column":"asc_countryid","targetTable":"asc_country"},
     "projects.country": {"column":"asc_countryid","targetTable":"asc_country"},
-    "projects.type": {"column":"asc_type","targetTable":"asc_ProjectType","note":"BLOCKED: asc_ProjectType has no rows yet (placeholder table, only the default field) - cannot resolve labels to IDs until it is built out and seeded. See backend/README.md."}
+    "projects.region": {"column":"asc_region_id","targetTable":"asc_region"},
+    "projects.type": {"column":"asc_projecttype_id","targetTable":"asc_projecttype","note":"2026-10-29: stored as a row in the junction asc_projectreferencetype (asc_projectreference_id + asc_projecttype_id), not a column on asc_projectreference."},
+    "projects.disciplines": {"column":"asc_DisciplineID","targetTable":"asc_discipline","note":"2026-10-29: one row per discipline in the junction asc_projectreferencediscipline (asc_ProjectReferenceID + asc_DisciplineID)."}
   },
   "unresolvedLiveGaps": {
     "_comment": "URS/FS-required fields whose Dataverse column no longer exists live. Kept mapped here (not deleted) so requirements aren't silently dropped, per project's no-removal-without-permission rule. Portal writes to these will fail until the columns are restored - do not enable live writes for these fields until resolved.",
@@ -31,7 +34,9 @@
     "bimProjects.lod": {"table":"asc_bimproject","column":"asc_lod","status":"MISSING_LIVE","note":"Required by URS §6.9 'LOD ... Yes'. Removed live with no replacement found."}
   },
   "revenueRegions": {"Middle East":"asc_revenuepct_middleeast","South Asia":"asc_revenuepct_southasia","Europe":"asc_revenuepct_europe","Africa":"asc_revenuepct_africa","Other":"asc_revenuepct_other"},
+  "picklistColumns": {"asc_bimcapability": {"In-house":751050000,"Outsourced":751050001}, "asc_projectstatus": {"In progress":751050000,"Completed":751050001,"On hold":751050002,"Cancelled":751050003}},
   "booleanColumns": ["asc_indemnified","asc_litigation","asc_holdspi","asc_esgcert","asc_esgreporting","asc_esgqa"],
-  "integerColumns": ["asc_effectiveyear","asc_bimoperatorcount","asc_accreditedcount","asc_headcount","asc_gfa","asc_keys","asc_startyear","asc_completionyear"],
+  "integerColumns": ["asc_effectiveyear","asc_bimoperatorcount","asc_accreditedcount","asc_headcount","asc_gfa","asc_keys"],
+  "yearDateColumns": ["asc_startyear","asc_completionyear"],
   "decimalColumns": ["asc_backloginhand","asc_revenuen1","asc_revenuen2","asc_revenuen3","asc_piperoccurrence","asc_piaggregate"]
 }

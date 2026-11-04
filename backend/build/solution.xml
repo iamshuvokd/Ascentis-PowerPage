@@ -125,7 +125,7 @@
       </Addresses>
     </Publisher>
     <RootComponents>
-      <RootComponent type="1" schemaName="asc_engagementcontact" behavior="0" />
+      <RootComponent type="1" schemaName="asc_invitation" behavior="0" />
     </RootComponents>
     <MissingDependencies />
   </SolutionManifest>

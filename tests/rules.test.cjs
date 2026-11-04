@@ -35,9 +35,9 @@ test('conditional project fields and dates follow selected values', () => {
   assert.equal(rules.yearError('2025','2025'), '');
 });
 
-test('file limit includes exactly 25 MB and percentage warnings are optional', () => {
-  assert.equal(rules.fileError({name:'a.pdf',size:25000000},25000000), '');
-  assert.ok(rules.fileError({name:'a.pdf',size:25000001},25000000));
+test('file limit includes exactly 16 MB and percentage warnings are optional', () => {
+  assert.equal(rules.fileError({name:'a.pdf',size:16000000},16000000), '');
+  assert.ok(rules.fileError({name:'a.pdf',size:16000001},16000000));
   assert.equal(rules.percentageWarning(['','','']), '');
   assert.equal(rules.percentageWarning(['64','21','15']), '');
   assert.ok(rules.percentageWarning(['60','20','15']));

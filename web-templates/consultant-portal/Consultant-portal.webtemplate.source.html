@@ -197,6 +197,10 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
 [data-section=financial]>.section-description { margin-bottom:20px; }
 [data-section=sustainability] [data-type=textarea] textarea { min-height:100px; }
 
+.pending-review-banner { margin:0 0 16px; padding:10px 14px; border:1px solid #d9b36a; border-radius:8px; background:#fbf3df; color:#77551e; font-weight:600; }
+.tab-locked [inert] { opacity:.65; }
+.record-dialog .multi-options { position:static; flex:1 0 100%; max-width:none; max-height:180px; margin:0 0 6px; box-shadow:none; }
+
   </style>
 </head>
 <body>
@@ -207,7 +211,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
   <script id="consultant-portal-script">
 (function () {
   'use strict';
-  var portalConfig = {"views":["signin","confidentiality","profile","submit"],"choices":{"Disciplines":["Architecture","Interior design","Engineering","Landscape","MEP"],"Sectors":["Hospitality","Mixed-use","Residential","Commercial"],"Regions":["Middle East","South Asia","Europe","Africa","Other"]},"formSchema":{"limits":{"text":200,"details":2000,"fileBytes":25000000,"projects":30,"bimProjects":10,"leaders":3},"documentTypes":["Company profile","References","Financials","Certificate","Insurance","Other"],"sections":[{"id":"financial","panel":1,"title":"Financial","description":"Enter amounts in USD. Choose your fiscal year to label the three previous years.","fields":[{"key":"effectiveYear","label":"Effective year (N)","type":"year","required":true},{"key":"yearFormat","label":"Fiscal-year format","type":"select","required":true,"options":["YYYY (Jan–Dec)","YYYY/ZZ (Apr–Mar)"]},{"key":"backlog","label":"Current backlog in hand","type":"money"},{"key":"revenue1","label":"Revenue N−1","type":"money","required":true},{"key":"revenue2","label":"Revenue N−2","type":"money","required":true},{"key":"revenue3","label":"Revenue N−3","type":"money","required":true}]},{"id":"legal","panel":2,"title":"Legal","description":"Choose Yes or No for each question. Additional information is required where applicable.","fields":[{"key":"indemnified","label":"Have you indemnified a client?","type":"yesno","required":true},{"key":"indemnityDetails","label":"Indemnification details","type":"textarea","required":true,"when":{"key":"indemnified","value":"Yes"}},{"key":"litigation","label":"Have you lost litigation with a client?","type":"yesno","required":true},{"key":"litigationDetails","label":"Litigation details","type":"textarea","required":true,"when":{"key":"litigation","value":"Yes"}},{"key":"insured","label":"Do you hold professional indemnity insurance?","type":"yesno","required":true},{"key":"perOccurrence","label":"PI insurance — per occurrence","type":"money","required":true,"when":{"key":"insured","value":"Yes"}},{"key":"aggregate","label":"PI insurance — in aggregate","type":"money","required":true,"when":{"key":"insured","value":"Yes"}}]},{"id":"bim","panel":5,"title":"BIM","description":"Tell us how you deliver building information modelling and add relevant projects.","fields":[{"key":"capability","label":"BIM capability","type":"select","required":true,"options":["In-house","Outsourced"]},{"key":"operators","label":"Number of BIM operators","type":"integer","required":true,"when":{"key":"capability","value":"In-house"}},{"key":"disciplines","label":"BIM disciplines","type":"multi","required":true,"source":"Disciplines"}]},{"id":"sustainability","panel":6,"title":"Sustainability & ESG","description":"Share your environmental credentials, reporting practices, and quality assurance approach.","fields":[{"key":"certified","label":"Any environmental or sustainability certification?","type":"yesno","required":true},{"key":"certificationDetails","label":"Certification details","type":"textarea","required":true,"when":{"key":"certified","value":"Yes"}},{"key":"reporting","label":"Formal ESG reporting?","type":"yesno","required":true},{"key":"frameworkDetails","label":"ESG framework details","type":"textarea","required":true,"when":{"key":"reporting","value":"Yes"}},{"key":"professionals","label":"Number of accredited professionals","type":"integer","help":"For example, LEED AP or WELL AP."},{"key":"qa","label":"Is sustainability part of your QA system?","type":"yesno","required":true},{"key":"qaDetails","label":"Implementation details","type":"textarea","required":true,"when":{"key":"qa","value":"Yes"}}]}],"collections":[{"id":"contacts","panel":3,"title":"Contacts","singular":"contact","fields":[{"key":"firstName","label":"First name","type":"text","required":true},{"key":"lastName","label":"Last name","type":"text","required":true},{"key":"email","label":"Work email","type":"email","required":true},{"key":"phone","label":"Phone","type":"tel","required":true},{"key":"jobTitle","label":"Job title","type":"text"},{"key":"region","label":"Region","type":"select","source":"Regions"},{"key":"contactType","label":"Contact type","type":"select","required":true,"options":["Senior leader","Project contact","Primary contact"]},{"key":"status","label":"Contact status","type":"select","required":true,"options":["Active","Inactive"]}]},{"id":"offices","panel":3,"title":"Offices","singular":"office","fields":[{"key":"region","label":"Office region","type":"select","required":true,"source":"Regions"},{"key":"city","label":"City","type":"text"},{"key":"country","label":"Office country","type":"select","required":true,"source":"Countries"},{"key":"address","label":"Office address","type":"textarea"},{"key":"status","label":"Office status","type":"select","required":true,"options":["Active","Inactive"]},{"key":"headcount","label":"Headcount","type":"integer"},{"key":"leaders","label":"Office leaders (up to 3)","type":"multi","source":"contacts","help":"Add contacts above, then select their names here."}]},{"id":"projects","panel":4,"title":"Project references","singular":"project","limit":"projects","fields":[{"key":"name","label":"Project name","type":"text","required":true},{"key":"country","label":"Country","type":"select","required":true,"source":"Countries"},{"key":"region","label":"Region","type":"select","source":"Regions","required":true},{"key":"disciplines","label":"Disciplines","type":"multi","source":"Disciplines","required":true},{"key":"type","label":"Project type","type":"select","required":true,"source":"ProjectTypes","options":["Hotel","Mixed-use","Residential","Commercial","Other"]},{"key":"gfa","label":"Gross floor area (m²)","type":"integer","required":true,"when":{"key":"type","not":"Hotel"}},{"key":"keys","label":"Number of hotel keys","type":"integer","required":true,"when":{"key":"type","value":"Hotel"}},{"key":"status","label":"Project status","type":"select","required":true,"options":["In progress","Completed","On hold","Cancelled"]},{"key":"startYear","label":"Start year","type":"year","required":true},{"key":"completionYear","label":"Completion year","type":"year","required":true,"when":{"key":"status","value":"Completed"}},{"key":"attachment","label":"Project attachment","type":"file","help":"Maximum 25 MB. Also listed under Attachments."}]},{"id":"bimProjects","panel":5,"title":"BIM projects","singular":"BIM project","limit":"bimProjects","fields":[{"key":"name","label":"Project name","type":"text","required":true},{"key":"location","label":"Location","type":"text","required":true},{"key":"gfa","label":"Gross floor area (m²)","type":"integer","required":true},{"key":"lod","label":"Level of development (LOD)","type":"text","required":true},{"key":"disciplines","label":"BIM project disciplines","type":"multi","source":"Disciplines"}]}],"countryCodes":["AE","AU","BD","BH","CA","CH","CN","DE","EG","ES","FR","GB","HK","ID","IN","IT","JP","KE","KW","LK","MA","MU","MV","MY","NG","NL","NP","NZ","OM","PH","PK","PT","QA","SA","SG","TH","TR","US","VN","ZA"]},"dataverseMap":{"version":1,"consultant":{"identity":{"firmName":"asc_name","website":"asc_website","alias":"asc_akaname"},"bim":{"capability":"asc_bimcapability","operators":"asc_bimoperatorcount"}},"childTables":{"_comment":"2026-10-08 live drift: financial/legal/sustainability were removed from asc_consultant entirely and moved into these dedicated 1:1 child tables (asc_financialinformation/asc_legalinformation/asc_sustainabilityesg - placeholder tables added 16 Sept 2026, never wired up until now actually gaining real columns). Same {table, fields} shape as collections below, but exactly one row per consultant, not a list - see saveChildTable()/loadExistingRecordSync() in services.js.","financial":{"table":"asc_financialinformation","fields":{"effectiveYear":"asc_effectiveyear","yearFormat":"asc_fiscalformat","backlog":"asc_backloginhand","revenue1":"asc_revenuen1","revenue2":"asc_revenuen2","revenue3":"asc_revenuen3"}},"legal":{"table":"asc_legalinformation","fields":{"indemnified":"asc_indemnified","indemnityDetails":"asc_indemnitydetails","litigation":"asc_litigation","litigationDetails":"asc_litigationdetails","insured":"asc_holdspi","perOccurrence":"asc_piperoccurrence","aggregate":"asc_piaggregate"}},"sustainability":{"table":"asc_sustainabilityesg","fields":{"certified":"asc_esgcert","certificationDetails":"asc_esgcertdetails","reporting":"asc_esgreporting","frameworkDetails":"asc_esgframework","professionals":"asc_accreditedcount","qa":"asc_esgqa","qaDetails":"asc_esgqadetails"}}},"collections":{"contacts":{"table":"asc_contact","fields":{"firstName":"asc_firstname","lastName":"asc_lastname","email":"asc_workemail","phone":"asc_phone","jobTitle":"asc_jobtitle","contactType":"asc_contacttype","status":"asc_status"}},"offices":{"table":"asc_office","fields":{"city":"asc_city","address":"asc_address","status":"asc_status","headcount":"asc_headcount"}},"projects":{"table":"asc_projectreference","fields":{"name":"asc_name","brand":"asc_brand","gfa":"asc_gfa","keys":"asc_keys","status":"asc_projectstatus","startYear":"asc_startyear","completionYear":"asc_completionyear"}},"bimProjects":{"table":"asc_bimproject","fields":{"name":"asc_name","location":"asc_location","gfa":"asc_gfa","lod":"asc_lod"}}},"referenceLookupColumns":{"_comment":"Fields moved out of the scalar 'fields' maps above because Dataverse now stores them as lookups, not free text. Carried in dataverseMapping's per-row 'references' object (label/local value) for a trusted service to resolve to the GUID column named here - never written directly as a string.","contacts.region":{"column":"asc_regionid","targetTable":"asc_region"},"offices.country":{"column":"asc_countryid","targetTable":"asc_country"},"projects.country":{"column":"asc_countryid","targetTable":"asc_country"},"projects.type":{"column":"asc_type","targetTable":"asc_ProjectType","note":"BLOCKED: asc_ProjectType has no rows yet (placeholder table, only the default field) - cannot resolve labels to IDs until it is built out and seeded. See backend/README.md."}},"unresolvedLiveGaps":{"_comment":"URS/FS-required fields whose Dataverse column no longer exists live. Kept mapped here (not deleted) so requirements aren't silently dropped, per project's no-removal-without-permission rule. Portal writes to these will fail until the columns are restored - do not enable live writes for these fields until resolved.","offices.city":{"table":"asc_office","column":"asc_city","status":"MISSING_LIVE","note":"Documented in backend/README.md as a deliberate additive FS requirement; removed live, cause unknown."},"offices.status":{"table":"asc_office","column":"asc_status","status":"MISSING_LIVE","note":"Region-eligibility business rule (active office) depends on this. Documented in backend/README.md as a deliberate additive FS requirement; removed live, cause unknown."},"offices.leaders":{"table":"asc_office","status":"AMBIGUOUS","note":"Frontend collects up to 3 existing Contact records as leaders (asc_office.asc_leader1_id/2_id/3_id, all removed live). Live now has a single asc_office.asc_officeleaderid lookup to the separate asc_officeleader table (its own name/position/email/phone, not linked to Contact, and singular not up-to-3) - does not match URS §6.3 'up to three senior leaders' or the current frontend. Needs a decision before this can be wired to anything; not mapped to asc_officeleaderid."},"bimProjects.lod":{"table":"asc_bimproject","column":"asc_lod","status":"MISSING_LIVE","note":"Required by URS §6.9 'LOD ... Yes'. Removed live with no replacement found."}},"revenueRegions":{"Middle East":"asc_revenuepct_middleeast","South Asia":"asc_revenuepct_southasia","Europe":"asc_revenuepct_europe","Africa":"asc_revenuepct_africa","Other":"asc_revenuepct_other"},"booleanColumns":["asc_indemnified","asc_litigation","asc_holdspi","asc_esgcert","asc_esgreporting","asc_esgqa"],"integerColumns":["asc_effectiveyear","asc_bimoperatorcount","asc_accreditedcount","asc_headcount","asc_gfa","asc_keys","asc_startyear","asc_completionyear"],"decimalColumns":["asc_backloginhand","asc_revenuen1","asc_revenuen2","asc_revenuen3","asc_piperoccurrence","asc_piaggregate"]}};
+  var portalConfig = {"views":["signin","confidentiality","profile","submit"],"choices":{"Disciplines":["Architecture","Interior design","Engineering","Landscape","MEP"],"Sectors":["Hospitality","Mixed-use","Residential","Commercial"],"Regions":["Middle East","South Asia","Europe","Africa","Other"]},"formSchema":{"limits":{"text":200,"details":2000,"fileBytes":16000000,"projects":30,"bimProjects":10,"leaders":3},"documentTypes":["Company profile","References","Financials","Certificate","Insurance","Other"],"sections":[{"id":"financial","panel":1,"title":"Financial","description":"Enter amounts in USD. Choose your fiscal year to label the three previous years.","fields":[{"key":"effectiveYear","label":"Effective year (N)","type":"year","required":true},{"key":"yearFormat","label":"Fiscal-year format","type":"select","required":true,"options":["YYYY (Jan–Dec)","YYYY/ZZ (Apr–Mar)"]},{"key":"backlog","label":"Current backlog in hand","type":"money"},{"key":"revenue1","label":"Revenue N−1","type":"money","required":true},{"key":"revenue2","label":"Revenue N−2","type":"money","required":true},{"key":"revenue3","label":"Revenue N−3","type":"money","required":true}]},{"id":"legal","panel":2,"title":"Legal","description":"Choose Yes or No for each question. Additional information is required where applicable.","fields":[{"key":"indemnified","label":"Have you indemnified a client?","type":"yesno","required":true},{"key":"indemnityDetails","label":"Indemnification details","type":"textarea","required":true,"when":{"key":"indemnified","value":"Yes"}},{"key":"litigation","label":"Have you lost litigation with a client?","type":"yesno","required":true},{"key":"litigationDetails","label":"Litigation details","type":"textarea","required":true,"when":{"key":"litigation","value":"Yes"}},{"key":"insured","label":"Do you hold professional indemnity insurance?","type":"yesno","required":true},{"key":"perOccurrence","label":"PI insurance — per occurrence","type":"money","required":true,"when":{"key":"insured","value":"Yes"}},{"key":"aggregate","label":"PI insurance — in aggregate","type":"money","required":true,"when":{"key":"insured","value":"Yes"}}]},{"id":"bim","panel":5,"title":"BIM","description":"Tell us how you deliver building information modelling and add relevant projects.","fields":[{"key":"capability","label":"BIM capability","type":"select","required":true,"options":["In-house","Outsourced"]},{"key":"operators","label":"Number of BIM operators","type":"integer","required":true,"when":{"key":"capability","value":"In-house"}},{"key":"disciplines","label":"BIM disciplines","type":"multi","required":true,"source":"Disciplines"}]},{"id":"sustainability","panel":6,"title":"Sustainability & ESG","description":"Share your environmental credentials, reporting practices, and quality assurance approach.","fields":[{"key":"certified","label":"Any environmental or sustainability certification?","type":"yesno","required":true},{"key":"certificationDetails","label":"Certification details","type":"textarea","required":true,"when":{"key":"certified","value":"Yes"}},{"key":"reporting","label":"Formal ESG reporting?","type":"yesno","required":true},{"key":"frameworkDetails","label":"ESG framework details","type":"textarea","required":true,"when":{"key":"reporting","value":"Yes"}},{"key":"professionals","label":"Number of accredited professionals","type":"integer","help":"For example, LEED AP or WELL AP."},{"key":"qa","label":"Is sustainability part of your QA system?","type":"yesno","required":true},{"key":"qaDetails","label":"Implementation details","type":"textarea","required":true,"when":{"key":"qa","value":"Yes"}}]}],"collections":[{"id":"contacts","panel":3,"title":"Contacts","singular":"contact","fields":[{"key":"firstName","label":"First name","type":"text","required":true},{"key":"lastName","label":"Last name","type":"text","required":true},{"key":"email","label":"Work email","type":"email","required":true},{"key":"phone","label":"Phone","type":"tel","required":true},{"key":"jobTitle","label":"Job title","type":"text"},{"key":"region","label":"Region","type":"select","source":"Regions"},{"key":"contactType","label":"Contact type","type":"select","required":true,"options":["Senior leader","Project contact","Primary contact"]},{"key":"status","label":"Contact status","type":"select","required":true,"options":["Active","Inactive"]}]},{"id":"offices","panel":3,"title":"Offices","singular":"office","fields":[{"key":"region","label":"Office region","type":"select","required":true,"source":"Regions"},{"key":"city","label":"City","type":"text"},{"key":"country","label":"Office country","type":"select","required":true,"source":"Countries"},{"key":"address","label":"Office address","type":"textarea"},{"key":"status","label":"Office status","type":"select","required":true,"options":["Active","Inactive"]},{"key":"headcount","label":"Headcount","type":"integer"},{"key":"leaders","label":"Office leaders (up to 3)","type":"multi","source":"contacts","help":"Add contacts above, then select their names here."}]},{"id":"projects","panel":4,"title":"Project references","singular":"project","limit":"projects","fields":[{"key":"name","label":"Project name","type":"text","required":true},{"key":"country","label":"Country","type":"select","required":true,"source":"Countries"},{"key":"region","label":"Region","type":"select","source":"Regions","required":true},{"key":"disciplines","label":"Disciplines","type":"multi","source":"Disciplines","required":true},{"key":"type","label":"Project type","type":"select","required":true,"source":"ProjectTypes","options":["Hotel","Mixed-use","Residential","Commercial","Other"]},{"key":"gfa","label":"Gross floor area (m²)","type":"integer","required":true,"when":{"key":"type","not":"Hotel"}},{"key":"keys","label":"Number of hotel keys","type":"integer","required":true,"when":{"key":"type","value":"Hotel"}},{"key":"status","label":"Project status","type":"select","required":true,"options":["In progress","Completed","On hold","Cancelled"]},{"key":"startYear","label":"Start year","type":"year","required":true},{"key":"completionYear","label":"Completion year","type":"year","required":true,"when":{"key":"status","value":"Completed"}},{"key":"attachment","label":"Project attachment","type":"file","help":"Maximum 16 MB. Also listed under Attachments."}]},{"id":"bimProjects","panel":5,"title":"BIM projects","singular":"BIM project","limit":"bimProjects","fields":[{"key":"name","label":"Project name","type":"text","required":true},{"key":"location","label":"Location","type":"text","required":true},{"key":"gfa","label":"Gross floor area (m²)","type":"integer","required":true},{"key":"lod","label":"Level of development (LOD)","type":"text","required":true},{"key":"disciplines","label":"BIM project disciplines","type":"multi","source":"Disciplines"}]}],"countryCodes":["AE","AU","BD","BH","CA","CH","CN","DE","EG","ES","FR","GB","HK","ID","IN","IT","JP","KE","KW","LK","MA","MU","MV","MY","NG","NL","NP","NZ","OM","PH","PK","PT","QA","SA","SG","TH","TR","US","VN","ZA"]},"dataverseMap":{"version":1,"consultant":{"identity":{"firmName":"asc_name","website":"asc_website","alias":"asc_akaname"}},"childTables":{"_comment":"2026-10-08 live drift: financial/legal/sustainability were removed from asc_consultant entirely and moved into these dedicated 1:1 child tables (asc_financialinformation/asc_legalinformation/asc_sustainabilityesg - placeholder tables added 16 Sept 2026, never wired up until now actually gaining real columns). Same {table, fields} shape as collections below, but exactly one row per consultant, not a list - see saveChildTable()/loadExistingRecordSync() in services.js.","financial":{"table":"asc_financialinformation","fields":{"effectiveYear":"asc_effectiveyear","yearFormat":"asc_fiscalformat","backlog":"asc_backloginhand","revenue1":"asc_revenuen1","revenue2":"asc_revenuen2","revenue3":"asc_revenuen3"}},"legal":{"table":"asc_legalinformation","fields":{"indemnified":"asc_indemnified","indemnityDetails":"asc_indemnitydetails","litigation":"asc_litigation","litigationDetails":"asc_litigationdetails","insured":"asc_holdspi","perOccurrence":"asc_piperoccurrence","aggregate":"asc_piaggregate"}},"bim":{"table":"asc_biminformation","fields":{"capability":"asc_bimcapability","operators":"asc_bimoperatorcount"}},"sustainability":{"table":"asc_sustainabilityesg","fields":{"certified":"asc_esgcert","certificationDetails":"asc_esgcertdetails","reporting":"asc_esgreporting","frameworkDetails":"asc_esgframework","professionals":"asc_accreditedcount","qa":"asc_esgqa","qaDetails":"asc_esgqadetails"}}},"collections":{"contacts":{"table":"asc_contact","fields":{"firstName":"asc_firstname","lastName":"asc_lastname","email":"asc_workemail","phone":"asc_phone","jobTitle":"asc_jobtitle","status":"asc_status"}},"offices":{"table":"asc_office","fields":{"city":"asc_city","address":"asc_address","status":"asc_status","headcount":"asc_headcount"}},"projects":{"table":"asc_projectreference","fields":{"name":"asc_name","brand":"asc_brand","gfa":"asc_gfa","keys":"asc_keys","status":"asc_projectstatus","startYear":"asc_startyear","completionYear":"asc_completionyear"}},"bimProjects":{"table":"asc_bimproject","fields":{"name":"asc_name","location":"asc_location","gfa":"asc_gfa","lod":"asc_lod"}}},"referenceLookupColumns":{"_comment":"Fields moved out of the scalar 'fields' maps above because Dataverse now stores them as lookups, not free text. Carried in dataverseMapping's per-row 'references' object (label/local value) for a trusted service to resolve to the GUID column named here - never written directly as a string.","contacts.contactType":{"column":"asc_ContactType","targetTable":"asc_contacttype","note":"Now a lookup to asc_ContactType (name column asc_contacttypename), found 2026-10-28."},"contacts.region":{"column":"asc_regionid","targetTable":"asc_region"},"offices.country":{"column":"asc_countryid","targetTable":"asc_country"},"projects.country":{"column":"asc_countryid","targetTable":"asc_country"},"projects.region":{"column":"asc_region_id","targetTable":"asc_region"},"projects.type":{"column":"asc_projecttype_id","targetTable":"asc_projecttype","note":"2026-10-29: stored as a row in the junction asc_projectreferencetype (asc_projectreference_id + asc_projecttype_id), not a column on asc_projectreference."},"projects.disciplines":{"column":"asc_DisciplineID","targetTable":"asc_discipline","note":"2026-10-29: one row per discipline in the junction asc_projectreferencediscipline (asc_ProjectReferenceID + asc_DisciplineID)."}},"unresolvedLiveGaps":{"_comment":"URS/FS-required fields whose Dataverse column no longer exists live. Kept mapped here (not deleted) so requirements aren't silently dropped, per project's no-removal-without-permission rule. Portal writes to these will fail until the columns are restored - do not enable live writes for these fields until resolved.","offices.city":{"table":"asc_office","column":"asc_city","status":"MISSING_LIVE","note":"Documented in backend/README.md as a deliberate additive FS requirement; removed live, cause unknown."},"offices.status":{"table":"asc_office","column":"asc_status","status":"MISSING_LIVE","note":"Region-eligibility business rule (active office) depends on this. Documented in backend/README.md as a deliberate additive FS requirement; removed live, cause unknown."},"offices.leaders":{"table":"asc_office","status":"AMBIGUOUS","note":"Frontend collects up to 3 existing Contact records as leaders (asc_office.asc_leader1_id/2_id/3_id, all removed live). Live now has a single asc_office.asc_officeleaderid lookup to the separate asc_officeleader table (its own name/position/email/phone, not linked to Contact, and singular not up-to-3) - does not match URS §6.3 'up to three senior leaders' or the current frontend. Needs a decision before this can be wired to anything; not mapped to asc_officeleaderid."},"bimProjects.lod":{"table":"asc_bimproject","column":"asc_lod","status":"MISSING_LIVE","note":"Required by URS §6.9 'LOD ... Yes'. Removed live with no replacement found."}},"revenueRegions":{"Middle East":"asc_revenuepct_middleeast","South Asia":"asc_revenuepct_southasia","Europe":"asc_revenuepct_europe","Africa":"asc_revenuepct_africa","Other":"asc_revenuepct_other"},"picklistColumns":{"asc_bimcapability":{"In-house":751050000,"Outsourced":751050001},"asc_projectstatus":{"In progress":751050000,"Completed":751050001,"On hold":751050002,"Cancelled":751050003}},"booleanColumns":["asc_indemnified","asc_litigation","asc_holdspi","asc_esgcert","asc_esgreporting","asc_esgqa"],"integerColumns":["asc_effectiveyear","asc_bimoperatorcount","asc_accreditedcount","asc_headcount","asc_gfa","asc_keys"],"yearDateColumns":["asc_startyear","asc_completionyear"],"decimalColumns":["asc_backloginhand","asc_revenuen1","asc_revenuen2","asc_revenuen3","asc_piperoccurrence","asc_piaggregate"]}};
   function initialize() {
     var root = document.querySelector('.consultant-portal');
     if (!root || root.dataset.initialized) return;
@@ -252,7 +256,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         return Math.abs(total - 100) > 0.5 ? 'Revenue shares total ' + total.toFixed(1) + '%. Check that they total approximately 100%.' : '';
       },
       fileError: function (file, maximum) {
-        return file.size > maximum ? file.name + ' exceeds the 25 MB limit.' : '';
+        return file.size > maximum ? file.name + ' exceeds the ' + Math.round(maximum / 1000000) + ' MB limit.' : '';
       },
       yearError: function (start, completion) {
         return start && completion && Number(completion) < Number(start) ? 'Completion year must be on or after the start year.' : '';
@@ -270,12 +274,25 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
           if (input === false || input === 'No') return false;
           throw new Error('Invalid Yes/No value for ' + column + '.');
         }
+        if ((map.yearDateColumns || []).includes(column)) {
+          // The form collects a plain year but the live column is Date and Time (checked against a
+          // fresh export 2026-10-29), so a year is stored as 1 January UTC of that year and only the
+          // year is read back (reverseValue). Never send a bare "2024" - Dataverse rejects it.
+          var yearText = String(input).trim();
+          if (!/^\d{4}$/.test(yearText) || Number(yearText) < 1900 || Number(yearText) > 2100) throw new Error('Invalid year for ' + column + '.');
+          return yearText + '-01-01T00:00:00Z';
+        }
         if (map.integerColumns.includes(column) || map.decimalColumns.includes(column) || column.startsWith('asc_revenuepct_')) {
           var text = String(input).trim();
           if (!/^\$?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(text)) throw new Error('Invalid number for ' + column + '.');
           var number = Number(text.replace(/[$,]/g, ''));
           if (!Number.isFinite(number) || number > 100000000000 || (map.integerColumns.includes(column) && (!Number.isSafeInteger(number) || number > 2147483647))) throw new Error('Number is outside the supported range for ' + column + '.');
           return number;
+        }
+        if (map.picklistColumns && map.picklistColumns[column]) {
+          var option = map.picklistColumns[column][String(input).trim()];
+          if (option === undefined) throw new Error('Unsupported choice for ' + column + '.');
+          return option;
         }
         if (column === 'asc_fiscalformat') {
           if (String(input).startsWith('YYYY/ZZ')) return 'YYYY/ZZ';
@@ -296,7 +313,12 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       function reverseValue(column, raw) {
         if (raw === null || raw === undefined) return undefined;
         if (map.booleanColumns.includes(column)) return raw ? 'Yes' : 'No';
+        if ((map.yearDateColumns || []).includes(column)) return String(raw).slice(0, 4);
         if (map.integerColumns.includes(column) || map.decimalColumns.includes(column) || column.startsWith('asc_revenuepct_')) return String(raw);
+        if (map.picklistColumns && map.picklistColumns[column]) {
+          var labels = Object.keys(map.picklistColumns[column]).filter(function (label) { return map.picklistColumns[column][label] === raw; });
+          return labels.length ? labels[0] : undefined;
+        }
         if (column === 'asc_fiscalformat') return raw === 'YYYY/ZZ' ? 'YYYY/ZZ (Apr–Mar)' : raw === 'YYYY' ? 'YYYY (Jan–Dec)' : raw;
         return String(raw);
       }
@@ -345,7 +367,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         var collections = {};
         Object.keys(map.collections).forEach(function (key) {
           collections[key] = ((payload.collections || {})[key] || []).map(function (row) {
-            return { clientId: row.id, liveId: row.liveId || null, table: map.collections[key].table, fields: fields(row, map.collections[key].fields), references: { region: row.region || null, country: row.country || null, type: row.type || null, disciplines: row.disciplines || [], leaders: row.leaders || [] } };
+            return { clientId: row.id, liveId: row.liveId || null, table: map.collections[key].table, fields: fields(row, map.collections[key].fields), references: { contactType: row.contactType || null, region: row.region || null, country: row.country || null, type: row.type || null, disciplines: row.disciplines || [], leaders: row.leaders || [] } };
           });
         });
         return { mappingVersion: map.version, consultant: consultant, references: { firmType: payload.identity.firmType || null, disciplines: payload.identity.disciplines || [], sectors: payload.identity.sectors || [], regions: payload.identity.regions || [], bimDisciplines: ((payload.sections || {}).bim || {}).disciplines || [] }, collections: collections, files: payload.files || [] };
@@ -367,7 +389,8 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     //      what the frontend collects (up to 3 existing Contacts). Every create would fail.
     //    * Project references - asc_projectreference.asc_type is a required lookup to
     //      asc_ProjectType, which has zero rows. Nothing to link to.
-    //    * Attachments - asc_attachment.asc_file (file column) is not provisioned yet.
+    //    * Project-level attachments - need a live asc_projectreference row to bind to (see above);
+    //      the upload code is written and gated, consultant-level attachments ARE written.
     //    See dataverse-map.json's unresolvedLiveGaps/referenceLookupColumns and
     //    backend/README.md for the exact blockers and what would unblock each one.
     //  - This bypasses the intended draft/review workflow (S7 accept/reject in
@@ -469,7 +492,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     // Financial/Legal/Sustainability - 1:1 child tables as of the 2026-10-08 live drift (see
     // dataverse-map.json's childTables._comment). liveChildTableIds caches each one's row ID
     // once found/created this session (same role as liveConsultantId, just three of them).
-    var CHILD_TABLE_KEYS = ['financial', 'legal', 'sustainability'];
+    var CHILD_TABLE_KEYS = ['financial', 'legal', 'sustainability', 'bim'];
     var liveChildTableIds = {};
     async function saveChildTable(consultantId, key, payload) {
       var entry = portalConfig.dataverseMap.childTables[key];
@@ -480,6 +503,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         return id;
       }
       body['asc_consultant_id@odata.bind'] = '/asc_consultants(' + consultantId + ')';
+      // asc_biminformation has no asc_name; its required primary name asc_number is an auto-number.
       var response = await webApiRequest('POST', '/_api/' + entry.table + 's', body);
       var createdId = extractCreatedId(response);
       if (createdId) liveChildTableIds[key] = createdId;
@@ -648,7 +672,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       // longer exists 400s the whole request, so they're gone from this $select. Fetched from
       // their own tables below instead (dataverse-map.json's childTables).
       var consultantUrl = '/_api/asc_consultants(' + liveConsultantId + ')'
-        + '?$select=asc_name,asc_website,asc_akaname,asc_bimcapability,asc_bimoperatorcount,'
+        + '?$select=asc_name,asc_website,asc_akaname,'
         + 'asc_revenuepct_middleeast,asc_revenuepct_southasia,'
         + 'asc_revenuepct_europe,asc_revenuepct_africa,asc_revenuepct_other'
         + '&$expand=asc_firmtype_id($select=asc_name)';
@@ -668,13 +692,15 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       function belongsToThisConsultantJunction(row) {
         return row._asc_consultantid_value && row._asc_consultantid_value.toLowerCase() === liveConsultantId.toLowerCase();
       }
-      var contactsData = syncGetJson('/_api/asc_contacts?$select=asc_contactid,asc_firstname,asc_lastname,asc_workemail,asc_phone,asc_jobtitle,asc_contacttype,asc_status,asc_regionid,asc_consultant_id', token);
+      var contactsData = syncGetJson('/_api/asc_contacts?$select=asc_contactid,asc_firstname,asc_lastname,asc_workemail,asc_phone,asc_jobtitle,_asc_contacttype_value,asc_status,asc_regionid,asc_consultant_id', token);
       var contacts = ((contactsData && contactsData.value) || []).filter(belongsToThisConsultant).map(function (row) {
         // contactType/status come through reverseRow() as plain strings already - asc_contact
         // is plain text now, not the option-set integers it used to be before the 2026-09-27
         // rebuild.
         var rowFields = dataverseMapping.reverseRow('contacts', row);
         rowFields.region = row['_asc_regionid_value@OData.Community.Display.V1.FormattedValue'] || '';
+        // asc_contacttype is a lookup to asc_ContactType now (2026-10-28) - read its display name.
+        rowFields.contactType = row['_asc_contacttype_value@OData.Community.Display.V1.FormattedValue'] || '';
         return { liveId: row.asc_contactid, fields: rowFields };
       });
 
@@ -694,13 +720,13 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       // stays lowercase since it's a plain attribute read, not a navigation property. The expanded
       // JSON response key echoes back exactly the casing requested, so the row.asc_DisciplineID
       // reads below must match too.
-      var disciplineData = syncGetJson('/_api/asc_consultantdisciplines?$select=asc_consultantid&$expand=asc_DisciplineID($select=asc_name)', token);
+      var disciplineData = syncGetJson('/_api/asc_consultantdisciplines?$select=_asc_consultantid_value&$expand=asc_DisciplineID($select=asc_name)', token);
       reversed.identity.disciplines = ((disciplineData && disciplineData.value) || []).filter(belongsToThisConsultantJunction).map(function (row) { return row.asc_DisciplineID && row.asc_DisciplineID.asc_name; }).filter(Boolean);
 
-      var sectorData = syncGetJson('/_api/asc_consultantsectorses?$select=asc_consultantid&$expand=asc_SectorID($select=asc_name)', token);
+      var sectorData = syncGetJson('/_api/asc_consultantsectorses?$select=_asc_consultantid_value&$expand=asc_SectorID($select=asc_name)', token);
       reversed.identity.sectors = ((sectorData && sectorData.value) || []).filter(belongsToThisConsultantJunction).map(function (row) { return row.asc_SectorID && row.asc_SectorID.asc_name; }).filter(Boolean);
 
-      var regionData = syncGetJson('/_api/asc_consultantregionses?$select=asc_consultantid&$expand=asc_RegionID($select=asc_name)', token);
+      var regionData = syncGetJson('/_api/asc_consultantregionses?$select=_asc_consultantid_value&$expand=asc_RegionID($select=asc_name)', token);
       reversed.identity.regions = ((regionData && regionData.value) || []).filter(belongsToThisConsultantJunction).map(function (row) { return row.asc_RegionID && row.asc_RegionID.asc_name; }).filter(Boolean);
 
       // Financial/Legal/Sustainability - 1:1 child tables (see dataverse-map.json's
@@ -718,19 +744,79 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         }
       });
 
-      existingRecord = { identity: reversed.identity, sections: reversed.sections, revenueByRegion: reversed.revenueByRegion, contacts: contacts, bimProjects: bimProjects };
+      // Project references (2026-10-29): same unfiltered + client-matched pattern as above. Disciplines
+      // and type come from their junction tables, grouped by project, so saveProjects() only writes
+      // the ones that are not live yet. Best-effort like the other reads: if a table is not
+      // reachable yet the project list is simply empty and the form still loads from the staged JSON.
+      var projectRows = syncGetJson('/_api/asc_projectreferences?$select=asc_projectreferenceid,asc_name,asc_brand,asc_gfa,asc_keys,asc_projectstatus,asc_startyear,asc_completionyear,_asc_consultant_id_value', token);
+      var projectDisciplineData = syncGetJson('/_api/asc_projectreferencedisciplines?$select=_asc_projectreferenceid_value&$expand=asc_DisciplineID($select=asc_name)', token);
+      var projectTypeData = syncGetJson('/_api/asc_projectreferencetypes?$select=_asc_projectreference_id_value&$expand=asc_projecttype_id($select=asc_projecttypename)', token);
+      var projects = ((projectRows && projectRows.value) || []).filter(belongsToThisConsultant).map(function (row) {
+        var disciplinesForProject = ((projectDisciplineData && projectDisciplineData.value) || [])
+          .filter(function (link) { return link._asc_projectreferenceid_value && link._asc_projectreferenceid_value.toLowerCase() === row.asc_projectreferenceid.toLowerCase(); })
+          .map(function (link) { return link.asc_DisciplineID && link.asc_DisciplineID.asc_name; }).filter(Boolean);
+        var typeLink = ((projectTypeData && projectTypeData.value) || []).find(function (link) { return link._asc_projectreference_id_value && link._asc_projectreference_id_value.toLowerCase() === row.asc_projectreferenceid.toLowerCase(); });
+        return {
+          liveId: row.asc_projectreferenceid,
+          fields: dataverseMapping.reverseRow('projects', row),
+          references: { disciplines: disciplinesForProject, type: (typeLink && typeLink.asc_projecttype_id && typeLink.asc_projecttype_id.asc_projecttypename) || '' }
+        };
+      });
+
+      var attachmentData = syncGetJson('/_api/asc_attachments?$select=asc_attachmentid,asc_filename,asc_filesizemb,asc_uploadedon,asc_status,asc_documenttype_id,asc_consultant_id,asc_projectreference_id', token);
+      // Project-level files have no consultant lookup; they belong to this consultant through their project.
+      var ownProjectIds = projects.map(function (project) { return project.liveId.toLowerCase(); });
+      existingAttachments = ((attachmentData && attachmentData.value) || []).filter(function (row) {
+        return belongsToThisConsultant(row) || (row._asc_projectreference_id_value && ownProjectIds.indexOf(row._asc_projectreference_id_value.toLowerCase()) !== -1);
+      }).map(function (row) {
+        return { liveId: row.asc_attachmentid, name: row.asc_filename || '', sizeMb: Number(row.asc_filesizemb) || 0, uploadedOn: row.asc_uploadedon || '', status: ATTACHMENT_STATUS_NAMES[row.asc_status] || '', documentType: row['_asc_documenttype_id_value@OData.Community.Display.V1.FormattedValue'] || '' };
+      });
+
+      existingRecord = { identity: reversed.identity, sections: reversed.sections, revenueByRegion: reversed.revenueByRegion, contacts: contacts, bimProjects: bimProjects, projects: projects };
+    }
+
+    // Secure self-service invitation flow, built 2026-10-13. Real design, confirmed with the
+    // project owner rather than assumed: an internal admin app (separate from this repository)
+    // creates a native Dataverse Contact for the invited person (emailaddress1 = their email,
+    // asc_consultantid lookup = the consultant they're invited to edit), then uses Power Pages'
+    // own native "Invite contacts" feature (docs.microsoft.com/power-pages/security/invite-
+    // contacts) to email a secure link + code. Redemption, the 6-digit code, and binding the
+    // Entra External ID identity to that exact Contact record all happen inside Power Pages'
+    // own "Redeem invitation" flow before this code ever runs - no custom token table, no
+    // email-string matching (per backend/README.md's "Required before enabling live writes"
+    // checklist: "Never infer access from submitted email/domain or custom business contact
+    // ID."). This replaces an earlier custom asc_invitation token system (superseded, 15 Oct
+    // 2026) that duplicated what Power Pages already does natively.
+    // Called once, after Entra sign-in has succeeded (root.dataset.authenticated === 'true'),
+    // before letting the visitor proceed past sign-in. Reads the signed-in native Contact's
+    // asc_consultantid lookup (rendered server-side into #account-consultant by shell.html,
+    // same pattern as #account-email) and ties the session to that consultant. Returns true
+    // when it's safe to continue: either the signed-in contact has no consultant assigned yet
+    // (existing behaviour, unaffected - e.g. admin/test sign-ins), or liveConsultantId has now
+    // been set from the native lookup. Never left false - a visitor with no assignment simply
+    // keeps whatever liveConsultantId (if any) localStorage already had.
+    function resolveInvitationConsultant() {
+      var consultantId = ((document.getElementById('account-consultant') || {}).textContent || '').trim();
+      // Only a real GUID is accepted - a Liquid error string (e.g. when the lookup is rendered
+      // without .id) must never be stored as the consultant.
+      if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(consultantId)) {
+        liveConsultantId = consultantId;
+        try { window.localStorage.setItem('ascentisLiveConsultantId', liveConsultantId); } catch (ignored) {}
+      }
+      return true;
     }
 
     // Reference-label -> GUID resolution, with an in-page cache since the same labels
     // (e.g. regions) repeat across many rows in one submission.
     var referenceIdCache = {};
-    async function resolveReferenceId(entitySet, idField, name) {
+    async function resolveReferenceId(entitySet, idField, name, nameField) {
       if (!name) return null;
-      var cacheKey = entitySet + '|' + name;
+      nameField = nameField || 'asc_name';
+      var cacheKey = entitySet + '|' + nameField + '|' + name;
       if (Object.prototype.hasOwnProperty.call(referenceIdCache, cacheKey)) return referenceIdCache[cacheKey];
       var token = await getVerificationToken();
       var filterValue = String(name).replace(/'/g, "''");
-      var url = '/_api/' + entitySet + '?$select=' + idField + '&$filter=asc_name eq \'' + filterValue + '\'';
+      var url = '/_api/' + entitySet + '?$select=' + idField + '&$filter=' + nameField + ' eq \'' + filterValue + '\'';
       var response = await fetch(url, {
         credentials: 'same-origin',
         headers: { 'Accept': 'application/json', 'OData-MaxVersion': '4.0', 'OData-Version': '4.0', '__RequestVerificationToken': token, 'Cache-Control': 'no-cache, no-store', 'Pragma': 'no-cache' }
@@ -778,6 +864,13 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         // asc_contacttype/asc_status are sent as plain text - asc_contact was rebuilt
         // 2026-09-27 with these as plain text columns (rebuild tooling can't create custom
         // picklists), replacing the option-set integer values the live picklist used to need.
+        var contactTypeLabel = row.references && row.references.contactType;
+        if (contactTypeLabel) {
+          // asc_contacttype became a lookup to asc_ContactType (name column asc_contacttypename);
+          // bind key uses the relationship's navigation property name (Pascal-cased, like asc_Actor).
+          var contactTypeId = await resolveReferenceId('asc_contacttypes', 'asc_contacttypeid', contactTypeLabel, 'asc_contacttypename');
+          if (contactTypeId) body['asc_ContactType@odata.bind'] = '/asc_contacttypes(' + contactTypeId + ')';
+        }
         var regionLabel = row.references && row.references.region;
         if (regionLabel) {
           var regionId = await resolveReferenceId('asc_regions', 'asc_regionid', regionLabel);
@@ -816,6 +909,65 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       }
       return results;
     }
+    // Project references (asc_projectreference). Written 2026-10-29 once the live table was inspected
+    // from a fresh export: required lookups asc_CountryID / asc_region_id / asc_consultant_id (bind keys
+    // are SchemaName-cased, same rule as the junction tables), asc_projectstatus is a choice (mapped in
+    // dataverse-map.json), and asc_startyear/asc_completionyear are Date and Time columns so a plain
+    // form year is sent as 1 January UTC (dataverse-mapping.js). Project type and disciplines are
+    // junction rows (asc_projectreferencetype / asc_projectreferencediscipline), written only for
+    // values not already live - there is no unique key, so re-writing would duplicate them. Changing a
+    // saved project's type, or removing a discipline, is not written back (would need PATCH/DELETE).
+    async function saveProjectJunctions(projectLiveId, row, known) {
+      var references = row.references || {};
+      var knownDisciplines = (known && known.disciplines) || [];
+      var newDisciplines = (references.disciplines || []).filter(function (label) { return !knownDisciplines.includes(label); });
+      for (var i = 0; i < newDisciplines.length; i++) {
+        var disciplineId = await resolveReferenceId('asc_disciplines', 'asc_disciplineid', newDisciplines[i]);
+        if (!disciplineId) continue;
+        var disciplineBody = {};
+        disciplineBody['asc_ProjectReferenceID@odata.bind'] = '/asc_projectreferences(' + projectLiveId + ')';
+        disciplineBody['asc_DisciplineID@odata.bind'] = '/asc_disciplines(' + disciplineId + ')';
+        await webApiRequest('POST', '/_api/asc_projectreferencedisciplines', disciplineBody);
+      }
+      if (references.type && !(known && known.type)) {
+        var typeId = await resolveReferenceId('asc_projecttypes', 'asc_projecttypeid', references.type, 'asc_projecttypename');
+        if (typeId) {
+          var typeBody = {};
+          typeBody['asc_projectreference_id@odata.bind'] = '/asc_projectreferences(' + projectLiveId + ')';
+          typeBody['asc_projecttype_id@odata.bind'] = '/asc_projecttypes(' + typeId + ')';
+          await webApiRequest('POST', '/_api/asc_projectreferencetypes', typeBody);
+        }
+      }
+    }
+    async function saveProjects(consultantId, payload) {
+      var dto = dataverseMapping.prepare(payload);
+      var rows = (dto.collections && dto.collections.projects) || [];
+      var knownRows = (existingRecord && existingRecord.projects) || [];
+      var results = [];
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var body = Object.assign({}, row.fields);
+        var references = row.references || {};
+        var countryId = await resolveReferenceId('asc_countrys', 'asc_countryid', references.country);
+        if (countryId) body['asc_CountryID@odata.bind'] = '/asc_countrys(' + countryId + ')';
+        var regionId = await resolveReferenceId('asc_regions', 'asc_regionid', references.region);
+        if (regionId) body['asc_region_id@odata.bind'] = '/asc_regions(' + regionId + ')';
+        var liveId = row.liveId;
+        if (liveId) {
+          await webApiRequest('PATCH', '/_api/asc_projectreferences(' + liveId + ')', body);
+        } else {
+          body['asc_consultant_id@odata.bind'] = '/asc_consultants(' + consultantId + ')';
+          var response = await webApiRequest('POST', '/_api/asc_projectreferences', body);
+          liveId = extractCreatedId(response);
+        }
+        if (liveId) {
+          var known = knownRows.find(function (item) { return item.liveId === liveId; });
+          await saveProjectJunctions(liveId, row, known && known.references);
+        }
+        results.push({ clientId: row.clientId, liveId: liveId || null });
+      }
+      return results;
+    }
     async function saveConsultantReferences(consultantId, payload) {
       // Only write rows for labels not already linked (from existingRecord, fetched at load
       // time) - on every edit-resubmit most previously-selected labels are unchanged, and there
@@ -831,7 +983,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       await createConsultantJunctionRows(consultantId, newRegions, 'asc_consultantregionses', 'asc_RegionID', 'asc_regions', 'asc_regionid');
       // Keep the "already associated" cache in sync so a second save later in the same
       // session (no page reload) does not try to re-associate the same labels again.
-      if (!existingRecord) existingRecord = { identity: {}, sections: {}, revenueByRegion: {}, contacts: [], bimProjects: [] };
+      if (!existingRecord) existingRecord = { identity: {}, sections: {}, revenueByRegion: {}, contacts: [], bimProjects: [], projects: [] };
       existingRecord.identity.disciplines = (payload.identity && payload.identity.disciplines) || [];
       existingRecord.identity.sectors = (payload.identity && payload.identity.sectors) || [];
       existingRecord.identity.regions = (payload.identity && payload.identity.regions) || [];
@@ -872,18 +1024,26 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     // "KAM" - presumably shared with an internal admin view) - "Identity" is "Overview" there,
     // "Sustainability" is "Sustainability & ESG". Mapped explicitly below rather than relying on
     // label text matching at all, the same lesson as the Status fix.
-    var PORTAL_SUBMISSION_STATUS_VALUES = { Draft: 751050000, Submitted: 751050001 };
+    // Accepted/Rejected re-confirmed via a fresh pac solution export 2026-10-24 (asc_powerpagestatuschoice:
+    // Draft/Submitted/Accepted/Rejected = 751050000..751050003; Seeded = 751050004 added 2026-10-27, written by the Power Apps seeding app, loads editable like Accepted) - needed to READ a tab's latest row back.
+    var PORTAL_SUBMISSION_STATUS_VALUES = { Draft: 751050000, Submitted: 751050001, Accepted: 751050002, Rejected: 751050003, Seeded: 751050004 };
     var PORTAL_SUBMISSION_TAB_VALUES = {
       'Identity': 751050000, 'Financial': 751050001, 'Legal': 751050002,
       'Offices & contacts': 751050003, 'Project references': 751050004,
       'BIM': 751050006, 'Sustainability': 751050007, 'Attachments': 751050010
     };
+    var PORTAL_SUBMISSION_STATUS_NAMES = {};
+    Object.keys(PORTAL_SUBMISSION_STATUS_VALUES).forEach(function (name) { PORTAL_SUBMISSION_STATUS_NAMES[PORTAL_SUBMISSION_STATUS_VALUES[name]] = name; });
+    var PORTAL_SUBMISSION_TAB_NAMES = {};
+    Object.keys(PORTAL_SUBMISSION_TAB_VALUES).forEach(function (name) { PORTAL_SUBMISSION_TAB_NAMES[PORTAL_SUBMISSION_TAB_VALUES[name]] = name; });
     var PORTAL_SUBMISSION_TABS = ['Identity', 'Financial', 'Legal', 'Offices & contacts', 'Project references', 'BIM', 'Sustainability', 'Attachments'];
     function tabSnapshot(source) {
       if (!source) return {};
       return {
         'Identity': source.identity || {},
-        'Financial': (source.sections && source.sections.financial) || {},
+        // revenueByRegion lives beside (not inside) sections.financial in the payload/existingRecord
+        // shapes - folded into the Financial slice so the staged asc_after loses nothing.
+        'Financial': Object.assign({}, (source.sections && source.sections.financial) || {}, source.revenueByRegion ? { revenueByRegion: source.revenueByRegion } : {}),
         'Legal': (source.sections && source.sections.legal) || {},
         'Offices & contacts': {
           offices: (source.collections && source.collections.offices) || [],
@@ -942,13 +1102,120 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       if (createdId) portalSubmissionIds[tab] = createdId;
       return createdId;
     }
+    // ---- Prefill from asc_portalsubmission.asc_after (read side) ----
+    // Per tab, the consultant's most recent submission row (any status) is the source of truth for
+    // what the form shows on login: Draft/Rejected/Accepted load editable, Submitted loads locked
+    // (profile.js applyTabLocks), no row = blank. No copy-forward write logic is needed - the next
+    // Save draft on a Rejected/Accepted tab already creates a fresh Draft row (findDraftSubmissionId
+    // only matches Draft).
+    var prefillRecord = null;
+    var submissionTabStatus = {};
+    function pickLatestSubmissionPerTab(rows, consultantId) {
+      var wanted = String(consultantId || '').toLowerCase();
+      var latest = {};
+      (Array.isArray(rows) ? rows : []).filter(function (row) {
+        return row && row._asc_consultant_id_value && String(row._asc_consultant_id_value).toLowerCase() === wanted;
+      }).sort(function (a, b) {
+        var left = String(a.createdon || ''), right = String(b.createdon || '');
+        return left < right ? 1 : left > right ? -1 : 0;
+      }).forEach(function (row) {
+        var tab = PORTAL_SUBMISSION_TAB_NAMES[row.asc_tab];
+        if (!tab || latest[tab]) return;
+        latest[tab] = { id: row.asc_portalsubmissionid, status: PORTAL_SUBMISSION_STATUS_NAMES[row.asc_status] || null, after: row.asc_after || null };
+      });
+      return latest;
+    }
+    function parseSubmissionAfter(text) {
+      if (!text) return null;
+      try { var value = JSON.parse(text); return value && typeof value === 'object' ? value : null; } catch (ignored) { return null; }
+    }
+    function plainObject(value) { return value && typeof value === 'object' && !Array.isArray(value) ? value : {}; }
+    function submissionRows(list) {
+      return (Array.isArray(list) ? list : []).filter(function (row) { return row && typeof row === 'object'; }).map(function (row) {
+        // asc_after stores collectProfile() rows flat ({id, liveId, ...fields}); tolerate the
+        // existingRecord-style {liveId, fields} too.
+        var fields = Object.assign({}, row.fields && typeof row.fields === 'object' ? row.fields : row);
+        delete fields.id; delete fields.liveId;
+        return { localId: row.id || null, liveId: row.liveId || null, fields: fields };
+      });
+    }
+    // Pure: {tabName: {status, after}} -> the existingRecord-like shape profile.js consumes. A
+    // corrupt/empty asc_after degrades that one tab to blank.
+    function reconstructPrefillRecord(latest) {
+      latest = latest || {};
+      function afterOf(tab) { return latest[tab] ? parseSubmissionAfter(latest[tab].after) : null; }
+      var identity = Object.assign({}, plainObject(afterOf('Identity')));
+      ['disciplines', 'sectors', 'regions'].forEach(function (key) { if (!Array.isArray(identity[key])) identity[key] = []; });
+      var financial = Object.assign({}, plainObject(afterOf('Financial')));
+      var revenueByRegion = Object.assign({}, plainObject(financial.revenueByRegion));
+      delete financial.revenueByRegion;
+      // Rows written by reviewers/seeding (or accepted from the DB) carry the short stored value
+      // ('YYYY' / 'YYYY/ZZ'), but the dropdown options are the labelled forms - an unmatched value
+      // renders as a blank select.
+      if (financial.yearFormat === 'YYYY') financial.yearFormat = 'YYYY (Jan–Dec)';
+      else if (financial.yearFormat === 'YYYY/ZZ') financial.yearFormat = 'YYYY/ZZ (Apr–Mar)';
+      var officesTab = plainObject(afterOf('Offices & contacts'));
+      var bimTab = plainObject(afterOf('BIM'));
+      var tabStatus = {};
+      Object.keys(latest).forEach(function (tab) { if (latest[tab] && latest[tab].status) tabStatus[tab] = latest[tab].status; });
+      return {
+        identity: identity,
+        sections: { financial: financial, legal: plainObject(afterOf('Legal')), bim: plainObject(bimTab.bim), sustainability: plainObject(afterOf('Sustainability')) },
+        revenueByRegion: revenueByRegion,
+        contacts: submissionRows(officesTab.contacts),
+        offices: submissionRows(officesTab.offices),
+        projects: submissionRows(afterOf('Project references')),
+        bimProjects: submissionRows(bimTab.bimProjects),
+        tabStatus: tabStatus
+      };
+    }
+    // Older asc_after payloads were captured before the live write returned row IDs, so rows may
+    // lack liveId; adopt it from the live read (loadExistingRecordSync) by email/name so the next
+    // save PATCHes instead of creating a duplicate.
+    function adoptLiveIds(rows, liveRows, key) {
+      rows.forEach(function (row) {
+        var wanted = String(row.fields[key] || '').trim().toLowerCase();
+        if (row.liveId || !wanted) return;
+        var matches = (liveRows || []).filter(function (live) { return String(live.fields[key] || '').trim().toLowerCase() === wanted; });
+        if (matches.length === 1) row.liveId = matches[0].liveId;
+      });
+    }
+    // Network half - cannot be unit tested (sync XHR), same as loadExistingRecordSync.
+    function loadPrefillRecordSync() {
+      prefillRecord = null;
+      submissionTabStatus = {};
+      if (!liveConsultantId) return;
+      var token = syncGetVerificationToken();
+      if (!token) return;
+      // Light listing first (no asc_after - Global scope returns every consultant's rows), then
+      // fetch asc_after only for the up-to-8 rows actually selected. $orderby is best-effort;
+      // the pick sorts client-side regardless.
+      var base = '/_api/asc_portalsubmissions?$select=asc_portalsubmissionid,asc_tab,asc_status,createdon,_asc_consultant_id_value';
+      var listing = syncGetJson(base + '&$orderby=createdon desc', token) || syncGetJson(base, token);
+      if (!listing) return;
+      var latest = pickLatestSubmissionPerTab(listing.value, liveConsultantId);
+      Object.keys(latest).forEach(function (tab) {
+        var full = syncGetJson('/_api/asc_portalsubmissions(' + latest[tab].id + ')?$select=asc_after', token);
+        latest[tab].after = full && full.asc_after;
+      });
+      prefillRecord = reconstructPrefillRecord(latest);
+      if (existingRecord) {
+        adoptLiveIds(prefillRecord.contacts, existingRecord.contacts, 'email');
+        adoptLiveIds(prefillRecord.bimProjects, existingRecord.bimProjects, 'name');
+        adoptLiveIds(prefillRecord.projects, existingRecord.projects, 'name');
+      }
+      submissionTabStatus = Object.assign({}, prefillRecord.tabStatus);
+    }
     async function recordPortalSubmissions(consultantId, payload, status) {
       var after = tabSnapshot(payload);
       var before = tabSnapshot(existingRecord);
       for (var i = 0; i < PORTAL_SUBMISSION_TABS.length; i++) {
         var tab = PORTAL_SUBMISSION_TABS[i];
+        // A Submitted tab is locked until reviewed - saving again would create/overwrite a Draft row.
+        if (submissionTabStatus[tab] === 'Submitted') continue;
         try {
           await saveTabSubmission(consultantId, tab, after[tab], before[tab], status);
+          submissionTabStatus[tab] = status;
         } catch (error) {
           console.warn('[ascentis] portal submission staging write failed for tab', tab, error);
         }
@@ -996,18 +1263,146 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         console.warn('[ascentis] audit log write failed', action, error);
       }
     }
+
+    // ---- Attachments (asc_attachment row + asc_attachedfile file column) ----
+    // The live file column is asc_attachedfile ("Attached File", 32 MB max), confirmed via a fresh
+    // pac solution export 2026-10-24 - NOT asc_file as the original design/dbml said. All lookups
+    // on asc_attachment have all-lowercase schema names, so nav property == LogicalName here
+    // (asc_consultant_id, asc_documenttype_id, asc_uploadedby_id, asc_projectreference_id).
+    // Upload: PUT /_api/asc_attachments(<id>)/asc_attachedfile with raw bytes (Power Pages docs).
+    // Docs cap a single service call at 16 MB; larger files would need chunking, which Power Pages
+    // does not document for uploads, so they are skipped with a warning rather than attempted.
+    var ATTACHMENT_FILE_COLUMN = 'asc_attachedfile';
+    var ATTACHMENT_SINGLE_REQUEST_MAX_BYTES = 16 * 1024 * 1024;
+    var uploadedAttachmentFiles = new WeakSet();
+    // asc_attachment.asc_status reuses the portal-submission status Choice (asc_powerpagestatuschoice,
+    // confirmed live 2026-11-01). The portal writes Draft/Submitted; Accepted/Rejected/Seeded come from
+    // the Power Apps reviewer app and are never overwritten here.
+    var ATTACHMENT_STATUS_VALUES = { Draft: 751050000, Submitted: 751050001, Accepted: 751050002, Rejected: 751050003, Seeded: 751050004 };
+    var ATTACHMENT_STATUS_NAMES = { 751050000: 'Draft', 751050001: 'Submitted', 751050002: 'Accepted', 751050003: 'Rejected', 751050004: 'Seeded' };
+    // Files already saved for this consultant (filled by loadExistingRecordSync): [{liveId, name, sizeMb, uploadedOn, status, documentType}]
+    var existingAttachments = [];
+    // Pure request shaping (unit-tested): what row body / upload headers a payload.files entry gets.
+    function buildAttachmentRequest(entry, ids) {
+      var file = entry.file;
+      var body = {
+        asc_name: file.name,
+        asc_filename: file.name,
+        asc_filesizemb: Math.round((file.size / 1000000) * 1000) / 1000,
+        asc_uploadedon: ids.uploadedOn,
+        asc_status: ATTACHMENT_STATUS_VALUES[ids.status || 'Draft'], asc_origin: AUDIT_ORIGIN_SELF_SERVICE_PORTAL,
+        'asc_uploadedby_id@odata.bind': '/systemusers(' + ids.uploadedById + ')'
+      };
+      // Always tied to the consultant (reviewers filter by it); project files are also tied to their project.
+      body['asc_consultant_id@odata.bind'] = '/asc_consultants(' + ids.consultantId + ')';
+      if (entry.projectId) body['asc_projectreference_id@odata.bind'] = '/asc_projectreferences(' + entry.projectLiveId + ')';
+      if (ids.documentTypeId) body['asc_documenttype_id@odata.bind'] = '/asc_documenttypes(' + ids.documentTypeId + ')';
+      return {
+        body: body,
+        uploadPath: function (attachmentId) { return '/_api/asc_attachments(' + attachmentId + ')/' + ATTACHMENT_FILE_COLUMN; },
+        // Header values must be ISO-8859-1 or fetch() throws; the real name is kept in asc_filename.
+        uploadHeaders: { 'Content-Type': 'application/octet-stream', 'x-ms-file-name': String(file.name).replace(/[^ -~]/g, '_') },
+        tooLargeForSingleRequest: file.size > ATTACHMENT_SINGLE_REQUEST_MAX_BYTES
+      };
+    }
+    async function uploadAttachmentBytes(path, file, headers) {
+      var token = await getVerificationToken();
+      var all = Object.assign({ 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest', '__RequestVerificationToken': token }, headers);
+      var response = await fetch(path, { method: 'PUT', credentials: 'same-origin', headers: all, body: file });
+      if (!response.ok) throw new Error('File upload failed (' + response.status + ').');
+    }
+    async function saveAttachments(consultantId, payload, projectResults, submissionStatus) {
+      var results = { uploaded: 0, skipped: 0, failed: 0, submitted: 0 };
+      var newStatus = submissionStatus === 'Submitted' ? 'Submitted' : 'Draft';
+      var files = payload.files || [];
+      for (var i = 0; i < files.length; i++) {
+        var entry = files[i];
+        if (!entry.file || uploadedAttachmentFiles.has(entry.file)) continue;
+        // Project-scoped attachments bind to the live asc_projectreference row saved by saveProjects()
+        // earlier in this same save. If that project could not be saved, skip loudly.
+        if (entry.projectId) {
+          var savedProject = (projectResults || []).find(function (item) { return item.clientId === entry.projectId && item.liveId; });
+          if (!savedProject) {
+            console.warn('[ascentis] project-level attachment not uploaded - its project reference was not saved:', entry.file.name);
+            results.skipped++;
+            continue;
+          }
+          entry = Object.assign({}, entry, { projectLiveId: savedProject.liveId });
+        }
+        try {
+          var documentTypeId = await resolveReferenceId('asc_documenttypes', 'asc_documenttypeid', entry.documentType);
+          var request = buildAttachmentRequest(entry, { consultantId: consultantId, documentTypeId: documentTypeId, uploadedById: AUDIT_ACTOR_SYSTEMUSER_ID, uploadedOn: new Date().toISOString(), status: newStatus });
+          if (request.tooLargeForSingleRequest) {
+            console.warn('[ascentis] attachment over 16 MB not uploaded (single-request limit):', entry.file.name);
+            results.skipped++;
+            continue;
+          }
+          var created = await webApiRequest('POST', '/_api/asc_attachments', request.body);
+          var attachmentId = extractCreatedId(created);
+          if (!attachmentId) throw new Error('Attachment row created but no id returned.');
+          try {
+            await uploadAttachmentBytes(request.uploadPath(attachmentId), entry.file, request.uploadHeaders);
+          } catch (uploadError) {
+            // Don't leave a file-less row behind; ignore cleanup failure (delete not permitted by the table permission).
+            try { await webApiRequest('DELETE', '/_api/asc_attachments(' + attachmentId + ')'); } catch (ignored) {}
+            throw uploadError;
+          }
+          uploadedAttachmentFiles.add(entry.file);
+          // Track it so a Submit in this same session (no reload) promotes it too.
+          existingAttachments.push({ liveId: attachmentId, name: entry.file.name, sizeMb: request.body.asc_filesizemb, uploadedOn: request.body.asc_uploadedon, status: newStatus, documentType: entry.documentType || '' });
+          results.uploaded++;
+        } catch (error) {
+          console.warn('[ascentis] attachment write failed', entry.file && entry.file.name, error);
+          results.failed++;
+        }
+      }
+      // Submit for review: the portal's own Draft files become Submitted. Accepted/Rejected/Seeded
+      // (set by the reviewer app) are never touched.
+      if (newStatus === 'Submitted') {
+        for (var j = 0; j < existingAttachments.length; j++) {
+          var row = existingAttachments[j];
+          if (row.status !== 'Draft') continue;
+          try {
+            await webApiRequest('PATCH', '/_api/asc_attachments(' + row.liveId + ')', { asc_status: ATTACHMENT_STATUS_VALUES.Submitted });
+            row.status = 'Submitted';
+            results.submitted++;
+          } catch (error) {
+            console.warn('[ascentis] attachment status update failed', row.name, error);
+            results.failed++;
+          }
+        }
+      }
+      return results;
+    }
+    // The staged asc_after must carry the live row IDs this save just created, or the next login's
+    // prefill would POST duplicates instead of PATCHing. Returns a copy; payload is untouched.
+    function stampLiveIds(payload, results) {
+      var collections = Object.assign({}, payload.collections);
+      Object.keys(results).forEach(function (key) {
+        collections[key] = (collections[key] || []).map(function (row) {
+          var hit = results[key].find(function (item) { return item.clientId === row.id; });
+          return hit && hit.liveId ? Object.assign({}, row, { liveId: hit.liveId }) : row;
+        });
+      });
+      return Object.assign({}, payload, { collections: collections });
+    }
     async function saveAll(payload, submissionStatus) {
       var wasNewConsultant = !liveConsultantId;
       var consultantId = await saveConsultant(payload);
       await saveChildTables(consultantId, payload);
       var contacts = await saveContacts(consultantId, payload);
       var bimProjects = await saveBimProjects(consultantId, payload);
+      // Project references never block the save: a failure here (e.g. Web API settings not deployed
+      // yet) is logged and the staged submission below still carries the project data.
+      var projects = [];
+      try { projects = await saveProjects(consultantId, payload); } catch (projectError) { console.warn('[ascentis] project references write failed', projectError); }
       await saveConsultantReferences(consultantId, payload);
-      await recordPortalSubmissions(consultantId, payload, submissionStatus);
+      var attachments = await saveAttachments(consultantId, payload, projects, submissionStatus);
+      await recordPortalSubmissions(consultantId, stampLiveIds(payload, { contacts: contacts, bimProjects: bimProjects, projects: projects }), submissionStatus);
       var firmName = (payload.identity && payload.identity.firmName) || '';
       var objectText = 'asc_consultant ' + consultantId + (firmName ? ' (' + firmName + ')' : '');
       await logAuditEvent(submissionStatus === 'Submitted' ? 'Submit' : (wasNewConsultant ? 'Create' : 'Update'), objectText);
-      return { consultantId: consultantId, contacts: contacts, bimProjects: bimProjects };
+      return { consultantId: consultantId, contacts: contacts, bimProjects: bimProjects, projects: projects, attachments: attachments };
     }
     var portalService = {
       saveDraft: async function (payload) {
@@ -1040,8 +1435,48 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     }
 
 
+    // Personalised PDF: calls the registered Power Pages cloud flow (secret stays server-side).
+    // Flow returns { ok, fileName, contentBase64, message }. Falls back to the static PDF when
+    // no flow ID is configured or in preview mode.
+    async function downloadFromFlow(flowId) {
+      var status = document.getElementById('confidentiality-status');
+      function say(text) { status.textContent = text; status.hidden = !text; }
+      say('Preparing the statement...');
+      try {
+        var token = await getVerificationToken();
+        var addressee = (document.getElementById('account-name').textContent || '').trim() || (document.getElementById('account-email').textContent || '').trim() || 'Consultant';
+        var response = await fetch('/_api/cloudflow/v1.0/trigger/' + encodeURIComponent(flowId), {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest', '__RequestVerificationToken': token },
+          body: 'eventData=' + encodeURIComponent(JSON.stringify({ text: addressee, addresseeName: addressee }))
+        });
+        if (!response.ok) { var detail = ''; try { detail = (await response.text()).slice(0, 300); } catch (ignored) {} var failure = new Error('flow ' + response.status + ' ' + detail); failure.status = response.status; throw failure; }
+        var result = await response.json();
+        if (typeof result === 'string') result = JSON.parse(result);
+        if (result && result.responseText) result = JSON.parse(result.responseText);
+        // Power Pages flow outputs are text and lower-cased (ok, filename, contentbase64, message).
+        var pick = function (name) { if (!result) return ''; var key = Object.keys(result).find(function (k) { return k.toLowerCase() === name; }); return key ? result[key] : ''; };
+        var content = pick('contentbase64');
+        if (String(pick('ok')).toLowerCase() !== 'true' || !content) { say(pick('message') || 'The statement could not be created.'); return; }
+        result = { fileName: pick('filename'), contentBase64: content };
+        var bin = atob(result.contentBase64), bytes = new Uint8Array(bin.length);
+        for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        var href = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+        var a = document.createElement('a');
+        a.href = href; a.download = result.fileName || 'Confidentiality statement.pdf';
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(href);
+        say('Downloaded.');
+      } catch (error) {
+        console.warn('[ascentis] confidentiality flow failed', error);
+        say('The statement could not be created. Try again.' + (error && error.status ? ' (error ' + error.status + ')' : ''));
+      }
+    }
     function download() {
-      var configured = document.getElementById('download-confidentiality').dataset.pdfUrl;
+      var button = document.getElementById('download-confidentiality');
+      if (!preview && button.dataset.flowId) { downloadFromFlow(button.dataset.flowId); return; }
+      var configured = button.dataset.pdfUrl;
       if (!configured) { window.alert('The confidentiality PDF is not available yet.'); return; }
       try { var url = new URL(configured, location.href); if (url.protocol !== 'https:' && !(url.protocol === 'http:' && url.origin === location.origin)) throw new Error(); location.assign(url.href); }
       catch (_) { window.alert('The confidentiality PDF link is unavailable.'); }
@@ -1072,19 +1507,31 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     });
 
 
-    document.getElementById('send-code').addEventListener('click', function () {
-      if (!document.getElementById('registered-email').reportValidity()) return;
-      report('signin-status', preview ? 'Preview only: no code was sent. Enter any six digits to explore the next screen.' : 'Email code sign-in is not connected yet. Use the Power Pages sign-in link below.');
-      if (preview) root.querySelector('.otp-fields input').focus();
-    });
-    var digits = Array.from(root.querySelectorAll('.otp-fields input'));
-    digits.forEach(function (input, index) {
-      input.addEventListener('input', function () { this.value = this.value.replace(/\D/g, '').slice(-1); if (this.value && digits[index+1]) digits[index+1].focus(); });
-      input.addEventListener('keydown', function (event) { if (event.key === 'Backspace' && !this.value && digits[index-1]) digits[index-1].focus(); });
-      input.addEventListener('paste', function (event) { event.preventDefault(); var value = event.clipboardData.getData('text').replace(/\D/g, '').slice(0,6-index); value.split('').forEach(function (digit, offset) { digits[index+offset].value = digit; }); digits[Math.min(index+value.length,5)].focus(); });
-    });
-    document.getElementById('signin-form').addEventListener('submit', function (event) { event.preventDefault(); if (!this.reportValidity()) return; if (preview) show('confidentiality', true); else report('signin-status','Email verification is not connected yet. Use the Power Pages sign-in link below.'); });
-
+    // The "Send me a code"/6-digit card only ever renders in the local design preview now
+    // (preview.js un-hides it) - it never sent or verified a real code. On the live site the
+    // single working action is "Continue with Power Pages sign in", Entra External ID's own
+    // email-OTP flow (confirmed end-to-end, 24 Sept 2026): Dataverse writes require Power
+    // Pages' own redirect-completed session, so a code verified purely on this page could never
+    // unlock a real save - explicit project-owner decision, 13 Oct 2026.
+    //
+    // Invitation redemption (email prefill, the 6-digit code, tying the identity to a specific
+    // consultant) is handled entirely by Power Pages' own native "Redeem invitation" flow,
+    // reached via the link below, before this page is ever shown again post-sign-in - see
+    // resolveInvitationConsultant() in services.js. Nothing to prefill here (15 Oct 2026).
+    if (preview) {
+      document.getElementById('send-code').addEventListener('click', function () {
+        if (!document.getElementById('registered-email').reportValidity()) return;
+        report('signin-status', 'Preview only: no code was sent. Enter any six digits to explore the next screen.');
+        root.querySelector('.otp-fields input').focus();
+      });
+      var digits = Array.from(root.querySelectorAll('.otp-fields input'));
+      digits.forEach(function (input, index) {
+        input.addEventListener('input', function () { this.value = this.value.replace(/\D/g, '').slice(-1); if (this.value && digits[index+1]) digits[index+1].focus(); });
+        input.addEventListener('keydown', function (event) { if (event.key === 'Backspace' && !this.value && digits[index-1]) digits[index-1].focus(); });
+        input.addEventListener('paste', function (event) { event.preventDefault(); var value = event.clipboardData.getData('text').replace(/\D/g, '').slice(0,6-index); value.split('').forEach(function (digit, offset) { digits[index+offset].value = digit; }); digits[Math.min(index+value.length,5)].focus(); });
+      });
+      document.getElementById('signin-form').addEventListener('submit', function (event) { event.preventDefault(); if (!this.reportValidity()) return; show('confidentiality', true); });
+    }
 
     var schema = portalConfig.formSchema;
     var fieldGroups = [];
@@ -1276,7 +1723,16 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         var field = createField(definition, node);
         if (initial && initial[definition.key] !== undefined && definition.type !== 'file') {
           if (field.control.multiple) Array.from(field.control.options).forEach(function (option) { option.selected = initial[definition.key].includes(option.value); });
-          else field.control.value = initial[definition.key];
+          else {
+            field.control.value = initial[definition.key];
+            // Stored values can differ from the option text only by case (e.g. 'In Progress' vs
+            // 'In progress'); an unmatched value would leave the select blank, so match loosely.
+            if (field.control.tagName === 'SELECT' && field.control.selectedIndex <= 0 && initial[definition.key]) {
+              var wanted = String(initial[definition.key]).trim().toLowerCase();
+              var match = Array.from(field.control.options).find(function (option) { return option.value.trim().toLowerCase() === wanted; });
+              if (match) field.control.value = match.value;
+            }
+          }
         }
         group.fields.push(field);
         if (field.control.refreshMulti) field.control.refreshMulti();
@@ -1295,17 +1751,20 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     var busy = false;
     if (!preview) { try { loadLiveChoicesSync(); } catch (ignored) { /* keep the config.json fallback list */ } }
     if (!preview) { try { loadExistingRecordSync(); } catch (ignored) { /* start from a blank form */ } }
+    // Form values come from each tab's latest asc_portalsubmission row; existingRecord (live tables)
+    // is still loaded above for asc_before, junction diffing and live-row ID caches.
+    if (!preview) { try { loadPrefillRecordSync(); } catch (ignored) { prefillRecord = null; /* blank form */ } }
     var choices = portalConfig.choices;
     var selected = {
-      Disciplines: (existingRecord && existingRecord.identity.disciplines) || [],
-      Sectors: (existingRecord && existingRecord.identity.sectors) || [],
-      Regions: (existingRecord && existingRecord.identity.regions) || []
+      Disciplines: (prefillRecord && prefillRecord.identity.disciplines.slice()) || [],
+      Sectors: (prefillRecord && prefillRecord.identity.sectors.slice()) || [],
+      Regions: (prefillRecord && prefillRecord.identity.regions.slice()) || []
     };
-    if (existingRecord) {
-      if (existingRecord.identity.firmName) form.elements.firmName.value = existingRecord.identity.firmName;
-      if (existingRecord.identity.website) form.elements.website.value = existingRecord.identity.website;
-      if (existingRecord.identity.alias) form.elements.alias.value = existingRecord.identity.alias;
-      if (existingRecord.identity.firmType) form.elements.firmType.value = existingRecord.identity.firmType;
+    if (prefillRecord) {
+      if (prefillRecord.identity.firmName) form.elements.firmName.value = prefillRecord.identity.firmName;
+      if (prefillRecord.identity.website) form.elements.website.value = prefillRecord.identity.website;
+      if (prefillRecord.identity.alias) form.elements.alias.value = prefillRecord.identity.alias;
+      if (prefillRecord.identity.firmType) form.elements.firmType.value = prefillRecord.identity.firmType;
     }
 
     function activate(index, focus) {
@@ -1333,7 +1792,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       panel.appendChild(element('p', 'section-description', definition.description));
       panel.dataset.section = definition.id;
       panel.prepend(element('p', 'required-legend', '* required field'));
-      sections[definition.id] = createFields(panel, definition.fields, existingRecord && existingRecord.sections[definition.id]);
+      sections[definition.id] = createFields(panel, definition.fields, prefillRecord && prefillRecord.sections[definition.id]);
     });
 
     function fieldIn(group, key) {
@@ -1423,7 +1882,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         });
         return;
       }
-      var table = dataTable(id === 'projects' ? ['Project', 'Country / region', 'Disciplines', 'Type', 'GFA / Keys', 'Status', 'Years'] : ['Name', 'Location', 'GFA', 'LOD']);
+      var table = dataTable(id === 'projects' ? ['Project', 'Country / region', 'Disciplines', 'Type', 'GFA / Keys', 'Status', 'Years'] : ['Name', 'Location', 'GFA', 'LOD', 'Disciplines']);
       collection.rows.forEach(function (row) {
         var values = readFields(row.group.node);
         var tr = element('tr');
@@ -1437,7 +1896,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
           ? [[values.country, values.region].filter(Boolean).join(' / '), (values.disciplines || []).join(', '), values.type,
             values.type === 'Hotel' ? (values.keys || '—') + ' keys' : (values.gfa ? Number(values.gfa).toLocaleString('en-US') : '—') + ' m²',
             values.status, [values.startYear, values.status === 'Completed' ? values.completionYear : ''].filter(Boolean).join('–')]
-          : [values.location, values.gfa ? Number(values.gfa).toLocaleString('en-US') : '—', values.lod];
+          : [values.location, values.gfa ? Number(values.gfa).toLocaleString('en-US') : '—', values.lod, (values.disciplines || []).join(', ')];
         cells.forEach(function (value) { tr.appendChild(element('td', '', value || '—')); });
         table.body.appendChild(tr);
       });
@@ -1517,12 +1976,30 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     collections.contacts.section.querySelector('h2').textContent = 'Contacts — click a name to view or edit';
     document.getElementById('panel-4').appendChild(element('p', 'region-help', 'GFA (m²) is required for non-hotel projects; Keys is required for hotels. Completion year is required only once a project is Completed.'));
 
-    // Prefill previously-saved Contacts and BIM projects. Offices/Project references are not
-    // included - saving those is blocked live (see services.js header), so there is nothing to
-    // load back either.
-    if (existingRecord) {
-      existingRecord.contacts.forEach(function (row) { addRecord('contacts', row.fields, false, row.liveId); });
-      existingRecord.bimProjects.forEach(function (row) { addRecord('bimProjects', row.fields, false, row.liveId); });
+    // Prefill every collection from the staged asc_after rows. Contacts go first: offices
+    // reference them as leaders by local row id, which is regenerated on load, so the old ids are
+    // remapped to the new ones.
+    if (prefillRecord) {
+      var contactIdMap = {};
+      prefillRecord.contacts.forEach(function (row) {
+        var added = addRecord('contacts', row.fields, false, row.liveId);
+        if (added && row.localId) contactIdMap[row.localId] = added.id;
+      });
+      prefillRecord.offices.forEach(function (row) {
+        var fields = Object.assign({}, row.fields);
+        var leaders = (Array.isArray(fields.leaders) ? fields.leaders : []).map(function (id) { return contactIdMap[id]; }).filter(Boolean);
+        delete fields.leaders;
+        var added = addRecord('offices', fields, false, row.liveId);
+        var control = added && fieldIn(added.group, 'leaders');
+        if (control) {
+          // Leader options only exist once contacts are registered (updateContacts), so select after.
+          Array.from(control.options).forEach(function (option) { option.selected = leaders.includes(option.value); });
+          if (control.refreshMulti) control.refreshMulti();
+          refreshCollection(collections.offices);
+        }
+      });
+      prefillRecord.projects.forEach(function (row) { addRecord('projects', row.fields, false, row.liveId); });
+      prefillRecord.bimProjects.forEach(function (row) { addRecord('bimProjects', row.fields, false, row.liveId); });
     }
 
     // Financial derived values are display-only; the server must calculate them again.
@@ -1543,7 +2020,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     var revenueRegionNames = Object.keys(portalConfig.dataverseMap.revenueRegions);
     var revenueShareInitial = {};
     revenueRegionNames.forEach(function (region, index) {
-      var value = existingRecord && existingRecord.revenueByRegion[region];
+      var value = prefillRecord && prefillRecord.revenueByRegion[region];
       if (value) revenueShareInitial['region-' + index] = value;
     });
     var regionShares = createFields(financialPanel, revenueRegionNames.map(function (region, index) {
@@ -1636,8 +2113,8 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
 
     // File objects remain in this browser until a future authenticated upload service accepts them.
     var attachmentPanel = document.getElementById('panel-7');
-    attachmentPanel.appendChild(element('h2', '', 'Attachments (max 25 MB each)'));
-    attachmentPanel.appendChild(element('p', 'section-description', 'Add supporting documents, up to 25 MB per file. Project attachments also appear here.'));
+    attachmentPanel.appendChild(element('h2', '', 'Attachments (max 16 MB each)'));
+    attachmentPanel.appendChild(element('p', 'section-description', 'Add supporting documents, up to 16 MB per file. Project attachments also appear here.'));
     var uploadLabel = element('label', '', 'Choose supporting documents');
     uploadLabel.htmlFor = 'profile-files';
     uploadLabel.className = 'visually-hidden';
@@ -1659,7 +2136,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     attachmentPanel.appendChild(attachmentMessage);
     var attachmentList = element('div', 'attachment-list');
     attachmentPanel.appendChild(attachmentList);
-    attachmentPanel.appendChild(element('p', 'region-help', 'You may delete files you uploaded yourself. Uploads and deletions will be recorded when saving is connected.'));
+    attachmentPanel.appendChild(element('p', 'region-help', 'Saved files show their review status. Files marked locked (Accepted, Rejected or Seeded) are set by our team and cannot be changed here.'));
     var attachmentSequence = 0;
 
     function allFiles() {
@@ -1673,8 +2150,21 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     function renderAttachments() {
       if (!attachmentList) return;
       attachmentList.replaceChildren();
-      var files = allFiles();
-      var table = dataTable(['File', 'Document type', 'Uploaded', 'Size', '']);
+      // Files already uploaded by a save show as saved rows below, not again as pending local files.
+      var files = allFiles().filter(function (item) { return !(typeof uploadedAttachmentFiles !== 'undefined' && uploadedAttachmentFiles.has(item.file)); });
+      var table = dataTable(['File', 'Document type', 'Uploaded', 'Status', 'Size', '']);
+      // Files already saved to Dataverse: read-only, with the status the reviewer app/portal set.
+      (typeof existingAttachments !== 'undefined' ? existingAttachments : []).forEach(function (saved) {
+        var tr = element('tr');
+        tr.appendChild(element('td', '', saved.name || '(unnamed file)'));
+        tr.appendChild(element('td', '', saved.documentType || '—'));
+        tr.appendChild(element('td', '', saved.uploadedOn ? new Date(saved.uploadedOn).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'));
+        var locked = saved.status === 'Accepted' || saved.status === 'Rejected' || saved.status === 'Seeded';
+        tr.appendChild(element('td', '', (saved.status || '—') + (locked ? ' (locked)' : '')));
+        tr.appendChild(element('td', '', saved.sizeMb ? saved.sizeMb.toFixed(1) + ' MB' : '—'));
+        tr.appendChild(element('td'));
+        table.body.appendChild(tr);
+      });
       files.forEach(function (item) {
         var tr = element('tr');
         var fileCell = element('td');
@@ -1702,6 +2192,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         select.addEventListener('change', function () { item.documentType = this.value; });
         typeCell.appendChild(select); tr.appendChild(typeCell);
         tr.appendChild(element('td', '', item.exampleDate || 'Not uploaded'));
+        tr.appendChild(element('td', '', 'Not saved yet'));
         tr.appendChild(element('td', '', (item.file.size / 1000000).toFixed(1) + ' MB'));
         var action = element('td');
         var remove = element('button', 'text-button', 'Delete');
@@ -1716,7 +2207,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         action.appendChild(remove); tr.appendChild(action); table.body.appendChild(tr);
       });
       attachmentList.appendChild(table.wrap);
-      if (!files.length) attachmentList.appendChild(element('p', 'empty-state', 'No documents selected.'));
+      if (!files.length && !(typeof existingAttachments !== 'undefined' && existingAttachments.length)) attachmentList.appendChild(element('p', 'empty-state', 'No documents selected.'));
     }
 
     uploadInput.addEventListener('change', function () {
@@ -1727,7 +2218,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         else attachments.push({ id: 'local-' + (++attachmentSequence), file: file, documentType: '' });
       });
       uploadInput.value = '';
-      attachmentMessage.textContent = errors.join(' ') || 'Files selected. They will be uploaded when saving is connected.';
+      attachmentMessage.textContent = errors.join(' ') || 'Files selected. They will be uploaded when you save.';
       renderAttachments();
     });
 
@@ -1868,7 +2359,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     }
 
     async function persist(action) {
-      if (busy || !validateProfile(action === 'saveDraft')) return;
+      if (busy || allTabsLocked() || !validateProfile(action === 'saveDraft')) return;
       busy = true;
       var buttons = Array.from(form.querySelectorAll('.profile-actions button'));
       buttons.forEach(function (button) { button.disabled = true; });
@@ -1886,6 +2377,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
           var row = collections.bimProjects.rows.find(function (r) { return r.id === item.clientId; });
           if (row && item.liveId) row.liveId = item.liveId;
         });
+        if (!result.preview) renderAttachments();
         if (action === 'saveDraft') {
           report('profile-status', result.preview ? 'Preview draft captured in memory for this session only. Reloading clears it; no data was sent to Dataverse.' : 'Draft saved.');
         } else {
@@ -1896,15 +2388,55 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
           }
           document.getElementById('next-revalidation-date').textContent = dateText;
           document.getElementById('submission-preview-note').hidden = !result.preview;
+          report('profile-status', result.preview ? 'Example submission only. No data was sent.' : 'Submitted for review. Submitted sections are locked until the review is complete.');
           show('submit', true);
+          if (!result.preview) applyTabLocks();
         }
       } catch (error) {
         report('profile-status', error.message || 'The request failed. Your entered details remain on this screen. Please try again.');
       } finally {
         busy = false;
-        buttons.forEach(function (button) { button.disabled = false; });
         form.setAttribute('aria-busy', 'false');
+        refreshActionState();
       }
+    }
+
+    // A tab whose latest submission is Submitted is pending review: read-only, no unlock action.
+    // inert (not disabled) so readFields() still collects its values and record cards stay openable.
+    // With every tab Submitted there is nothing left to save, so both actions are disabled.
+    function allTabsLocked() {
+      return PORTAL_SUBMISSION_TABS.every(function (tab) { return submissionTabStatus[tab] === 'Submitted'; });
+    }
+    function refreshActionState() {
+      var locked = allTabsLocked();
+      form.querySelectorAll('.profile-actions button').forEach(function (button) { button.disabled = locked || busy; });
+      if (locked && !busy) report('profile-status', 'All sections have been submitted and are pending review. Nothing left to save.');
+    }
+    function applyTabLocks() {
+      PORTAL_SUBMISSION_TABS.forEach(function (tab, index) {
+        var panel = document.getElementById('panel-' + index);
+        if (submissionTabStatus[tab] !== 'Submitted' || !panel || panel.dataset.locked === 'true') return;
+        panel.dataset.locked = 'true';
+        panel.classList.add('tab-locked');
+        var banner = element('p', 'pending-review-banner', 'Pending review — this section has been submitted and cannot be edited until the review is complete.');
+        banner.setAttribute('role', 'status');
+        panel.prepend(banner);
+        Array.from(panel.children).forEach(function (child) {
+          if (child === banner) return;
+          if (child.classList.contains('collection-section')) {
+            child.querySelectorAll('.form-field, .add-record, .remove-record').forEach(function (node) { node.setAttribute('inert', ''); });
+            // Record cards open in a modal dialog: keep only its Done button live so a submitted
+            // record can be viewed but nothing inside it (fields, pickers, Remove) can change.
+            child.querySelectorAll('.record-card').forEach(function (card) {
+              Array.from(card.children).forEach(function (part) {
+                if (part.tagName !== 'LEGEND' && !part.classList.contains('close-editor')) part.setAttribute('inert', '');
+              });
+            });
+          }
+          else child.setAttribute('inert', '');
+        });
+      });
+      refreshActionState();
     }
 
     form.noValidate = true;
@@ -1912,11 +2444,16 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     form.addEventListener('submit', function (event) { event.preventDefault(); persist('submit'); });
     document.getElementById('done').addEventListener('click', function () { show('profile', true); });
     Object.keys(choices).forEach(renderTags);
+    applyTabLocks();
     refreshFinancial();
     renderAttachments();
 
     if (preview) {
       root.querySelector('.live-signin').hidden = true;
+      document.getElementById('send-code').hidden = false;
+      document.getElementById('code-label').hidden = false;
+      root.querySelector('.otp-fields').hidden = false;
+      document.getElementById('signin-verify').hidden = false;
       document.getElementById('registered-email').value = 'contact@studiovermeer.com';
       ['4','9','2'].forEach(function (value,index) { digits[index].value = value; });
       form.elements.firmName.value = 'Studio Vermeer Architects'; form.elements.website.value = 'studiovermeer.com'; form.elements.firmType.value = 'Private'; form.elements.alias.value = 'SVA Design';
@@ -1965,7 +2502,13 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       document.getElementById('submission-preview-note').hidden = false;
       document.getElementById('sign-out').addEventListener('click',function (event) { event.preventDefault(); show('signin',true); });
       show(location.hash.slice(1) || 'signin');
-    } else show(root.dataset.authenticated === 'true' ? 'confidentiality' : 'signin');
+    } else if (root.dataset.authenticated === 'true') {
+      // Picks up the signed-in native Contact's asc_consultantid (set by Power Pages' own
+      // invitation redemption, not anything this code validates) - see
+      // resolveInvitationConsultant() in services.js.
+      resolveInvitationConsultant();
+      show('confidentiality');
+    } else show('signin');
 
 
   }

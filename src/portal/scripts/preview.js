@@ -1,5 +1,9 @@
     if (preview) {
       root.querySelector('.live-signin').hidden = true;
+      document.getElementById('send-code').hidden = false;
+      document.getElementById('code-label').hidden = false;
+      root.querySelector('.otp-fields').hidden = false;
+      document.getElementById('signin-verify').hidden = false;
       document.getElementById('registered-email').value = 'contact@studiovermeer.com';
       ['4','9','2'].forEach(function (value,index) { digits[index].value = value; });
       form.elements.firmName.value = 'Studio Vermeer Architects'; form.elements.website.value = 'studiovermeer.com'; form.elements.firmType.value = 'Private'; form.elements.alias.value = 'SVA Design';
@@ -48,4 +52,10 @@
       document.getElementById('submission-preview-note').hidden = false;
       document.getElementById('sign-out').addEventListener('click',function (event) { event.preventDefault(); show('signin',true); });
       show(location.hash.slice(1) || 'signin');
-    } else show(root.dataset.authenticated === 'true' ? 'confidentiality' : 'signin');
+    } else if (root.dataset.authenticated === 'true') {
+      // Picks up the signed-in native Contact's asc_consultantid (set by Power Pages' own
+      // invitation redemption, not anything this code validates) - see
+      // resolveInvitationConsultant() in services.js.
+      resolveInvitationConsultant();
+      show('confidentiality');
+    } else show('signin');

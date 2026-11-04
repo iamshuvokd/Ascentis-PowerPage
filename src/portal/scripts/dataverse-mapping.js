@@ -9,12 +9,25 @@
           if (input === false || input === 'No') return false;
           throw new Error('Invalid Yes/No value for ' + column + '.');
         }
+        if ((map.yearDateColumns || []).includes(column)) {
+          // The form collects a plain year but the live column is Date and Time (checked against a
+          // fresh export 2026-10-29), so a year is stored as 1 January UTC of that year and only the
+          // year is read back (reverseValue). Never send a bare "2024" - Dataverse rejects it.
+          var yearText = String(input).trim();
+          if (!/^\d{4}$/.test(yearText) || Number(yearText) < 1900 || Number(yearText) > 2100) throw new Error('Invalid year for ' + column + '.');
+          return yearText + '-01-01T00:00:00Z';
+        }
         if (map.integerColumns.includes(column) || map.decimalColumns.includes(column) || column.startsWith('asc_revenuepct_')) {
           var text = String(input).trim();
           if (!/^\$?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(text)) throw new Error('Invalid number for ' + column + '.');
           var number = Number(text.replace(/[$,]/g, ''));
           if (!Number.isFinite(number) || number > 100000000000 || (map.integerColumns.includes(column) && (!Number.isSafeInteger(number) || number > 2147483647))) throw new Error('Number is outside the supported range for ' + column + '.');
           return number;
+        }
+        if (map.picklistColumns && map.picklistColumns[column]) {
+          var option = map.picklistColumns[column][String(input).trim()];
+          if (option === undefined) throw new Error('Unsupported choice for ' + column + '.');
+          return option;
         }
         if (column === 'asc_fiscalformat') {
           if (String(input).startsWith('YYYY/ZZ')) return 'YYYY/ZZ';
@@ -35,7 +48,12 @@
       function reverseValue(column, raw) {
         if (raw === null || raw === undefined) return undefined;
         if (map.booleanColumns.includes(column)) return raw ? 'Yes' : 'No';
+        if ((map.yearDateColumns || []).includes(column)) return String(raw).slice(0, 4);
         if (map.integerColumns.includes(column) || map.decimalColumns.includes(column) || column.startsWith('asc_revenuepct_')) return String(raw);
+        if (map.picklistColumns && map.picklistColumns[column]) {
+          var labels = Object.keys(map.picklistColumns[column]).filter(function (label) { return map.picklistColumns[column][label] === raw; });
+          return labels.length ? labels[0] : undefined;
+        }
         if (column === 'asc_fiscalformat') return raw === 'YYYY/ZZ' ? 'YYYY/ZZ (Apr–Mar)' : raw === 'YYYY' ? 'YYYY (Jan–Dec)' : raw;
         return String(raw);
       }
@@ -84,7 +102,7 @@
         var collections = {};
         Object.keys(map.collections).forEach(function (key) {
           collections[key] = ((payload.collections || {})[key] || []).map(function (row) {
-            return { clientId: row.id, liveId: row.liveId || null, table: map.collections[key].table, fields: fields(row, map.collections[key].fields), references: { region: row.region || null, country: row.country || null, type: row.type || null, disciplines: row.disciplines || [], leaders: row.leaders || [] } };
+            return { clientId: row.id, liveId: row.liveId || null, table: map.collections[key].table, fields: fields(row, map.collections[key].fields), references: { contactType: row.contactType || null, region: row.region || null, country: row.country || null, type: row.type || null, disciplines: row.disciplines || [], leaders: row.leaders || [] } };
           });
         });
         return { mappingVersion: map.version, consultant: consultant, references: { firmType: payload.identity.firmType || null, disciplines: payload.identity.disciplines || [], sectors: payload.identity.sectors || [], regions: payload.identity.regions || [], bimDisciplines: ((payload.sections || {}).bim || {}).disciplines || [] }, collections: collections, files: payload.files || [] };

@@ -34,7 +34,7 @@
         return Math.abs(total - 100) > 0.5 ? 'Revenue shares total ' + total.toFixed(1) + '%. Check that they total approximately 100%.' : '';
       },
       fileError: function (file, maximum) {
-        return file.size > maximum ? file.name + ' exceeds the 25 MB limit.' : '';
+        return file.size > maximum ? file.name + ' exceeds the ' + Math.round(maximum / 1000000) + ' MB limit.' : '';
       },
       yearError: function (start, completion) {
         return start && completion && Number(completion) < Number(start) ? 'Completion year must be on or after the start year.' : '';

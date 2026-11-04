@@ -188,7 +188,16 @@
         var field = createField(definition, node);
         if (initial && initial[definition.key] !== undefined && definition.type !== 'file') {
           if (field.control.multiple) Array.from(field.control.options).forEach(function (option) { option.selected = initial[definition.key].includes(option.value); });
-          else field.control.value = initial[definition.key];
+          else {
+            field.control.value = initial[definition.key];
+            // Stored values can differ from the option text only by case (e.g. 'In Progress' vs
+            // 'In progress'); an unmatched value would leave the select blank, so match loosely.
+            if (field.control.tagName === 'SELECT' && field.control.selectedIndex <= 0 && initial[definition.key]) {
+              var wanted = String(initial[definition.key]).trim().toLowerCase();
+              var match = Array.from(field.control.options).find(function (option) { return option.value.trim().toLowerCase() === wanted; });
+              if (match) field.control.value = match.value;
+            }
+          }
         }
         group.fields.push(field);
         if (field.control.refreshMulti) field.control.refreshMulti();

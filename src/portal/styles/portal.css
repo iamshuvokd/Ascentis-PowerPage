@@ -177,3 +177,7 @@
 [data-section=financial]>h3 + .field-help { display:none; }
 [data-section=financial]>.section-description { margin-bottom:20px; }
 [data-section=sustainability] [data-type=textarea] textarea { min-height:100px; }
+
+.pending-review-banner { margin:0 0 16px; padding:10px 14px; border:1px solid #d9b36a; border-radius:8px; background:#fbf3df; color:#77551e; font-weight:600; }
+.tab-locked [inert] { opacity:.65; }
+.record-dialog .multi-options { position:static; flex:1 0 100%; max-width:none; max-height:180px; margin:0 0 6px; box-shadow:none; }

@@ -1,0 +1,16 @@
+adx_accountrelationship:
+adx_append: true
+adx_appendto: false
+adx_contactrelationship:
+adx_create: false
+adx_delete: false
+adx_entitylogicalname: asc_contacttype
+adx_entityname: Contact Type - Authenticated Read
+adx_entitypermission_webrole:
+- a39db80e-a77a-4cca-b447-e2cffb65f8af
+adx_entitypermissionid: d3f1a8c5-2b6e-4e9a-8c7d-1a5b9f3e6c42
+adx_parententitypermission:
+adx_parentrelationship:
+adx_read: true
+adx_scope: 756150000
+adx_write: false

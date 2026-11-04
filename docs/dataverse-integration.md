@@ -23,3 +23,7 @@ For asynchronous writes, disable the triggering control while pending, prevent d
 Before implementing, provide the exported schema or a mapping of tables, columns, relationships, choice values, authentication provider, review statuses, attachment storage, and consultant-to-firm ownership. Verify the chosen Power Pages APIs against current Microsoft documentation during implementation.
 
 Frontend update: structured forms and validation now exist in `form-schema.json`, `form-fields.js`, `rules.js`, and `profile.js`. The service boundary is implemented as `portalService.saveDraft(payload)` / `portalService.submit(payload)` in `services.js`, with live rejection and labelled preview responses. Use `PROJECT_MEMORY.md` for current completion status and provisional field/list decisions. Older statements about placeholder textareas in this plan describe the pre-implementation baseline.
+
+## Attachments (24 Oct 2026)
+
+Consultant-level files are stored in `asc_attachment` (row) + `asc_attachedfile` (file column, uploaded via `PUT /_api/asc_attachments(id)/asc_attachedfile`). Project-level files are blocked until `asc_projectreference` is writable; files over 16 MB are skipped (single-call limit). See `PROJECT_MEMORY.md`.

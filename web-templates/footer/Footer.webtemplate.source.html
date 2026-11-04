@@ -45,3 +45,48 @@
     }
   };
  </script>
+
+<script type="text/javascript">
+  // Invitation links (/register/?invitation=...): submit the native "Redeem invitation" form once so the
+  // user goes straight to the identity provider. Does nothing on other pages or when the form shows an error.
+  document.addEventListener("DOMContentLoaded", function () {
+    try {
+      if (!/^\/register\/?$/i.test(window.location.pathname)) return;
+      var code = new URLSearchParams(window.location.search).get("invitation");
+      if (!code) return;
+      var key = "asc-invitation-autosubmit";
+      if (window.sessionStorage.getItem(key) === code) return;
+      var submit = document.getElementById("submit-redeem-invitation");
+      if (!submit) return;
+      if (document.querySelector(".validation-summary-errors, .field-validation-error")) return;
+      var form = submit.form || submit.closest("form");
+      var existing = form && form.querySelector("input[type='checkbox']");
+      if (existing) existing.checked = false;
+      window.sessionStorage.setItem(key, code);
+      submit.click();
+    } catch (e) { /* leave the native page as is */ }
+  });
+</script>
+
+
+<script type="text/javascript">
+  // Provider list (/SignIn, /Account/Login/*): keep only the Entra External ID button, and when arriving
+  // with an invitation code go straight to it. Does nothing if that button is not found.
+  document.addEventListener("DOMContentLoaded", function () {
+    try {
+      if (!/^\/(signin|account\/login\/)/i.test(window.location.pathname)) return;
+      var buttons = Array.prototype.slice.call(document.querySelectorAll("button[name='provider'], input[name='provider']"));
+      var external = buttons.filter(function (b) {
+        return /EntraExternalID|ciamlogin/i.test((b.value || "") + " " + (b.textContent || "") + " " + (b.title || ""));
+      })[0];
+      if (!external) return;
+      buttons.forEach(function (b) { if (b !== external) b.style.display = "none"; });
+      var code = new URLSearchParams(window.location.search).get("invitationCode");
+      if (!code) return;
+      var key = "asc-provider-autoclick";
+      if (window.sessionStorage.getItem(key) === code) return;
+      window.sessionStorage.setItem(key, code);
+      external.click();
+    } catch (e) { /* leave the native page as is */ }
+  });
+</script>
