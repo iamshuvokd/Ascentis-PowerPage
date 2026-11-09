@@ -5,6 +5,10 @@
     var attachments = [];
     var busy = false;
     if (!preview) { try { loadLiveChoicesSync(); } catch (ignored) { /* keep the config.json fallback list */ } }
+    // Resolve the signed-in contact's consultant BEFORE any record is loaded. It used to run later (when the
+    // confidentiality screen was shown), so on a first sign-in - empty browser storage - the loaders below saw no
+    // consultant id and left the form blank until the next page refresh.
+    if (!preview && root.dataset.authenticated === 'true') { try { resolveInvitationConsultant(); } catch (ignored) { /* fall back to stored id */ } }
     if (!preview) { try { loadExistingRecordSync(); } catch (ignored) { /* start from a blank form */ } }
     // Form values come from each tab's latest asc_portalsubmission row; existingRecord (live tables)
     // is still loaded above for asc_before, junction diffing and live-row ID caches.

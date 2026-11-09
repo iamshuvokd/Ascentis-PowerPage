@@ -145,8 +145,22 @@ test('findDraftSubmissionId filters by the correct numeric Tab/Status values and
   assert.equal(id, 'right-row'); // case-insensitive match on the real consultant, not the other row
 });
 
-test('logAuditEvent sends the correct numeric Action/Origin and binds the fixed Actor on every call, and never throws on failure', async () => {
+test('logAuditEvent omits the Actor bind when no per-environment actor id is configured (never sends another environment\'s GUID)', async () => {
   const ctx = freshServicesContext();
+  let captured = null;
+  ctx.webApiRequest = async (method, url, body) => { captured = { method, url, body }; };
+  await ctx.logAuditEvent('Submit', 'x');
+  assert.ok(captured, 'audit entry still written');
+  assert.equal(captured.body['asc_Actor@odata.bind'], undefined);
+  ctx.document = { getElementById: id => (id === 'audit-actor' ? { textContent: 'not-a-guid' } : null) };
+  captured = null;
+  await ctx.logAuditEvent('Submit', 'x');
+  assert.equal(captured.body['asc_Actor@odata.bind'], undefined); // junk value ignored
+});
+
+test('logAuditEvent sends the correct numeric Action/Origin and binds the configured Actor on every call, and never throws on failure', async () => {
+  const ctx = freshServicesContext();
+  ctx.document = { getElementById: id => (id === 'audit-actor' ? { textContent: '2ed46b7a-98a6-f111-b373-6045bdad8d08' } : null) };
   let captured = null;
   ctx.webApiRequest = async (method, url, body) => { captured = { method, url, body }; };
   await ctx.logAuditEvent('Submit', 'asc_consultant test-id (Test Firm)');

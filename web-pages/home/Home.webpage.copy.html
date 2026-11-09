@@ -3,7 +3,7 @@
   <header class="portal-header">
     <a class="portal-brand" href="/">Ascentis — consultant portal</a>
     <div class="portal-account">
-      <span id="account-name">{% if user %}{{ user.fullname | escape }}{% endif %}</span><a id="sign-out" href="{{ website.sign_out_url_substitution | escape }}">sign out</a><span id="account-email" hidden>{% if user %}{{ user.emailaddress1 | escape }}{% endif %}</span><span id="account-consultant" hidden>{% if user %}{{ user.asc_consultantid.id | escape }}{% endif %}</span>
+      <span id="account-name">{% if user %}{{ user.fullname | escape }}{% endif %}</span><a id="sign-out" href="{{ website.sign_out_url_substitution | escape }}">sign out</a><span id="account-email" hidden>{% if user %}{{ user.emailaddress1 | escape }}{% endif %}</span><span id="account-consultant" hidden>{% if user %}{{ user.asc_consultantid.id | escape }}{% endif %}</span><span id="audit-actor" hidden>{{ settings['ConsultantPortal/AuditActorSystemUserId'] | escape }}</span>
     </div>
   </header>
 <section class="signin-card" data-view="signin" hidden aria-labelledby="signin-title">

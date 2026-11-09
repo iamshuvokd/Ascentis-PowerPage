@@ -9,6 +9,17 @@
     // consultant) is handled entirely by Power Pages' own native "Redeem invitation" flow,
     // reached via the link below, before this page is ever shown again post-sign-in - see
     // resolveInvitationConsultant() in services.js. Nothing to prefill here (15 Oct 2026).
+    if (!preview) {
+      // Live: the email box does nothing (the button only links to Power Pages sign-in, where Entra External ID
+      // asks for the email and sends the code), so remove it instead of asking for the email twice.
+      var liveEmail = document.getElementById('registered-email');
+      if (liveEmail) {
+        liveEmail.required = false;
+        liveEmail.hidden = true;
+        var liveEmailLabel = root.querySelector('label[for="registered-email"]');
+        if (liveEmailLabel) liveEmailLabel.hidden = true;
+      }
+    }
     if (preview) {
       document.getElementById('send-code').addEventListener('click', function () {
         if (!document.getElementById('registered-email').reportValidity()) return;

@@ -162,7 +162,7 @@
   adx_value: true
 - adx_name: Authentication/Registration/OpenRegistrationEnabled
   adx_sitesettingid: fc3a5682-2673-4c58-999a-71c93c4ddbd5
-  adx_value: true
+  adx_value: false
 - adx_name: Authentication/OpenIdConnect/AzureAD/RebrandDisclaimerEnabled
   adx_sitesettingid: fd4f531a-cfa9-f111-b373-6045bda553ef
   adx_value: false

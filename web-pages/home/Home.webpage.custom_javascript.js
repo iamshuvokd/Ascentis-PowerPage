@@ -190,7 +190,15 @@
     //    on create - see backend/README.md for the exact list.
     var previewDraft = null;
     var liveConsultantId = null;
-    try { liveConsultantId = window.localStorage.getItem('ascentisLiveConsultantId') || null; } catch (ignored) {}
+    try {
+      liveConsultantId = window.localStorage.getItem('ascentisLiveConsultantId') || null;
+      // A stored value that is not a GUID (e.g. an old Liquid placeholder such as "empty37184771") is junk:
+      // discard it so it is never used as a consultant id.
+      if (liveConsultantId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(liveConsultantId)) {
+        window.localStorage.removeItem('ascentisLiveConsultantId');
+        liveConsultantId = null;
+      }
+    } catch (ignored) {}
     var verificationToken = null;
     async function getVerificationToken() {
       if (verificationToken) return verificationToken;
@@ -1029,29 +1037,36 @@
     // `pac org who` User ID for svc.dev@ascentis.build) - not looked up by this code at runtime.
     var AUDIT_ACTOR_SYSTEMUSER_ID = '2ed46b7a-98a6-f111-b373-6045bdad8d08';
     var AUDIT_ORIGIN_SELF_SERVICE_PORTAL = 751050001;
+    // The actor GUID above is the DEVELOPMENT service user; SystemUser ids differ per environment, so binding it
+    // in Production returned 404. Each environment now sets its own via the site setting
+    // ConsultantPortal/AuditActorSystemUserId (rendered into #audit-actor by shell.html). If it is missing or not
+    // a GUID the actor is simply left off (asc_actor is optional) so the audit entry is still written.
+    function auditActorId() {
+      var configured = '';
+      try { configured = ((document.getElementById('audit-actor') || {}).textContent || '').trim(); } catch (ignored) {}
+      return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(configured) ? configured : '';
+    }
     async function logAuditEvent(action, objectText) {
       try {
-        await webApiRequest('POST', '/_api/asc_auditlogs', {
+        var actorId = auditActorId();
+        var auditBody = {
           asc_action: AUDIT_ACTION_VALUES[action],
           asc_eventtime: new Date().toISOString(),
           asc_object: objectText,
-          asc_origin: AUDIT_ORIGIN_SELF_SERVICE_PORTAL,
-          // Bind property must match the relationship's single-valued navigation property name
-          // (SchemaName-derived: "asc_Actor", capital A) - NOT the attribute's all-lowercase
-          // LogicalName "asc_actor". Confirmed via a fresh pac solution export: every other
-          // @odata.bind lookup in this file happens to have been typed all-lowercase originally
-          // so LogicalName and the nav property already matched by coincidence; this one didn't.
-          // Dataverse Web API treats this as case-sensitive, so the lowercase form 400s with the
-          // generic "Common Data Service error occurred" - this, not the systemuser Web API
-          // exposure, was the real cause of every unconfirmed Audit Log failure logged so far.
-          'asc_Actor@odata.bind': '/systemusers(' + AUDIT_ACTOR_SYSTEMUSER_ID + ')'
-        });
+          asc_origin: AUDIT_ORIGIN_SELF_SERVICE_PORTAL
+        };
+        // See the long note below on why this key is "asc_Actor@odata.bind" (case-sensitive nav property).
+        if (actorId) auditBody['asc_Actor@odata.bind'] = '/systemusers(' + actorId + ')';
+        await webApiRequest('POST', '/_api/asc_auditlogs', auditBody);
       } catch (error) {
         // Never blocks or fails the actual save this is logging - same fire-and-forget pattern
         // as recordPortalSubmissions above.
         console.warn('[ascentis] audit log write failed', action, error);
       }
     }
+    // Bind key note (confirmed via a fresh pac solution export): it must be the relationship's navigation
+    // property name "asc_Actor" (capital A), NOT the all-lowercase LogicalName "asc_actor"; Dataverse treats it
+    // as case-sensitive and the lowercase form fails with a generic "Common Data Service error occurred".
 
     // ---- Attachments (asc_attachment row + asc_attachedfile file column) ----
     // The live file column is asc_attachedfile ("Attached File", 32 MB max), confirmed via a fresh
@@ -1079,9 +1094,10 @@
         asc_filename: file.name,
         asc_filesizemb: Math.round((file.size / 1000000) * 1000) / 1000,
         asc_uploadedon: ids.uploadedOn,
-        asc_status: ATTACHMENT_STATUS_VALUES[ids.status || 'Draft'], asc_origin: AUDIT_ORIGIN_SELF_SERVICE_PORTAL,
-        'asc_uploadedby_id@odata.bind': '/systemusers(' + ids.uploadedById + ')'
+        asc_status: ATTACHMENT_STATUS_VALUES[ids.status || 'Draft'], asc_origin: AUDIT_ORIGIN_SELF_SERVICE_PORTAL
       };
+      // Per-environment service user (site setting); left off when not configured rather than sending another environment's id.
+      if (ids.uploadedById) body['asc_uploadedby_id@odata.bind'] = '/systemusers(' + ids.uploadedById + ')';
       // Always tied to the consultant (reviewers filter by it); project files are also tied to their project.
       body['asc_consultant_id@odata.bind'] = '/asc_consultants(' + ids.consultantId + ')';
       if (entry.projectId) body['asc_projectreference_id@odata.bind'] = '/asc_projectreferences(' + entry.projectLiveId + ')';
@@ -1120,7 +1136,7 @@
         }
         try {
           var documentTypeId = await resolveReferenceId('asc_documenttypes', 'asc_documenttypeid', entry.documentType);
-          var request = buildAttachmentRequest(entry, { consultantId: consultantId, documentTypeId: documentTypeId, uploadedById: AUDIT_ACTOR_SYSTEMUSER_ID, uploadedOn: new Date().toISOString(), status: newStatus });
+          var request = buildAttachmentRequest(entry, { consultantId: consultantId, documentTypeId: documentTypeId, uploadedById: auditActorId(), uploadedOn: new Date().toISOString(), status: newStatus });
           if (request.tooLargeForSingleRequest) {
             console.warn('[ascentis] attachment over 16 MB not uploaded (single-request limit):', entry.file.name);
             results.skipped++;
@@ -1307,6 +1323,17 @@
     // consultant) is handled entirely by Power Pages' own native "Redeem invitation" flow,
     // reached via the link below, before this page is ever shown again post-sign-in - see
     // resolveInvitationConsultant() in services.js. Nothing to prefill here (15 Oct 2026).
+    if (!preview) {
+      // Live: the email box does nothing (the button only links to Power Pages sign-in, where Entra External ID
+      // asks for the email and sends the code), so remove it instead of asking for the email twice.
+      var liveEmail = document.getElementById('registered-email');
+      if (liveEmail) {
+        liveEmail.required = false;
+        liveEmail.hidden = true;
+        var liveEmailLabel = root.querySelector('label[for="registered-email"]');
+        if (liveEmailLabel) liveEmailLabel.hidden = true;
+      }
+    }
     if (preview) {
       document.getElementById('send-code').addEventListener('click', function () {
         if (!document.getElementById('registered-email').reportValidity()) return;
@@ -1539,6 +1566,10 @@
     var attachments = [];
     var busy = false;
     if (!preview) { try { loadLiveChoicesSync(); } catch (ignored) { /* keep the config.json fallback list */ } }
+    // Resolve the signed-in contact's consultant BEFORE any record is loaded. It used to run later (when the
+    // confidentiality screen was shown), so on a first sign-in - empty browser storage - the loaders below saw no
+    // consultant id and left the form blank until the next page refresh.
+    if (!preview && root.dataset.authenticated === 'true') { try { resolveInvitationConsultant(); } catch (ignored) { /* fall back to stored id */ } }
     if (!preview) { try { loadExistingRecordSync(); } catch (ignored) { /* start from a blank form */ } }
     // Form values come from each tab's latest asc_portalsubmission row; existingRecord (live tables)
     // is still loaded above for asc_before, junction diffing and live-row ID caches.

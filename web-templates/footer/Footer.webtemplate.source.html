@@ -47,8 +47,52 @@
  </script>
 
 <script type="text/javascript">
+  // Loading screen for the automatic invitation hops (Register -> Sign in -> identity provider), so the
+  // user sees one "setting up your account" screen instead of the native pages flashing past.
+  // window.ascLoading.show() / hide(); it removes itself after 25 s so a stalled redirect never traps the user.
+  (function () {
+    var id = "asc-loading-overlay", timer = null;
+    function hide() {
+      if (timer) { clearTimeout(timer); timer = null; }
+      var el = document.getElementById(id);
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+    }
+    function show() {
+      if (document.getElementById(id) || !document.body) return;
+      var style = document.createElement("style");
+      style.textContent = "#" + id + "{position:fixed;inset:0;z-index:2147483647;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Segoe UI,Arial,sans-serif;color:#333;text-align:center;padding:24px}" +
+        "#" + id + " .asc-spin{width:48px;height:48px;border:5px solid #e3e3e3;border-top-color:#0b5cab;border-radius:50%;animation:asc-spin 0.9s linear infinite;margin-bottom:20px}" +
+        "#" + id + " p{margin:4px 0;font-size:16px}#" + id + " .asc-sub{color:#666;font-size:14px}" +
+        "@keyframes asc-spin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){#" + id + " .asc-spin{animation-duration:3s}}";
+      var el = document.createElement("div");
+      el.id = id;
+      el.setAttribute("role", "status");
+      el.setAttribute("aria-live", "polite");
+      el.appendChild(style);
+      el.insertAdjacentHTML("beforeend", "<div class='asc-spin' aria-hidden='true'></div><p><strong>Setting up your account&hellip;</strong></p><p class='asc-sub'>Please wait, you will be taken to sign in automatically.</p>");
+      document.body.appendChild(el);
+      timer = setTimeout(hide, 25000);
+    }
+    window.ascLoading = { show: show, hide: hide };
+    // Back/forward cache restore must not leave the overlay on screen.
+    window.addEventListener("pageshow", function (e) { if (e.persisted) hide(); });
+  })();
+</script>
+
+<script type="text/javascript">
   // Invitation links (/register/?invitation=...): submit the native "Redeem invitation" form once so the
   // user goes straight to the identity provider. Does nothing on other pages or when the form shows an error.
+  // The loading screen is shown straight away (before DOMContentLoaded) to hide the native page.
+  (function () {
+    var willAutoSubmit = false;
+    try {
+      if (/^\/register\/?$/i.test(window.location.pathname)) {
+        var c = new URLSearchParams(window.location.search).get("invitation");
+        willAutoSubmit = !!c && window.sessionStorage.getItem("asc-invitation-autosubmit") !== c;
+      }
+    } catch (e) { /* no storage: fall through, the handler below decides */ }
+    if (willAutoSubmit && window.ascLoading) window.ascLoading.show();
+  })();
   document.addEventListener("DOMContentLoaded", function () {
     try {
       if (!/^\/register\/?$/i.test(window.location.pathname)) return;
@@ -57,36 +101,110 @@
       var key = "asc-invitation-autosubmit";
       if (window.sessionStorage.getItem(key) === code) return;
       var submit = document.getElementById("submit-redeem-invitation");
-      if (!submit) return;
-      if (document.querySelector(".validation-summary-errors, .field-validation-error")) return;
+      if (!submit || document.querySelector(".validation-summary-errors, .field-validation-error")) {
+        if (window.ascLoading) window.ascLoading.hide();
+        return;
+      }
       var form = submit.form || submit.closest("form");
       var existing = form && form.querySelector("input[type='checkbox']");
       if (existing) existing.checked = false;
       window.sessionStorage.setItem(key, code);
       submit.click();
-    } catch (e) { /* leave the native page as is */ }
+    } catch (e) { if (window.ascLoading) window.ascLoading.hide(); /* leave the native page as is */ }
   });
 </script>
 
 
 <script type="text/javascript">
+  // Used / expired invitation link: after the native Redeem form answers "Invalid invitation code." show a plain
+  // explanation and a sign-in button (Entra External ID emails a one-time code) instead of the raw form.
+  // Only runs on /register when that message is actually visible; otherwise the native page is untouched.
+  document.addEventListener("DOMContentLoaded", function () {
+    try {
+      if (!/^\/register\/?$/i.test(window.location.pathname)) return;
+      var submit = document.getElementById("submit-redeem-invitation");
+      var form = submit && (submit.form || submit.closest("form"));
+      if (!form) return;
+      var scope = document.getElementById("content-container") || document.getElementById("mainContent") || document.querySelector("main") || document.body;
+      var holder = null;
+      Array.prototype.slice.call(scope.querySelectorAll("div, p, span, li")).forEach(function (el) {
+        if (holder || el.children.length > 1 || !el.offsetParent) return;
+        if (/invalid invitation code/i.test(el.textContent || "")) holder = el;
+      });
+      if (!holder) return;
+      if (window.ascLoading) window.ascLoading.hide();
+      // Hide the native tabs, heading, message and form.
+      holder.style.display = "none";
+      var errBox = holder.closest(".alert, .validation-summary-errors, .alert-danger");
+      if (errBox) errBox.style.display = "none";
+      form.style.display = "none";
+      Array.prototype.slice.call(document.querySelectorAll(".nav-tabs, h1, h2, h3")).forEach(function (el) {
+        if (el.classList.contains("nav-tabs") || /invitation code/i.test(el.textContent || "")) {
+          if (!el.closest("header, footer, .navbar")) el.style.display = "none";
+        }
+      });
+      var card = document.createElement("div");
+      card.id = "asc-invite-expired";
+      card.setAttribute("role", "alert");
+      card.innerHTML =
+        "<style>#asc-invite-expired{max-width:560px;margin:40px auto;padding:32px 28px;background:#fff;border:1px solid #b8bfd3;border-radius:12px;font-family:Segoe UI,Arial,sans-serif;color:#00143e;text-align:center}" +
+        "#asc-invite-expired h2{margin:0 0 12px;font-size:24px;display:block!important}" +
+        "#asc-invite-expired p{margin:0 0 14px;font-size:16px;line-height:1.5}" +
+        "#asc-invite-expired .asc-small{font-size:14px;color:#697fa5}" +
+        "#asc-invite-expired a.asc-btn{display:inline-block;margin:6px 0 18px;padding:12px 28px;background:#ebf7e4;border:1px solid #99de80;border-radius:8px;color:#287d17;font-size:16px;font-weight:600;text-decoration:none}" +
+        "#asc-invite-expired a.asc-btn:hover,#asc-invite-expired a.asc-btn:focus{background:#d9f0cc}</style>" +
+        "<h2>This invitation link is no longer valid</h2>" +
+        "<p>It has already been used or has expired.</p>" +
+        "<p>If you have already registered, sign in with your registered email address. We will send you a one-time code.</p>" +
+        "<a class='asc-btn' href='/SignIn?returnUrl=%2F'>Sign in with email code</a>" +
+        "<p class='asc-small'>Not registered yet, or the code does not work? Please contact Ascentis and ask for a new invitation.</p>";
+      form.parentNode.insertBefore(card, form);
+    } catch (e) { /* leave the native page as is */ }
+  });
+</script>
+
+<script type="text/javascript">
   // Provider list (/SignIn, /Account/Login/*): keep only the Entra External ID button, and when arriving
   // with an invitation code go straight to it. Does nothing if that button is not found.
+  (function () {
+    try {
+      if (/^\/(signin|account\/login\/)/i.test(window.location.pathname)) {
+        var c = new URLSearchParams(window.location.search).get("invitationCode");
+        var recent = Date.now() - Number(window.sessionStorage.getItem("asc-provider-autoclick-ts") || 0) < 60000;
+        if (c ? window.sessionStorage.getItem("asc-provider-autoclick") !== c : !recent) { if (window.ascLoading) window.ascLoading.show(); }
+      }
+    } catch (e) { /* no storage: the handler below decides */ }
+  })();
   document.addEventListener("DOMContentLoaded", function () {
     try {
       if (!/^\/(signin|account\/login\/)/i.test(window.location.pathname)) return;
-      var buttons = Array.prototype.slice.call(document.querySelectorAll("button[name='provider'], input[name='provider']"));
+      // Provider buttons may be <button name=provider>, <input> or links (/Account/Login/ExternalLogin?...);
+      // search all of them but ignore the site header/footer.
+      var buttons = Array.prototype.slice.call(document.querySelectorAll("button, input[type='submit'], input[type='button'], a")).filter(function (b) {
+        if (b.closest("header, footer, nav, .navbar")) return false;
+        return b.getAttribute("name") === "provider" || /ExternalLogin|\/Account\/Login/i.test(b.getAttribute("href") || "") || /EntraExternalID|ciamlogin/i.test((b.value || "") + " " + (b.textContent || "") + " " + (b.title || ""));
+      });
       var external = buttons.filter(function (b) {
-        return /EntraExternalID|ciamlogin/i.test((b.value || "") + " " + (b.textContent || "") + " " + (b.title || ""));
+        return /EntraExternalID|ciamlogin|email code/i.test((b.value || "") + " " + (b.textContent || "") + " " + (b.title || "") + " " + (b.getAttribute("href") || ""));
       })[0];
-      if (!external) return;
+      var lastClick = Number(window.sessionStorage.getItem("asc-provider-autoclick-ts") || 0);
+      try { console.info("[ascentis] sign-in forward: candidates=" + buttons.length + ", providerButtonFound=" + !!external + ", msSinceLastAutoClick=" + (lastClick ? Date.now() - lastClick : "never")); } catch (ignored) {}
+      if (!external) { if (window.ascLoading) window.ascLoading.hide(); return; }
       buttons.forEach(function (b) { if (b !== external) b.style.display = "none"; });
       var code = new URLSearchParams(window.location.search).get("invitationCode");
-      if (!code) return;
+      if (!code) {
+        // Normal sign-in (no invitation): go straight to External ID (email code). Loop guard: if we already
+        // auto-clicked in the last 60 s (e.g. the provider returned an error to /SignIn), show the page instead.
+        var tsKey = "asc-provider-autoclick-ts";
+        if (Date.now() - Number(window.sessionStorage.getItem(tsKey) || 0) < 60000) { if (window.ascLoading) window.ascLoading.hide(); return; }
+        window.sessionStorage.setItem(tsKey, String(Date.now()));
+        external.click();
+        return;
+      }
       var key = "asc-provider-autoclick";
-      if (window.sessionStorage.getItem(key) === code) return;
+      if (window.sessionStorage.getItem(key) === code) { if (window.ascLoading) window.ascLoading.hide(); return; }
       window.sessionStorage.setItem(key, code);
       external.click();
-    } catch (e) { /* leave the native page as is */ }
+    } catch (e) { if (window.ascLoading) window.ascLoading.hide(); /* leave the native page as is */ }
   });
 </script>

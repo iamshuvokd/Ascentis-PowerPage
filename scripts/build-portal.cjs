@@ -25,6 +25,7 @@ const previewHtml = html
   .replace('{% if user %}{{ user.asc_consultantid.id | escape }}{% endif %}', '')
   .replaceAll('{{ website.sign_out_url_substitution | escape }}', '#signin')
   .replaceAll('{{ website.sign_in_url_substitution | escape }}', '#signin')
+  .replaceAll("{{ settings['ConsultantPortal/AuditActorSystemUserId'] | escape }}", '')
   .replaceAll("{{ settings['ConsultantPortal/ConfidentialityPdfUrl'] | escape }}", '')
   .replaceAll("{{ settings['ConsultantPortal/ConfidentialityFlowId'] | escape }}", '')
   .replace('class="consultant-portal"', 'class="consultant-portal" data-preview="true"');
