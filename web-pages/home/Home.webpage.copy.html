@@ -7,7 +7,12 @@
     </div>
   </header>
 <section class="signin-card" data-view="signin" hidden aria-labelledby="signin-title">
+  <div class="signin-icon" aria-hidden="true">
+    <svg viewBox="0 0 120 120" width="88" height="88" focusable="false"><circle cx="60" cy="60" r="56" fill="#ebf7e4" stroke="#99de80" stroke-width="2"/><path d="M60 28l24 9v19c0 15-10 27-24 33-14-6-24-18-24-33V37z" fill="#fff" stroke="#287d17" stroke-width="3" stroke-linejoin="round"/><path d="M49 58l8 8 15-16" fill="none" stroke="#00143e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <p class="signin-eyebrow">Consultant Database</p>
   <h1 id="signin-title" tabindex="-1">Sign in to update your profile</h1>
+  <p class="signin-intro">Use the email address your invitation was sent to. We will email you a one-time code, so there is no password to remember.</p>
   <form id="signin-form">
     <label for="registered-email">Registered email</label>
     <input id="registered-email" type="email" autocomplete="email" required>
@@ -16,8 +21,9 @@
     <div class="otp-fields" role="group" aria-labelledby="code-label" hidden><input aria-label="Digit 1" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="one-time-code" required><input aria-label="Digit 2" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 3" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 4" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 5" inputmode="numeric" pattern="[0-9]" maxlength="1"  required><input aria-label="Digit 6" inputmode="numeric" pattern="[0-9]" maxlength="1"  required></div>
     <button class="portal-button portal-button-primary full-width" id="signin-verify" type="submit" hidden>Verify and continue</button>
     <p class="portal-status" id="signin-status" role="status" hidden></p>
-    <a class="portal-button portal-button-primary full-width live-signin" href="{{ website.sign_in_url_substitution | escape }}">Continue with Power Pages sign in</a>
+    <a class="portal-button portal-button-primary full-width live-signin" href="{{ website.sign_in_url_substitution | escape }}">Continue to secure sign-in</a>
   </form>
+  <p class="signin-help">Did not receive an invitation? Contact your Ascentis representative.</p>
 </section>
 <div class="portal-content">
     <nav aria-label="Registration progress">
