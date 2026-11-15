@@ -3,7 +3,11 @@ ASCENTIS CONSULTANT PORTAL - DATA FORMAT FOR THE POWER APPS REVIEWER SCREENS
 
 SOURCE TABLE
   Table:        asc_portalsubmission  (ConsultantDatabaseSolution)
-  Environment:  CDB Development - https://org84e19bfd.crm8.dynamics.com
+  Environments: CDB Development  https://org84e19bfd.crm8.dynamics.com
+                CDB Testing      https://org3db46cb7.crm8.dynamics.com
+                CDB Production   https://org7fc54203.crm8.dynamics.com
+  (same table and same JSON formats in all three; updated 15 Nov 2026: new
+   "Operator approvals" tab and "shareholders" inside Offices & contacts)
   The Consultant Portal creates one row each time a consultant saves a tab.
 
 COLUMNS
@@ -26,6 +30,7 @@ CHOICE VALUES
     751050002 Legal
     751050003 Offices & contacts
     751050004 Project references
+    751050005 Operator approvals   (NEW)
     751050006 BIM
     751050007 Sustainability & ESG
     751050010 Attachments
@@ -70,7 +75,7 @@ asc_after FORMAT (a JSON string, one per tab)
 --- Financial (751050001) --- revenueByRegion holds only regions that were filled in
 {
   "effectiveYear": "2026",
-  "yearFormat": "FY",
+  "yearFormat": "YYYY (Jan–Dec)",
   "backlog": "5000000",
   "revenue1": "1000000",
   "revenue2": "900000",
@@ -90,6 +95,8 @@ asc_after FORMAT (a JSON string, one per tab)
 }
 
 --- Offices & contacts (751050003) --- offices[].leaders lists contacts[].id values
+    "shareholders" (NEW) is part of this tab: equity is a string "0".."100"; the
+    portal warns (does not block) when the equity values do not total about 100.
 {
   "offices": [
     {
@@ -106,8 +113,29 @@ asc_after FORMAT (a JSON string, one per tab)
       "jobTitle": "Partner", "region": "Europe",
       "contactType": "Primary", "status": "Active"
     }
+  ],
+  "shareholders": [
+    { "id": "shareholders-1", "liveId": "GUID-or-null", "name": "Shuvo Kumar Das", "equity": "20" },
+    { "id": "shareholders-2", "liveId": null, "name": "Rimon Paul", "equity": "40.5" }
   ]
 }
+    Live table: asc_shareholder (asc_name, asc_equitypct decimal, asc_consultant_id).
+    Older rows written before 15 Nov 2026 have no "shareholders" key = none entered.
+
+--- Operator approvals (751050005) --- NEW tab, a bare ARRAY (max 8 rows)
+[
+  {
+    "id": "operatorApprovals-1", "liveId": "GUID-or-null",
+    "operator": "Marriott",
+    "disciplines": ["MEP", "Structure"],
+    "regions": ["Africa", "Europe"],
+    "brands": "JW Marriott, Autograph"
+  }
+]
+    operator = display name of an asc_Operator row; disciplines is required, regions
+    and brands are optional. Live tables: asc_operatorapproval (asc_operator_id,
+    asc_brands, asc_consultant_id) + one row per discipline in
+    asc_operatorapprovaldiscipline + one row per region in asc_OperatorApprovalsRegions.
 
 --- Project references (751050004) --- a bare ARRAY, not an object
 [
@@ -122,7 +150,7 @@ asc_after FORMAT (a JSON string, one per tab)
 
 --- BIM (751050006) ---
 {
-  "bim": { "capability": "Yes", "operators": "5", "disciplines": ["MEP"] },
+  "bim": { "capability": "In-house", "operators": "5", "disciplines": ["MEP"] },
   "bimProjects": [
     {
       "id": "bimProjects-1", "liveId": "GUID-or-null",
@@ -177,7 +205,7 @@ END-TO-END FLOW
      (this is NOT the asc_contact business-contact table).
   2. Admin app sends the Power Pages invitation (native "Invite contacts" feature).
   3. Admin app seeds the consultant's data: ONE asc_portalsubmission row PER TAB
-     (8 tabs), see "SEEDING A ROW" below.
+     (9 tabs), see "SEEDING A ROW" below.
   4. Invitee redeems the link and signs in. The portal reads the signed-in contact's
      asc_consultantid, then loads the NEWEST asc_portalsubmission row per tab for
      that consultant and shows its asc_after in the form.
@@ -200,6 +228,7 @@ WHAT THE PORTAL SHOWS PER TAB (newest row by createdon, any status)
 SEEDING A ROW (what the Power Apps developer writes)
   asc_consultant_id   the consultant (lookup)                      REQUIRED
   asc_tab             tab number (751050000 ... 751050010)        REQUIRED
+                      (751050005 Operator approvals added 15 Nov 2026)
   asc_status          751050004 (Seeded) when seeding existing     REQUIRED
                       data, so the tab opens editable.
                       Do NOT seed as Submitted: that locks the tab.
@@ -223,9 +252,10 @@ SEEDING A ROW (what the Power Apps developer writes)
 
 RULES
   - Always create a NEW row; never edit or delete old rows. Newest createdon wins.
-  - Seed all 8 tabs, or the missing ones show blank.
+  - Seed all 9 tabs, or the missing ones show blank.
   - Keep keys exactly as in Part 1; a missing key shows blank.
-  - Include the real "liveId" GUID on contacts and bimProjects rows. Without it the
+  - Include the real "liveId" GUID on contacts, shareholders, operatorApprovals and
+    bimProjects rows. Without it the
     next consultant save creates duplicate live rows.
   - Use display names (not GUIDs) for choices/lookups, e.g. "region": "Europe".
   - Money/numbers are strings ("1000000"); multi-selects are arrays of text.

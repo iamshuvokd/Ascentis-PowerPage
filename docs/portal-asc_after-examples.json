@@ -1,0 +1,172 @@
+{
+  "_readme": "Examples of the JSON the Ascentis consultant portal stores in asc_portalsubmission.asc_after, one value per tab. Store each tab's value as TEXT in its own row. Keys are exact; numbers/money are strings; multi-selects are arrays of display names; id = temporary row id, liveId = Dataverse GUID or null. See docs/powerapps-reviewer-handoff.txt.",
+  "asc_tab_values": {
+    "Identity (shown as Overview)": 751050000,
+    "Financial": 751050001,
+    "Legal": 751050002,
+    "Offices & contacts": 751050003,
+    "Project references": 751050004,
+    "Operator approvals": 751050005,
+    "BIM": 751050006,
+    "Sustainability & ESG": 751050007,
+    "Attachments": 751050010
+  },
+  "asc_status_values": {
+    "Draft": 751050000,
+    "Submitted": 751050001,
+    "Accepted": 751050002,
+    "Rejected": 751050003,
+    "Seeded": 751050004
+  },
+  "tabs": {
+    "Identity": {
+      "firmName": "Rajan Consultant Limited",
+      "website": "www.example.com",
+      "firmType": "Private",
+      "alias": "RCL",
+      "disciplines": [
+        "Architecture",
+        "MEP"
+      ],
+      "sectors": [
+        "Hospitality"
+      ],
+      "regions": [
+        "Europe",
+        "Africa"
+      ]
+    },
+    "Financial": {
+      "effectiveYear": "2026",
+      "yearFormat": "YYYY (Jan–Dec)",
+      "backlog": "5000000",
+      "revenue1": "1000000",
+      "revenue2": "900000",
+      "revenue3": "800000",
+      "revenueByRegion": {
+        "Europe": "60",
+        "Middle East": "40"
+      }
+    },
+    "Legal": {
+      "indemnified": "No",
+      "litigation": "No",
+      "insured": "Yes",
+      "perOccurrence": "1000000",
+      "aggregate": "2000000"
+    },
+    "Offices & contacts": {
+      "offices": [
+        {
+          "id": "offices-1",
+          "liveId": null,
+          "region": "Europe",
+          "city": "Paris",
+          "country": "France",
+          "address": "",
+          "status": "Active",
+          "headcount": "40",
+          "leaders": [
+            "contacts-1"
+          ]
+        }
+      ],
+      "contacts": [
+        {
+          "id": "contacts-1",
+          "liveId": null,
+          "firstName": "A",
+          "lastName": "B",
+          "email": "a@example.com",
+          "phone": "+33 1 5555 0100",
+          "jobTitle": "Partner",
+          "region": "Europe",
+          "contactType": "Primary contact",
+          "status": "Active"
+        }
+      ],
+      "shareholders": [
+        {
+          "id": "shareholders-1",
+          "liveId": null,
+          "name": "Shuvo Kumar Das",
+          "equity": "20"
+        },
+        {
+          "id": "shareholders-2",
+          "liveId": null,
+          "name": "Rimon Paul",
+          "equity": "40.5"
+        }
+      ]
+    },
+    "Project references": [
+      {
+        "id": "projects-1",
+        "liveId": null,
+        "name": "Tower",
+        "country": "France",
+        "region": "Europe",
+        "disciplines": [
+          "Architecture"
+        ],
+        "type": "Hotel",
+        "keys": "200",
+        "status": "Completed",
+        "startYear": "2020",
+        "completionYear": "2024"
+      }
+    ],
+    "Operator approvals": [
+      {
+        "id": "operatorApprovals-1",
+        "liveId": null,
+        "operator": "Marriott",
+        "disciplines": [
+          "MEP",
+          "Structure"
+        ],
+        "regions": [
+          "Africa",
+          "Europe"
+        ],
+        "brands": "JW Marriott, Autograph"
+      }
+    ],
+    "BIM": {
+      "bim": {
+        "capability": "In-house",
+        "operators": "5",
+        "disciplines": [
+          "MEP"
+        ]
+      },
+      "bimProjects": [
+        {
+          "id": "bimProjects-1",
+          "liveId": null,
+          "name": "Hub",
+          "location": "Paris",
+          "gfa": "12000",
+          "lod": "LOD 300",
+          "disciplines": [
+            "MEP"
+          ]
+        }
+      ]
+    },
+    "Sustainability & ESG": {
+      "certified": "No",
+      "reporting": "No",
+      "professionals": "0",
+      "qa": "No"
+    },
+    "Attachments": [
+      {
+        "documentType": "Certificate",
+        "projectId": null,
+        "name": "cert.pdf"
+      }
+    ]
+  }
+}
