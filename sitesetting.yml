@@ -214,6 +214,46 @@
   adx_name: Webapi/asc_contact/fields
   adx_sitesettingid: 471acefa-e418-4fa6-addd-a6eaea874c6e
   adx_value: asc_contactid,asc_number,asc_firstname,asc_lastname,asc_workemail,asc_phone,asc_jobtitle,asc_contacttype,asc_ContactType,_asc_contacttype_value,asc_status,asc_regionid,asc_consultant_id,_asc_consultant_id_value
+- adx_description: 'Enables the Power Pages Web API for the Shareholder table (asc_shareholder), required by src/portal/scripts/services.js live write path.'
+  adx_name: Webapi/asc_shareholder/enabled
+  adx_sitesettingid: 5c1e7a52-3f0b-4d6e-9a41-2b8d7e6f1a30
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_shareholder, matching every column written/read by src/portal/scripts/services.js.'
+  adx_name: Webapi/asc_shareholder/fields
+  adx_sitesettingid: 8d4b2f19-6a7c-4e35-b1d0-9c3a5e7f2b64
+  adx_value: asc_shareholderid,asc_name,asc_equitypct,asc_consultant_id,_asc_consultant_id_value
+- adx_description: 'Enables the Power Pages Web API for Operator reference table (asc_operator), read-only, used to populate the operator dropdown.'
+  adx_name: Webapi/asc_operator/enabled
+  adx_sitesettingid: 6f840b56-7d15-46ab-bed9-a1eee0e06583
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_operator, matching every column read/written by src/portal/scripts/services.js.'
+  adx_name: Webapi/asc_operator/fields
+  adx_sitesettingid: b24261e3-16b3-4cc7-aa41-0b7442daa33e
+  adx_value: asc_operatorid,asc_name
+- adx_description: 'Enables the Power Pages Web API for Operator Approval table (asc_operatorapproval), required by src/portal/scripts/services.js live write path.'
+  adx_name: Webapi/asc_operatorapproval/enabled
+  adx_sitesettingid: a8a92e22-3d12-4de1-a3e5-1354472acbf8
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_operatorapproval, matching every column read/written by src/portal/scripts/services.js.'
+  adx_name: Webapi/asc_operatorapproval/fields
+  adx_sitesettingid: e8803dab-2dd8-4a7d-b46d-4e23e1dc4032
+  adx_value: asc_operatorapprovalid,asc_brands,asc_operator_id,_asc_operator_id_value,asc_consultant_id,_asc_consultant_id_value
+- adx_description: 'Enables the Power Pages Web API for Operator approval discipline junction (asc_operatorapprovaldiscipline).'
+  adx_name: Webapi/asc_operatorapprovaldiscipline/enabled
+  adx_sitesettingid: 994f8fcc-6a2c-4a05-b727-47f1eeeb1375
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_operatorapprovaldiscipline, matching every column read/written by src/portal/scripts/services.js.'
+  adx_name: Webapi/asc_operatorapprovaldiscipline/fields
+  adx_sitesettingid: b5b99f8d-c879-4258-8f3a-d6bad5b10994
+  adx_value: asc_operatorapprovaldisciplineid,asc_operatorapproval_id,_asc_operatorapproval_id_value,asc_disciplineid,_asc_disciplineid_value
+- adx_description: 'Enables the Power Pages Web API for Operator approval region junction (asc_OperatorApprovalsRegions).'
+  adx_name: Webapi/asc_operatorapprovalsregions/enabled
+  adx_sitesettingid: f9d31f45-d661-491c-a01a-bb67ebd55986
+  adx_value: true
+- adx_description: 'Fields exposed via the Web API for asc_operatorapprovalsregions, matching every column read/written by src/portal/scripts/services.js.'
+  adx_name: Webapi/asc_operatorapprovalsregions/fields
+  adx_sitesettingid: 65aeb900-ffa6-4eb8-a739-2fe3798ded86
+  adx_value: asc_operatorapprovalsregionsid,asc_OperatorApprovalsID,asc_operatorapprovalsid,_asc_operatorapprovalsid_value,asc_RegionsID,asc_regionsid,_asc_regionsid_value
 - adx_description: 'Enables the Power Pages Web API for the BIM Project table (asc_bimproject), required by src/portal/scripts/services.js live write path.'
   adx_name: Webapi/asc_bimproject/enabled
   adx_sitesettingid: a104728e-b778-40a7-afb6-86a8582cf7a2

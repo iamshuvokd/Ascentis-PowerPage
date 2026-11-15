@@ -9,7 +9,9 @@ config.formSchema = JSON.parse(source('form-schema.json'));
 config.dataverseMap = JSON.parse(source('dataverse-map.json'));
 const check = process.argv.includes('--check');
 const scripts = ['start', 'rules', 'dataverse-mapping', 'services', 'navigation', 'confidentiality', 'signin', 'form-fields', 'profile', 'preview', 'end'];
-const html = source('shell.html').replace(/<!-- view:([a-z]+) -->/g, (_, name) => {
+// The logo is inlined as a data URI so the standalone page and preview need no extra web file.
+const logoDataUri = 'data:image/png;base64,' + fs.readFileSync(path.join(root, 'src/portal/assets/ascentis-logo.png')).toString('base64');
+const html = source('shell.html').replace(/%%ASCENTIS_LOGO%%/g, () => logoDataUri).replace(/<!-- view:([a-z]+) -->/g, (_, name) => {
   if (!config.views.includes(name)) throw new Error('Unknown view: ' + name);
   return source('views/' + name + '.html').trim();
 });

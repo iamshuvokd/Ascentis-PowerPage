@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "node scripts/build-portal.cjs",
-    "check": "node scripts/build-portal.cjs --check && node --test tests/portal.test.cjs tests/rules.test.cjs tests/mapping.test.cjs tests/portal-submission.test.cjs",
+    "check": "node scripts/build-portal.cjs --check && node --test tests/portal.test.cjs tests/rules.test.cjs tests/mapping.test.cjs tests/portal-submission.test.cjs tests/shareholders-operators.test.cjs",
     "check:browser": "node tests/browser.cjs"
   }
 }

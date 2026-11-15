@@ -5,6 +5,7 @@
     "fileBytes": 16000000,
     "projects": 30,
     "bimProjects": 10,
+    "operators": 8,
     "leaders": 3
   },
   "documentTypes": [
@@ -131,7 +132,7 @@
     },
     {
       "id": "bim",
-      "panel": 5,
+      "panel": 6,
       "title": "BIM",
       "description": "Tell us how you deliver building information modelling and add relevant projects.",
       "fields": [
@@ -166,7 +167,7 @@
     },
     {
       "id": "sustainability",
-      "panel": 6,
+      "panel": 7,
       "title": "Sustainability & ESG",
       "description": "Share your environmental credentials, reporting practices, and quality assurance approach.",
       "fields": [
@@ -347,6 +348,26 @@
       ]
     },
     {
+      "id": "shareholders",
+      "panel": 3,
+      "title": "Shareholders",
+      "singular": "shareholder",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Shareholder name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "equity",
+          "label": "Equity %",
+          "type": "percent",
+          "required": true
+        }
+      ]
+    },
+    {
       "id": "projects",
       "panel": 4,
       "title": "Project references",
@@ -451,8 +472,21 @@
       ]
     },
     {
-      "id": "bimProjects",
+      "id": "operatorApprovals",
       "panel": 5,
+      "title": "Operator approvals",
+      "singular": "operator approval",
+      "limit": "operators",
+      "fields": [
+        { "key": "operator", "label": "Operator", "type": "select", "required": true, "source": "Operators" },
+        { "key": "disciplines", "label": "Disciplines", "type": "multi", "required": true, "source": "Disciplines" },
+        { "key": "regions", "label": "Regions", "type": "multi", "source": "Regions" },
+        { "key": "brands", "label": "Brands", "type": "text", "placeholder": "e.g. JW Marriott, Autograph" }
+      ]
+    },
+    {
+      "id": "bimProjects",
+      "panel": 6,
       "title": "BIM projects",
       "singular": "BIM project",
       "limit": "bimProjects",

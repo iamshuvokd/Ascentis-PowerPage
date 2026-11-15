@@ -258,6 +258,8 @@
       if (documentTypes) liveLists.DocumentTypes = documentTypes;
       var projectTypes = syncFetchNames('asc_projecttypes', token, 'asc_projecttypename');
       if (projectTypes) liveLists.ProjectTypes = projectTypes;
+      var operators = syncFetchNames('asc_operators', token);
+      if (operators) liveLists.Operators = operators;
     }
 
     function syncGetJson(url, token) {
@@ -335,6 +337,31 @@
         return { liveId: row.asc_contactid, fields: rowFields };
       });
 
+      // Shareholders: best-effort like the other reads (empty list if the table is not reachable yet).
+      var shareholderData = syncGetJson('/_api/asc_shareholders?$select=asc_shareholderid,asc_name,asc_equitypct,asc_consultant_id', token);
+      var shareholders = ((shareholderData && shareholderData.value) || []).filter(belongsToThisConsultant).map(function (row) {
+        return { liveId: row.asc_shareholderid, fields: dataverseMapping.reverseRow('shareholders', row) };
+      });
+
+      // Operator approvals: the approval row plus its discipline/region junction rows (names via $expand),
+      // grouped per approval so saveOperatorApprovals() only writes junction rows that are not live yet.
+      var approvalData = syncGetJson('/_api/asc_operatorapprovals?$select=asc_operatorapprovalid,asc_brands,_asc_operator_id_value,_asc_consultant_id_value', token);
+      var approvalDisciplineData = syncGetJson('/_api/asc_operatorapprovaldisciplines?$select=_asc_operatorapproval_id_value&$expand=asc_disciplineid($select=asc_name)', token);
+      var approvalRegionData = syncGetJson('/_api/asc_operatorapprovalsregionses?$select=_asc_operatorapprovalsid_value&$expand=asc_RegionsID($select=asc_name)', token);
+      var operatorApprovals = ((approvalData && approvalData.value) || []).filter(belongsToThisConsultant).map(function (row) {
+        var mine = String(row.asc_operatorapprovalid).toLowerCase();
+        var disciplinesForApproval = ((approvalDisciplineData && approvalDisciplineData.value) || [])
+          .filter(function (link) { return link._asc_operatorapproval_id_value && link._asc_operatorapproval_id_value.toLowerCase() === mine; })
+          .map(function (link) { return link.asc_disciplineid && link.asc_disciplineid.asc_name; }).filter(Boolean);
+        var regionsForApproval = ((approvalRegionData && approvalRegionData.value) || [])
+          .filter(function (link) { return link._asc_operatorapprovalsid_value && link._asc_operatorapprovalsid_value.toLowerCase() === mine; })
+          .map(function (link) { return link.asc_RegionsID && link.asc_RegionsID.asc_name; }).filter(Boolean);
+        return {
+          liveId: row.asc_operatorapprovalid,
+          fields: { operator: row['_asc_operator_id_value@OData.Community.Display.V1.FormattedValue'] || '', brands: row.asc_brands || '', disciplines: disciplinesForApproval, regions: regionsForApproval }
+        };
+      });
+
       var bimData = syncGetJson('/_api/asc_bimprojects?$select=asc_bimprojectid,asc_name,asc_location,asc_gfa,asc_consultant_id', token);
       var bimProjects = ((bimData && bimData.value) || []).filter(belongsToThisConsultant).map(function (row) {
         return { liveId: row.asc_bimprojectid, fields: dataverseMapping.reverseRow('bimProjects', row) };
@@ -403,7 +430,7 @@
         return { liveId: row.asc_attachmentid, name: row.asc_filename || '', sizeMb: Number(row.asc_filesizemb) || 0, uploadedOn: row.asc_uploadedon || '', status: ATTACHMENT_STATUS_NAMES[row.asc_status] || '', documentType: row['_asc_documenttype_id_value@OData.Community.Display.V1.FormattedValue'] || '' };
       });
 
-      existingRecord = { identity: reversed.identity, sections: reversed.sections, revenueByRegion: reversed.revenueByRegion, contacts: contacts, bimProjects: bimProjects, projects: projects };
+      existingRecord = { identity: reversed.identity, sections: reversed.sections, revenueByRegion: reversed.revenueByRegion, contacts: contacts, shareholders: shareholders, operatorApprovals: operatorApprovals, bimProjects: bimProjects, projects: projects };
     }
 
     // Secure self-service invitation flow, built 2026-10-13. Real design, confirmed with the
@@ -518,6 +545,82 @@
       }
       return results;
     }
+    async function saveShareholders(consultantId, payload) {
+      var dto = dataverseMapping.prepare(payload);
+      var rows = (dto.collections && dto.collections.shareholders) || [];
+      var results = [];
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var body = Object.assign({}, row.fields);
+        if (row.liveId) {
+          await webApiRequest('PATCH', '/_api/asc_shareholders(' + row.liveId + ')', body);
+          results.push({ clientId: row.clientId, liveId: row.liveId });
+        } else {
+          body['asc_consultant_id@odata.bind'] = '/asc_consultants(' + consultantId + ')';
+          var response = await webApiRequest('POST', '/_api/asc_shareholders', body);
+          results.push({ clientId: row.clientId, liveId: extractCreatedId(response) });
+        }
+      }
+      return results;
+    }
+    // Operator approvals (asc_operatorapproval). Operator is a lookup to asc_Operator (bound by id, resolved
+    // from the name). Disciplines/regions are junction rows (asc_operatorapprovaldiscipline /
+    // asc_OperatorApprovalsRegions), written only for labels not already live - same rule and same
+    // limitation as project references: removing a discipline/region or deleting an approval is not
+    // written back (no DELETE built). Bind keys use the lookup attribute casing from the export.
+    async function saveOperatorApprovals(consultantId, payload) {
+      var dto = dataverseMapping.prepare(payload);
+      var rows = (dto.collections && dto.collections.operatorApprovals) || [];
+      var live = (existingRecord && existingRecord.operatorApprovals) || [];
+      var results = [];
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var body = Object.assign({}, row.fields);
+        var operatorLabel = row.references && row.references.operator;
+        if (operatorLabel) {
+          var operatorId = await resolveReferenceId('asc_operators', 'asc_operatorid', operatorLabel);
+          if (operatorId) body['asc_operator_id@odata.bind'] = '/asc_operators(' + operatorId + ')';
+        }
+        var approvalId = row.liveId;
+        if (approvalId) {
+          await webApiRequest('PATCH', '/_api/asc_operatorapprovals(' + approvalId + ')', body);
+        } else {
+          body['asc_consultant_id@odata.bind'] = '/asc_consultants(' + consultantId + ')';
+          var response = await webApiRequest('POST', '/_api/asc_operatorapprovals', body);
+          approvalId = extractCreatedId(response);
+        }
+        if (approvalId) {
+          var known = (live.find(function (item) { return item.liveId === approvalId; }) || { fields: {} }).fields;
+          var knownDisciplines = known.disciplines || [];
+          var knownRegions = known.regions || [];
+          var newDisciplines = ((row.references && row.references.disciplines) || []).filter(function (label) { return !knownDisciplines.includes(label); });
+          for (var d = 0; d < newDisciplines.length; d++) {
+            var disciplineId = await resolveReferenceId('asc_disciplines', 'asc_disciplineid', newDisciplines[d]);
+            if (!disciplineId) continue;
+            var disciplineBody = {};
+            disciplineBody['asc_operatorapproval_id@odata.bind'] = '/asc_operatorapprovals(' + approvalId + ')';
+            disciplineBody['asc_disciplineid@odata.bind'] = '/asc_disciplines(' + disciplineId + ')';
+            await webApiRequest('POST', '/_api/asc_operatorapprovaldisciplines', disciplineBody);
+          }
+          var newRegions = ((row.references && row.references.regions) || []).filter(function (label) { return !knownRegions.includes(label); });
+          for (var r = 0; r < newRegions.length; r++) {
+            var regionId = await resolveReferenceId('asc_regions', 'asc_regionid', newRegions[r]);
+            if (!regionId) continue;
+            var regionBody = {};
+            regionBody['asc_OperatorApprovalsID@odata.bind'] = '/asc_operatorapprovals(' + approvalId + ')';
+            regionBody['asc_RegionsID@odata.bind'] = '/asc_regions(' + regionId + ')';
+            await webApiRequest('POST', '/_api/asc_operatorapprovalsregionses', regionBody);
+          }
+          // Remember what is live now so a second save in this session does not re-write it.
+          var entry = live.find(function (item) { return item.liveId === approvalId; });
+          if (!entry) { entry = { liveId: approvalId, fields: {} }; live.push(entry); }
+          entry.fields = { operator: operatorLabel || '', brands: body.asc_brands || '', disciplines: (row.references && row.references.disciplines) || [], regions: (row.references && row.references.regions) || [] };
+        }
+        results.push({ clientId: row.clientId, liveId: approvalId || null });
+      }
+      if (existingRecord) existingRecord.operatorApprovals = live;
+      return results;
+    }
     async function saveBimProjects(consultantId, payload) {
       var dto = dataverseMapping.prepare(payload);
       var rows = (dto.collections && dto.collections.bimProjects) || [];
@@ -614,7 +717,7 @@
       await createConsultantJunctionRows(consultantId, newRegions, 'asc_consultantregionses', 'asc_RegionID', 'asc_regions', 'asc_regionid');
       // Keep the "already associated" cache in sync so a second save later in the same
       // session (no page reload) does not try to re-associate the same labels again.
-      if (!existingRecord) existingRecord = { identity: {}, sections: {}, revenueByRegion: {}, contacts: [], bimProjects: [], projects: [] };
+      if (!existingRecord) existingRecord = { identity: {}, sections: {}, revenueByRegion: {}, contacts: [], shareholders: [], operatorApprovals: [], bimProjects: [], projects: [] };
       existingRecord.identity.disciplines = (payload.identity && payload.identity.disciplines) || [];
       existingRecord.identity.sectors = (payload.identity && payload.identity.sectors) || [];
       existingRecord.identity.regions = (payload.identity && payload.identity.regions) || [];
@@ -660,14 +763,14 @@
     var PORTAL_SUBMISSION_STATUS_VALUES = { Draft: 751050000, Submitted: 751050001, Accepted: 751050002, Rejected: 751050003, Seeded: 751050004 };
     var PORTAL_SUBMISSION_TAB_VALUES = {
       'Identity': 751050000, 'Financial': 751050001, 'Legal': 751050002,
-      'Offices & contacts': 751050003, 'Project references': 751050004,
+      'Offices & contacts': 751050003, 'Project references': 751050004, 'Operator approvals': 751050005,
       'BIM': 751050006, 'Sustainability': 751050007, 'Attachments': 751050010
     };
     var PORTAL_SUBMISSION_STATUS_NAMES = {};
     Object.keys(PORTAL_SUBMISSION_STATUS_VALUES).forEach(function (name) { PORTAL_SUBMISSION_STATUS_NAMES[PORTAL_SUBMISSION_STATUS_VALUES[name]] = name; });
     var PORTAL_SUBMISSION_TAB_NAMES = {};
     Object.keys(PORTAL_SUBMISSION_TAB_VALUES).forEach(function (name) { PORTAL_SUBMISSION_TAB_NAMES[PORTAL_SUBMISSION_TAB_VALUES[name]] = name; });
-    var PORTAL_SUBMISSION_TABS = ['Identity', 'Financial', 'Legal', 'Offices & contacts', 'Project references', 'BIM', 'Sustainability', 'Attachments'];
+    var PORTAL_SUBMISSION_TABS = ['Identity', 'Financial', 'Legal', 'Offices & contacts', 'Project references', 'Operator approvals', 'BIM', 'Sustainability', 'Attachments'];
     function tabSnapshot(source) {
       if (!source) return {};
       return {
@@ -678,9 +781,11 @@
         'Legal': (source.sections && source.sections.legal) || {},
         'Offices & contacts': {
           offices: (source.collections && source.collections.offices) || [],
-          contacts: (source.collections && source.collections.contacts) || source.contacts || []
+          contacts: (source.collections && source.collections.contacts) || source.contacts || [],
+          shareholders: (source.collections && source.collections.shareholders) || source.shareholders || []
         },
         'Project references': (source.collections && source.collections.projects) || [],
+        'Operator approvals': (source.collections && source.collections.operatorApprovals) || source.operatorApprovals || [],
         'BIM': {
           bim: (source.sections && source.sections.bim) || {},
           bimProjects: (source.collections && source.collections.bimProjects) || source.bimProjects || []
@@ -795,7 +900,9 @@
         revenueByRegion: revenueByRegion,
         contacts: submissionRows(officesTab.contacts),
         offices: submissionRows(officesTab.offices),
+        shareholders: submissionRows(officesTab.shareholders),
         projects: submissionRows(afterOf('Project references')),
+        operatorApprovals: submissionRows(afterOf('Operator approvals')),
         bimProjects: submissionRows(bimTab.bimProjects),
         tabStatus: tabStatus
       };
@@ -832,6 +939,8 @@
       prefillRecord = reconstructPrefillRecord(latest);
       if (existingRecord) {
         adoptLiveIds(prefillRecord.contacts, existingRecord.contacts, 'email');
+        adoptLiveIds(prefillRecord.operatorApprovals, existingRecord.operatorApprovals, 'operator');
+        adoptLiveIds(prefillRecord.shareholders, existingRecord.shareholders, 'name');
         adoptLiveIds(prefillRecord.bimProjects, existingRecord.bimProjects, 'name');
         adoptLiveIds(prefillRecord.projects, existingRecord.projects, 'name');
       }
@@ -1030,6 +1139,12 @@
       var consultantId = await saveConsultant(payload);
       await saveChildTables(consultantId, payload);
       var contacts = await saveContacts(consultantId, payload);
+      // Like operator approvals/projects, never blocks the save (Web API settings or permission may not be deployed yet).
+      var shareholders = [];
+      try { shareholders = await saveShareholders(consultantId, payload); } catch (shareholderError) { console.warn('[ascentis] shareholders write failed', shareholderError); }
+      // Never blocks the save: tables/settings may not be deployed yet (e.g. Web API settings missing).
+      var operatorApprovals = [];
+      try { operatorApprovals = await saveOperatorApprovals(consultantId, payload); } catch (operatorError) { console.warn('[ascentis] operator approvals write failed', operatorError); }
       var bimProjects = await saveBimProjects(consultantId, payload);
       // Project references never block the save: a failure here (e.g. Web API settings not deployed
       // yet) is logged and the staged submission below still carries the project data.
@@ -1037,11 +1152,11 @@
       try { projects = await saveProjects(consultantId, payload); } catch (projectError) { console.warn('[ascentis] project references write failed', projectError); }
       await saveConsultantReferences(consultantId, payload);
       var attachments = await saveAttachments(consultantId, payload, projects, submissionStatus);
-      await recordPortalSubmissions(consultantId, stampLiveIds(payload, { contacts: contacts, bimProjects: bimProjects, projects: projects }), submissionStatus);
+      await recordPortalSubmissions(consultantId, stampLiveIds(payload, { contacts: contacts, shareholders: shareholders, operatorApprovals: operatorApprovals, bimProjects: bimProjects, projects: projects }), submissionStatus);
       var firmName = (payload.identity && payload.identity.firmName) || '';
       var objectText = 'asc_consultant ' + consultantId + (firmName ? ' (' + firmName + ')' : '');
       await logAuditEvent(submissionStatus === 'Submitted' ? 'Submit' : (wasNewConsultant ? 'Create' : 'Update'), objectText);
-      return { consultantId: consultantId, contacts: contacts, bimProjects: bimProjects, projects: projects, attachments: attachments };
+      return { consultantId: consultantId, contacts: contacts, shareholders: shareholders, operatorApprovals: operatorApprovals, bimProjects: bimProjects, projects: projects, attachments: attachments };
     }
     var portalService = {
       saveDraft: async function (payload) {

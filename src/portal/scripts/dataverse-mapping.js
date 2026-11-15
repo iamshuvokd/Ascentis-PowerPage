@@ -102,7 +102,7 @@
         var collections = {};
         Object.keys(map.collections).forEach(function (key) {
           collections[key] = ((payload.collections || {})[key] || []).map(function (row) {
-            return { clientId: row.id, liveId: row.liveId || null, table: map.collections[key].table, fields: fields(row, map.collections[key].fields), references: { contactType: row.contactType || null, region: row.region || null, country: row.country || null, type: row.type || null, disciplines: row.disciplines || [], leaders: row.leaders || [] } };
+            return { clientId: row.id, liveId: row.liveId || null, table: map.collections[key].table, fields: fields(row, map.collections[key].fields), references: { contactType: row.contactType || null, region: row.region || null, country: row.country || null, type: row.type || null, disciplines: row.disciplines || [], regions: row.regions || [], operator: row.operator || null, leaders: row.leaders || [] } };
           });
         });
         return { mappingVersion: map.version, consultant: consultant, references: { firmType: payload.identity.firmType || null, disciplines: payload.identity.disciplines || [], sectors: payload.identity.sectors || [], regions: payload.identity.regions || [], bimDisciplines: ((payload.sections || {}).bim || {}).disciplines || [] }, collections: collections, files: payload.files || [] };

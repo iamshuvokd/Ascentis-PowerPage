@@ -128,6 +128,7 @@
           if (type === 'percent') control.max = '100';
         }
       }
+      if (definition.placeholder) control.placeholder = definition.placeholder;
       if (type === 'textarea') control.rows = 4;
       if (type === 'money') {
         control.type = 'text';

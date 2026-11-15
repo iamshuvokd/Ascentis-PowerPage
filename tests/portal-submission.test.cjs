@@ -47,11 +47,11 @@ test('tabSnapshot maps every one of the 8 portal tabs from a collectProfile()-sh
     files: [{ file: { name: 'plan.pdf' }, documentType: 'Drawing', projectId: 'p1' }]
   };
   const snapshot = tabSnapshot(payload);
-  assert.deepEqual(Object.keys(snapshot), ['Identity', 'Financial', 'Legal', 'Offices & contacts', 'Project references', 'BIM', 'Sustainability', 'Attachments']);
+  assert.deepEqual(Object.keys(snapshot), ['Identity', 'Financial', 'Legal', 'Offices & contacts', 'Project references', 'Operator approvals', 'BIM', 'Sustainability', 'Attachments']);
   assert.equal(snapshot.Identity.firmName, 'Studio Vermeer');
   assert.equal(snapshot.Financial.revenue1, '100');
   assert.equal(snapshot.Legal.insured, 'No');
-  assert.equal(json(snapshot['Offices & contacts']), json({ offices: [{ id: 'o1' }], contacts: [{ id: 'c1' }] }));
+  assert.equal(json(snapshot['Offices & contacts']), json({ offices: [{ id: 'o1' }], contacts: [{ id: 'c1' }], shareholders: [] }));
   assert.equal(json(snapshot['Project references']), json([{ id: 'p1' }]));
   assert.equal(json(snapshot.BIM), json({ bim: { bimCapability: 'In-house' }, bimProjects: [{ id: 'b1' }] }));
   assert.equal(snapshot.Sustainability.esgCert, 'No');
@@ -345,7 +345,7 @@ test('pickLatestSubmissionPerTab takes the newest row per tab for this consultan
     { asc_portalsubmissionid: 'someone-else', asc_tab: 751050001, asc_status: 751050001, createdon: '2026-10-09T00:00:00Z', _asc_consultant_id_value: 'OTHER' },
     { asc_portalsubmissionid: 'fin-submitted', asc_tab: 751050001, asc_status: 751050001, createdon: '2026-10-02T00:00:00Z', _asc_consultant_id_value: 'ME' },
     { asc_portalsubmissionid: 'legal-accepted', asc_tab: 751050002, asc_status: 751050002, createdon: '2026-10-03T00:00:00Z', _asc_consultant_id_value: 'ME' },
-    { asc_portalsubmissionid: 'unknown-tab', asc_tab: 751050005, asc_status: 751050000, createdon: '2026-10-04T00:00:00Z', _asc_consultant_id_value: 'ME' }
+    { asc_portalsubmissionid: 'unknown-tab', asc_tab: 751099999, asc_status: 751050000, createdon: '2026-10-04T00:00:00Z', _asc_consultant_id_value: 'ME' }
   ];
   const latest = context.pickLatestSubmissionPerTab(rows, 'Me');
   assert.deepEqual(Object.keys(latest).sort(), ['Financial', 'Identity', 'Legal']);
@@ -423,7 +423,7 @@ test('recordPortalSubmissions never writes a Submitted (locked) tab, and marks t
   ctx.saveTabSubmission = async (consultantId, tab) => { written.push(tab); };
   await ctx.recordPortalSubmissions('c-1', { identity: {} }, 'Draft');
   assert.equal(written.includes('Legal'), false);
-  assert.equal(written.length, 7);
+  assert.equal(written.length, 8);
   assert.equal(ctx.submissionTabStatus.Identity, 'Draft');
 });
 

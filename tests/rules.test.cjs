@@ -42,3 +42,17 @@ test('file limit includes exactly 16 MB and percentage warnings are optional', (
   assert.equal(rules.percentageWarning(['64','21','15']), '');
   assert.ok(rules.percentageWarning(['60','20','15']));
 });
+
+test('equityWarning flags shareholder totals away from 100%', () => {
+  const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'src/portal/scripts/rules.js'), 'utf8');
+  const rules = new Function(src + '; return profileRules;')();
+  assert.equal(rules.equityWarning([]), '');
+  assert.equal(rules.equityWarning(['60', '40']), '');
+  assert.match(rules.equityWarning(['20', '40']), /totals 60%/);
+});
+
+test('equityWarning flags shareholder totals away from 100%', () => {
+  assert.equal(rules.equityWarning([]), '');
+  assert.equal(rules.equityWarning(['60', '40']), '');
+  assert.match(rules.equityWarning(['20', '40']), /totals 60%/);
+});

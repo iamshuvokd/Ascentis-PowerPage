@@ -33,6 +33,12 @@
         var total = entered.reduce(function (sum, value) { return sum + Number(value); }, 0);
         return Math.abs(total - 100) > 0.5 ? 'Revenue shares total ' + total.toFixed(1) + '%. Check that they total approximately 100%.' : '';
       },
+      equityWarning: function (values) {
+        var entered = values.filter(function (value) { return value !== '' && value !== undefined && value !== null; });
+        if (!entered.length) return '';
+        var total = entered.reduce(function (sum, value) { return sum + Number(value); }, 0);
+        return Math.abs(total - 100) > 0.5 ? 'Warning: shareholding totals ' + Number(total.toFixed(2)) + '%. It should total about 100%.' : '';
+      },
       fileError: function (file, maximum) {
         return file.size > maximum ? file.name + ' exceeds the ' + Math.round(maximum / 1000000) + ' MB limit.' : '';
       },

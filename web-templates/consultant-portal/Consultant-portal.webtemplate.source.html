@@ -22,7 +22,8 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
 .consultant-portal * { box-sizing:border-box; }
 .consultant-portal [hidden] { display:none !important; }
 .portal-header { min-height:45px; padding:10px 25px; display:flex; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid #ddded5; }
-.portal-brand { color:var(--portal-text); text-decoration:none; }
+.portal-brand { display:inline-flex; align-items:center; color:var(--portal-text); text-decoration:none; }
+.portal-logo { display:block; height:26px; width:auto; }
 .portal-account { display:flex; gap:12px; color:var(--portal-secondary); }
 .portal-account a,.text-button,.live-signin { color:var(--portal-accent); text-decoration:none; }
 .portal-content { width:calc(100% - 40px); max-width:var(--portal-content-width); margin:46px auto 0; padding-bottom:70px; }
@@ -72,7 +73,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
 .tag:nth-child(2) { background:#d3e0da; }.tag:nth-child(3) { background:#b0e09c; }
 .tag-list select { width:auto; max-width:200px; min-height:28px; padding:3px; }
 .region-help { color:var(--portal-muted); font-style:italic; margin:8px 0 0; }
-.profile-actions { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-top:38px; color:var(--portal-muted); }
+.profile-actions { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-top:22px; color:var(--portal-muted); }
 .submission-card { text-align:center; padding:40px; }
 .preview-toolbar { position:fixed; bottom:10px; right:12px; padding:6px 10px; border:1px solid #ddded5; border-radius:8px; background:#fff; color:#586782; font:12px Arial,sans-serif; box-shadow:0 2px 8px #0001; }
 .preview-toolbar select { margin-left:10px; padding:5px; border:1px solid var(--portal-input-border); border-radius:4px; }
@@ -153,6 +154,14 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
 [data-collection=contacts] .collection-count { display:none; }
 [data-collection=contacts]>.add-record { position:static; margin-top:12px; }
 [data-collection=contacts]>.record-list { display:inline; }
+[data-collection=shareholders] .collection-count { display:none; }
+.shareholder-table .portal-table th:nth-child(2),.shareholder-table .portal-table td.equity-cell { text-align:right; width:110px; }
+.shareholder-table .portal-table td.row-action { width:44px; text-align:right; }
+.shareholder-table .portal-table td:first-child { min-width:0; }
+.contact-name-link { color:var(--portal-accent); font-weight:600; text-decoration:underline; }
+.icon-button { border:0; background:none; padding:4px; color:var(--portal-muted); cursor:pointer; line-height:0; }
+.icon-button:hover { color:var(--portal-text); }
+.shareholder-warning:empty { display:none; }
 .contact-link { margin:0 7px 0 0; padding-right:7px; border-right:1px solid #bdc7b5; }
 .office-summary { display:block; width:100%; padding:16px; margin-bottom:20px; border:1px solid #dce1e8; border-radius:8px; background:white; color:var(--portal-text); font:inherit; text-align:left; cursor:pointer; }
 .office-summary:hover { background:#fafcf7; }
@@ -169,11 +178,11 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
 .table-link { border:0; background:none; padding:0; color:var(--portal-text); font:inherit; text-align:left; cursor:pointer; }
 .table-link:hover { text-decoration:underline; }
 .attachment-list { display:block; }
-#panel-7 { position:relative; }
-#panel-7>.section-description { display:none; }
-#panel-7>.upload-button { position:absolute; top:0; right:0; }
-#panel-7 .portal-table select { min-width:140px; border:0; padding:0; background:transparent; }
-#panel-7>.region-help,#panel-4>.region-help { margin-top:26px; }
+#panel-8 { position:relative; }
+#panel-8>.section-description { display:none; }
+#panel-8>.upload-button { position:absolute; top:0; right:0; }
+#panel-8 .portal-table select { min-width:140px; border:0; padding:0; background:transparent; }
+#panel-8>.region-help,#panel-4>.region-help { margin-top:26px; }
 .visually-hidden,.consultant-portal .native-multi { position:absolute !important; width:1px !important; height:1px !important; min-height:0 !important; padding:0 !important; margin:-1px !important; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 .multi-picker { position:relative; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:6px 0; }
 .multi-chips { display:contents; }
@@ -186,9 +195,9 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
   .office-summary-top { flex-direction:column; gap:6px; }
   .portal-table { min-width:600px; }
   .record-dialog { padding:16px; }
-  .collection-section h2,#panel-7 h2 { padding-right:95px; font-size:16px; }
+  .collection-section h2,#panel-8 h2 { padding-right:95px; font-size:16px; }
   .revenue-shares>.form-field { grid-template-columns:minmax(100px,1fr) 80px 20px; }
-  .profile-actions { margin-top:28px; }
+  .profile-actions { margin-top:20px; }
 }
 /* Keep the reference forms compact while retaining accessible field help. */
 [data-type=money]>.field-help { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
@@ -211,7 +220,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
   <script id="consultant-portal-script">
 (function () {
   'use strict';
-  var portalConfig = {"views":["signin","confidentiality","profile","submit"],"choices":{"Disciplines":["Architecture","Interior design","Engineering","Landscape","MEP"],"Sectors":["Hospitality","Mixed-use","Residential","Commercial"],"Regions":["Middle East","South Asia","Europe","Africa","Other"]},"formSchema":{"limits":{"text":200,"details":2000,"fileBytes":16000000,"projects":30,"bimProjects":10,"leaders":3},"documentTypes":["Company profile","References","Financials","Certificate","Insurance","Other"],"sections":[{"id":"financial","panel":1,"title":"Financial","description":"Enter amounts in USD. Choose your fiscal year to label the three previous years.","fields":[{"key":"effectiveYear","label":"Effective year (N)","type":"year","required":true},{"key":"yearFormat","label":"Fiscal-year format","type":"select","required":true,"options":["YYYY (Jan–Dec)","YYYY/ZZ (Apr–Mar)"]},{"key":"backlog","label":"Current backlog in hand","type":"money"},{"key":"revenue1","label":"Revenue N−1","type":"money","required":true},{"key":"revenue2","label":"Revenue N−2","type":"money","required":true},{"key":"revenue3","label":"Revenue N−3","type":"money","required":true}]},{"id":"legal","panel":2,"title":"Legal","description":"Choose Yes or No for each question. Additional information is required where applicable.","fields":[{"key":"indemnified","label":"Have you indemnified a client?","type":"yesno","required":true},{"key":"indemnityDetails","label":"Indemnification details","type":"textarea","required":true,"when":{"key":"indemnified","value":"Yes"}},{"key":"litigation","label":"Have you lost litigation with a client?","type":"yesno","required":true},{"key":"litigationDetails","label":"Litigation details","type":"textarea","required":true,"when":{"key":"litigation","value":"Yes"}},{"key":"insured","label":"Do you hold professional indemnity insurance?","type":"yesno","required":true},{"key":"perOccurrence","label":"PI insurance — per occurrence","type":"money","required":true,"when":{"key":"insured","value":"Yes"}},{"key":"aggregate","label":"PI insurance — in aggregate","type":"money","required":true,"when":{"key":"insured","value":"Yes"}}]},{"id":"bim","panel":5,"title":"BIM","description":"Tell us how you deliver building information modelling and add relevant projects.","fields":[{"key":"capability","label":"BIM capability","type":"select","required":true,"options":["In-house","Outsourced"]},{"key":"operators","label":"Number of BIM operators","type":"integer","required":true,"when":{"key":"capability","value":"In-house"}},{"key":"disciplines","label":"BIM disciplines","type":"multi","required":true,"source":"Disciplines"}]},{"id":"sustainability","panel":6,"title":"Sustainability & ESG","description":"Share your environmental credentials, reporting practices, and quality assurance approach.","fields":[{"key":"certified","label":"Any environmental or sustainability certification?","type":"yesno","required":true},{"key":"certificationDetails","label":"Certification details","type":"textarea","required":true,"when":{"key":"certified","value":"Yes"}},{"key":"reporting","label":"Formal ESG reporting?","type":"yesno","required":true},{"key":"frameworkDetails","label":"ESG framework details","type":"textarea","required":true,"when":{"key":"reporting","value":"Yes"}},{"key":"professionals","label":"Number of accredited professionals","type":"integer","help":"For example, LEED AP or WELL AP."},{"key":"qa","label":"Is sustainability part of your QA system?","type":"yesno","required":true},{"key":"qaDetails","label":"Implementation details","type":"textarea","required":true,"when":{"key":"qa","value":"Yes"}}]}],"collections":[{"id":"contacts","panel":3,"title":"Contacts","singular":"contact","fields":[{"key":"firstName","label":"First name","type":"text","required":true},{"key":"lastName","label":"Last name","type":"text","required":true},{"key":"email","label":"Work email","type":"email","required":true},{"key":"phone","label":"Phone","type":"tel","required":true},{"key":"jobTitle","label":"Job title","type":"text"},{"key":"region","label":"Region","type":"select","source":"Regions"},{"key":"contactType","label":"Contact type","type":"select","required":true,"options":["Senior leader","Project contact","Primary contact"]},{"key":"status","label":"Contact status","type":"select","required":true,"options":["Active","Inactive"]}]},{"id":"offices","panel":3,"title":"Offices","singular":"office","fields":[{"key":"region","label":"Office region","type":"select","required":true,"source":"Regions"},{"key":"city","label":"City","type":"text"},{"key":"country","label":"Office country","type":"select","required":true,"source":"Countries"},{"key":"address","label":"Office address","type":"textarea"},{"key":"status","label":"Office status","type":"select","required":true,"options":["Active","Inactive"]},{"key":"headcount","label":"Headcount","type":"integer"},{"key":"leaders","label":"Office leaders (up to 3)","type":"multi","source":"contacts","help":"Add contacts above, then select their names here."}]},{"id":"projects","panel":4,"title":"Project references","singular":"project","limit":"projects","fields":[{"key":"name","label":"Project name","type":"text","required":true},{"key":"country","label":"Country","type":"select","required":true,"source":"Countries"},{"key":"region","label":"Region","type":"select","source":"Regions","required":true},{"key":"disciplines","label":"Disciplines","type":"multi","source":"Disciplines","required":true},{"key":"type","label":"Project type","type":"select","required":true,"source":"ProjectTypes","options":["Hotel","Mixed-use","Residential","Commercial","Other"]},{"key":"gfa","label":"Gross floor area (m²)","type":"integer","required":true,"when":{"key":"type","not":"Hotel"}},{"key":"keys","label":"Number of hotel keys","type":"integer","required":true,"when":{"key":"type","value":"Hotel"}},{"key":"status","label":"Project status","type":"select","required":true,"options":["In progress","Completed","On hold","Cancelled"]},{"key":"startYear","label":"Start year","type":"year","required":true},{"key":"completionYear","label":"Completion year","type":"year","required":true,"when":{"key":"status","value":"Completed"}},{"key":"attachment","label":"Project attachment","type":"file","help":"Maximum 16 MB. Also listed under Attachments."}]},{"id":"bimProjects","panel":5,"title":"BIM projects","singular":"BIM project","limit":"bimProjects","fields":[{"key":"name","label":"Project name","type":"text","required":true},{"key":"location","label":"Location","type":"text","required":true},{"key":"gfa","label":"Gross floor area (m²)","type":"integer","required":true},{"key":"lod","label":"Level of development (LOD)","type":"text","required":true},{"key":"disciplines","label":"BIM project disciplines","type":"multi","source":"Disciplines"}]}],"countryCodes":["AE","AU","BD","BH","CA","CH","CN","DE","EG","ES","FR","GB","HK","ID","IN","IT","JP","KE","KW","LK","MA","MU","MV","MY","NG","NL","NP","NZ","OM","PH","PK","PT","QA","SA","SG","TH","TR","US","VN","ZA"]},"dataverseMap":{"version":1,"consultant":{"identity":{"firmName":"asc_name","website":"asc_website","alias":"asc_akaname"}},"childTables":{"_comment":"2026-10-08 live drift: financial/legal/sustainability were removed from asc_consultant entirely and moved into these dedicated 1:1 child tables (asc_financialinformation/asc_legalinformation/asc_sustainabilityesg - placeholder tables added 16 Sept 2026, never wired up until now actually gaining real columns). Same {table, fields} shape as collections below, but exactly one row per consultant, not a list - see saveChildTable()/loadExistingRecordSync() in services.js.","financial":{"table":"asc_financialinformation","fields":{"effectiveYear":"asc_effectiveyear","yearFormat":"asc_fiscalformat","backlog":"asc_backloginhand","revenue1":"asc_revenuen1","revenue2":"asc_revenuen2","revenue3":"asc_revenuen3"}},"legal":{"table":"asc_legalinformation","fields":{"indemnified":"asc_indemnified","indemnityDetails":"asc_indemnitydetails","litigation":"asc_litigation","litigationDetails":"asc_litigationdetails","insured":"asc_holdspi","perOccurrence":"asc_piperoccurrence","aggregate":"asc_piaggregate"}},"bim":{"table":"asc_biminformation","fields":{"capability":"asc_bimcapability","operators":"asc_bimoperatorcount"}},"sustainability":{"table":"asc_sustainabilityesg","fields":{"certified":"asc_esgcert","certificationDetails":"asc_esgcertdetails","reporting":"asc_esgreporting","frameworkDetails":"asc_esgframework","professionals":"asc_accreditedcount","qa":"asc_esgqa","qaDetails":"asc_esgqadetails"}}},"collections":{"contacts":{"table":"asc_contact","fields":{"firstName":"asc_firstname","lastName":"asc_lastname","email":"asc_workemail","phone":"asc_phone","jobTitle":"asc_jobtitle","status":"asc_status"}},"offices":{"table":"asc_office","fields":{"city":"asc_city","address":"asc_address","status":"asc_status","headcount":"asc_headcount"}},"projects":{"table":"asc_projectreference","fields":{"name":"asc_name","brand":"asc_brand","gfa":"asc_gfa","keys":"asc_keys","status":"asc_projectstatus","startYear":"asc_startyear","completionYear":"asc_completionyear"}},"bimProjects":{"table":"asc_bimproject","fields":{"name":"asc_name","location":"asc_location","gfa":"asc_gfa","lod":"asc_lod"}}},"referenceLookupColumns":{"_comment":"Fields moved out of the scalar 'fields' maps above because Dataverse now stores them as lookups, not free text. Carried in dataverseMapping's per-row 'references' object (label/local value) for a trusted service to resolve to the GUID column named here - never written directly as a string.","contacts.contactType":{"column":"asc_ContactType","targetTable":"asc_contacttype","note":"Now a lookup to asc_ContactType (name column asc_contacttypename), found 2026-10-28."},"contacts.region":{"column":"asc_regionid","targetTable":"asc_region"},"offices.country":{"column":"asc_countryid","targetTable":"asc_country"},"projects.country":{"column":"asc_countryid","targetTable":"asc_country"},"projects.region":{"column":"asc_region_id","targetTable":"asc_region"},"projects.type":{"column":"asc_projecttype_id","targetTable":"asc_projecttype","note":"2026-10-29: stored as a row in the junction asc_projectreferencetype (asc_projectreference_id + asc_projecttype_id), not a column on asc_projectreference."},"projects.disciplines":{"column":"asc_DisciplineID","targetTable":"asc_discipline","note":"2026-10-29: one row per discipline in the junction asc_projectreferencediscipline (asc_ProjectReferenceID + asc_DisciplineID)."}},"unresolvedLiveGaps":{"_comment":"URS/FS-required fields whose Dataverse column no longer exists live. Kept mapped here (not deleted) so requirements aren't silently dropped, per project's no-removal-without-permission rule. Portal writes to these will fail until the columns are restored - do not enable live writes for these fields until resolved.","offices.city":{"table":"asc_office","column":"asc_city","status":"MISSING_LIVE","note":"Documented in backend/README.md as a deliberate additive FS requirement; removed live, cause unknown."},"offices.status":{"table":"asc_office","column":"asc_status","status":"MISSING_LIVE","note":"Region-eligibility business rule (active office) depends on this. Documented in backend/README.md as a deliberate additive FS requirement; removed live, cause unknown."},"offices.leaders":{"table":"asc_office","status":"AMBIGUOUS","note":"Frontend collects up to 3 existing Contact records as leaders (asc_office.asc_leader1_id/2_id/3_id, all removed live). Live now has a single asc_office.asc_officeleaderid lookup to the separate asc_officeleader table (its own name/position/email/phone, not linked to Contact, and singular not up-to-3) - does not match URS §6.3 'up to three senior leaders' or the current frontend. Needs a decision before this can be wired to anything; not mapped to asc_officeleaderid."},"bimProjects.lod":{"table":"asc_bimproject","column":"asc_lod","status":"MISSING_LIVE","note":"Required by URS §6.9 'LOD ... Yes'. Removed live with no replacement found."}},"revenueRegions":{"Middle East":"asc_revenuepct_middleeast","South Asia":"asc_revenuepct_southasia","Europe":"asc_revenuepct_europe","Africa":"asc_revenuepct_africa","Other":"asc_revenuepct_other"},"picklistColumns":{"asc_bimcapability":{"In-house":751050000,"Outsourced":751050001},"asc_projectstatus":{"In progress":751050000,"Completed":751050001,"On hold":751050002,"Cancelled":751050003}},"booleanColumns":["asc_indemnified","asc_litigation","asc_holdspi","asc_esgcert","asc_esgreporting","asc_esgqa"],"integerColumns":["asc_effectiveyear","asc_bimoperatorcount","asc_accreditedcount","asc_headcount","asc_gfa","asc_keys"],"yearDateColumns":["asc_startyear","asc_completionyear"],"decimalColumns":["asc_backloginhand","asc_revenuen1","asc_revenuen2","asc_revenuen3","asc_piperoccurrence","asc_piaggregate"]}};
+  var portalConfig = {"views":["signin","confidentiality","profile","submit"],"choices":{"Disciplines":["Architecture","Interior design","Engineering","Landscape","MEP"],"Sectors":["Hospitality","Mixed-use","Residential","Commercial"],"Regions":["Middle East","South Asia","Europe","Africa","Other"]},"formSchema":{"limits":{"text":200,"details":2000,"fileBytes":16000000,"projects":30,"bimProjects":10,"operators":8,"leaders":3},"documentTypes":["Company profile","References","Financials","Certificate","Insurance","Other"],"sections":[{"id":"financial","panel":1,"title":"Financial","description":"Enter amounts in USD. Choose your fiscal year to label the three previous years.","fields":[{"key":"effectiveYear","label":"Effective year (N)","type":"year","required":true},{"key":"yearFormat","label":"Fiscal-year format","type":"select","required":true,"options":["YYYY (Jan–Dec)","YYYY/ZZ (Apr–Mar)"]},{"key":"backlog","label":"Current backlog in hand","type":"money"},{"key":"revenue1","label":"Revenue N−1","type":"money","required":true},{"key":"revenue2","label":"Revenue N−2","type":"money","required":true},{"key":"revenue3","label":"Revenue N−3","type":"money","required":true}]},{"id":"legal","panel":2,"title":"Legal","description":"Choose Yes or No for each question. Additional information is required where applicable.","fields":[{"key":"indemnified","label":"Have you indemnified a client?","type":"yesno","required":true},{"key":"indemnityDetails","label":"Indemnification details","type":"textarea","required":true,"when":{"key":"indemnified","value":"Yes"}},{"key":"litigation","label":"Have you lost litigation with a client?","type":"yesno","required":true},{"key":"litigationDetails","label":"Litigation details","type":"textarea","required":true,"when":{"key":"litigation","value":"Yes"}},{"key":"insured","label":"Do you hold professional indemnity insurance?","type":"yesno","required":true},{"key":"perOccurrence","label":"PI insurance — per occurrence","type":"money","required":true,"when":{"key":"insured","value":"Yes"}},{"key":"aggregate","label":"PI insurance — in aggregate","type":"money","required":true,"when":{"key":"insured","value":"Yes"}}]},{"id":"bim","panel":6,"title":"BIM","description":"Tell us how you deliver building information modelling and add relevant projects.","fields":[{"key":"capability","label":"BIM capability","type":"select","required":true,"options":["In-house","Outsourced"]},{"key":"operators","label":"Number of BIM operators","type":"integer","required":true,"when":{"key":"capability","value":"In-house"}},{"key":"disciplines","label":"BIM disciplines","type":"multi","required":true,"source":"Disciplines"}]},{"id":"sustainability","panel":7,"title":"Sustainability & ESG","description":"Share your environmental credentials, reporting practices, and quality assurance approach.","fields":[{"key":"certified","label":"Any environmental or sustainability certification?","type":"yesno","required":true},{"key":"certificationDetails","label":"Certification details","type":"textarea","required":true,"when":{"key":"certified","value":"Yes"}},{"key":"reporting","label":"Formal ESG reporting?","type":"yesno","required":true},{"key":"frameworkDetails","label":"ESG framework details","type":"textarea","required":true,"when":{"key":"reporting","value":"Yes"}},{"key":"professionals","label":"Number of accredited professionals","type":"integer","help":"For example, LEED AP or WELL AP."},{"key":"qa","label":"Is sustainability part of your QA system?","type":"yesno","required":true},{"key":"qaDetails","label":"Implementation details","type":"textarea","required":true,"when":{"key":"qa","value":"Yes"}}]}],"collections":[{"id":"contacts","panel":3,"title":"Contacts","singular":"contact","fields":[{"key":"firstName","label":"First name","type":"text","required":true},{"key":"lastName","label":"Last name","type":"text","required":true},{"key":"email","label":"Work email","type":"email","required":true},{"key":"phone","label":"Phone","type":"tel","required":true},{"key":"jobTitle","label":"Job title","type":"text"},{"key":"region","label":"Region","type":"select","source":"Regions"},{"key":"contactType","label":"Contact type","type":"select","required":true,"options":["Senior leader","Project contact","Primary contact"]},{"key":"status","label":"Contact status","type":"select","required":true,"options":["Active","Inactive"]}]},{"id":"offices","panel":3,"title":"Offices","singular":"office","fields":[{"key":"region","label":"Office region","type":"select","required":true,"source":"Regions"},{"key":"city","label":"City","type":"text"},{"key":"country","label":"Office country","type":"select","required":true,"source":"Countries"},{"key":"address","label":"Office address","type":"textarea"},{"key":"status","label":"Office status","type":"select","required":true,"options":["Active","Inactive"]},{"key":"headcount","label":"Headcount","type":"integer"},{"key":"leaders","label":"Office leaders (up to 3)","type":"multi","source":"contacts","help":"Add contacts above, then select their names here."}]},{"id":"shareholders","panel":3,"title":"Shareholders","singular":"shareholder","fields":[{"key":"name","label":"Shareholder name","type":"text","required":true},{"key":"equity","label":"Equity %","type":"percent","required":true}]},{"id":"projects","panel":4,"title":"Project references","singular":"project","limit":"projects","fields":[{"key":"name","label":"Project name","type":"text","required":true},{"key":"country","label":"Country","type":"select","required":true,"source":"Countries"},{"key":"region","label":"Region","type":"select","source":"Regions","required":true},{"key":"disciplines","label":"Disciplines","type":"multi","source":"Disciplines","required":true},{"key":"type","label":"Project type","type":"select","required":true,"source":"ProjectTypes","options":["Hotel","Mixed-use","Residential","Commercial","Other"]},{"key":"gfa","label":"Gross floor area (m²)","type":"integer","required":true,"when":{"key":"type","not":"Hotel"}},{"key":"keys","label":"Number of hotel keys","type":"integer","required":true,"when":{"key":"type","value":"Hotel"}},{"key":"status","label":"Project status","type":"select","required":true,"options":["In progress","Completed","On hold","Cancelled"]},{"key":"startYear","label":"Start year","type":"year","required":true},{"key":"completionYear","label":"Completion year","type":"year","required":true,"when":{"key":"status","value":"Completed"}},{"key":"attachment","label":"Project attachment","type":"file","help":"Maximum 16 MB. Also listed under Attachments."}]},{"id":"operatorApprovals","panel":5,"title":"Operator approvals","singular":"operator approval","limit":"operators","fields":[{"key":"operator","label":"Operator","type":"select","required":true,"source":"Operators"},{"key":"disciplines","label":"Disciplines","type":"multi","required":true,"source":"Disciplines"},{"key":"regions","label":"Regions","type":"multi","source":"Regions"},{"key":"brands","label":"Brands","type":"text","placeholder":"e.g. JW Marriott, Autograph"}]},{"id":"bimProjects","panel":6,"title":"BIM projects","singular":"BIM project","limit":"bimProjects","fields":[{"key":"name","label":"Project name","type":"text","required":true},{"key":"location","label":"Location","type":"text","required":true},{"key":"gfa","label":"Gross floor area (m²)","type":"integer","required":true},{"key":"lod","label":"Level of development (LOD)","type":"text","required":true},{"key":"disciplines","label":"BIM project disciplines","type":"multi","source":"Disciplines"}]}],"countryCodes":["AE","AU","BD","BH","CA","CH","CN","DE","EG","ES","FR","GB","HK","ID","IN","IT","JP","KE","KW","LK","MA","MU","MV","MY","NG","NL","NP","NZ","OM","PH","PK","PT","QA","SA","SG","TH","TR","US","VN","ZA"]},"dataverseMap":{"version":1,"consultant":{"identity":{"firmName":"asc_name","website":"asc_website","alias":"asc_akaname"}},"childTables":{"_comment":"2026-10-08 live drift: financial/legal/sustainability were removed from asc_consultant entirely and moved into these dedicated 1:1 child tables (asc_financialinformation/asc_legalinformation/asc_sustainabilityesg - placeholder tables added 16 Sept 2026, never wired up until now actually gaining real columns). Same {table, fields} shape as collections below, but exactly one row per consultant, not a list - see saveChildTable()/loadExistingRecordSync() in services.js.","financial":{"table":"asc_financialinformation","fields":{"effectiveYear":"asc_effectiveyear","yearFormat":"asc_fiscalformat","backlog":"asc_backloginhand","revenue1":"asc_revenuen1","revenue2":"asc_revenuen2","revenue3":"asc_revenuen3"}},"legal":{"table":"asc_legalinformation","fields":{"indemnified":"asc_indemnified","indemnityDetails":"asc_indemnitydetails","litigation":"asc_litigation","litigationDetails":"asc_litigationdetails","insured":"asc_holdspi","perOccurrence":"asc_piperoccurrence","aggregate":"asc_piaggregate"}},"bim":{"table":"asc_biminformation","fields":{"capability":"asc_bimcapability","operators":"asc_bimoperatorcount"}},"sustainability":{"table":"asc_sustainabilityesg","fields":{"certified":"asc_esgcert","certificationDetails":"asc_esgcertdetails","reporting":"asc_esgreporting","frameworkDetails":"asc_esgframework","professionals":"asc_accreditedcount","qa":"asc_esgqa","qaDetails":"asc_esgqadetails"}}},"collections":{"contacts":{"table":"asc_contact","fields":{"firstName":"asc_firstname","lastName":"asc_lastname","email":"asc_workemail","phone":"asc_phone","jobTitle":"asc_jobtitle","status":"asc_status"}},"offices":{"table":"asc_office","fields":{"city":"asc_city","address":"asc_address","status":"asc_status","headcount":"asc_headcount"}},"shareholders":{"table":"asc_shareholder","fields":{"name":"asc_name","equity":"asc_equitypct"}},"operatorApprovals":{"table":"asc_operatorapproval","fields":{"brands":"asc_brands"}},"projects":{"table":"asc_projectreference","fields":{"name":"asc_name","brand":"asc_brand","gfa":"asc_gfa","keys":"asc_keys","status":"asc_projectstatus","startYear":"asc_startyear","completionYear":"asc_completionyear"}},"bimProjects":{"table":"asc_bimproject","fields":{"name":"asc_name","location":"asc_location","gfa":"asc_gfa","lod":"asc_lod"}}},"referenceLookupColumns":{"_comment":"Fields moved out of the scalar 'fields' maps above because Dataverse now stores them as lookups, not free text. Carried in dataverseMapping's per-row 'references' object (label/local value) for a trusted service to resolve to the GUID column named here - never written directly as a string.","contacts.contactType":{"column":"asc_ContactType","targetTable":"asc_contacttype","note":"Now a lookup to asc_ContactType (name column asc_contacttypename), found 2026-10-28."},"contacts.region":{"column":"asc_regionid","targetTable":"asc_region"},"offices.country":{"column":"asc_countryid","targetTable":"asc_country"},"operatorApprovals.operator":{"column":"asc_operator_id","targetTable":"asc_operator","note":"Lookup to asc_Operator (name asc_name). Carried in references.operator."},"operatorApprovals.disciplines":{"column":"asc_disciplineid","targetTable":"asc_discipline","note":"One row per discipline in asc_operatorapprovaldiscipline (asc_operatorapproval_id + asc_disciplineid)."},"operatorApprovals.regions":{"column":"asc_RegionsID","targetTable":"asc_region","note":"One row per region in asc_OperatorApprovalsRegions (asc_OperatorApprovalsID + asc_RegionsID)."},"projects.country":{"column":"asc_countryid","targetTable":"asc_country"},"projects.region":{"column":"asc_region_id","targetTable":"asc_region"},"projects.type":{"column":"asc_projecttype_id","targetTable":"asc_projecttype","note":"2026-10-29: stored as a row in the junction asc_projectreferencetype (asc_projectreference_id + asc_projecttype_id), not a column on asc_projectreference."},"projects.disciplines":{"column":"asc_DisciplineID","targetTable":"asc_discipline","note":"2026-10-29: one row per discipline in the junction asc_projectreferencediscipline (asc_ProjectReferenceID + asc_DisciplineID)."}},"unresolvedLiveGaps":{"_comment":"URS/FS-required fields whose Dataverse column no longer exists live. Kept mapped here (not deleted) so requirements aren't silently dropped, per project's no-removal-without-permission rule. Portal writes to these will fail until the columns are restored - do not enable live writes for these fields until resolved.","offices.city":{"table":"asc_office","column":"asc_city","status":"MISSING_LIVE","note":"Documented in backend/README.md as a deliberate additive FS requirement; removed live, cause unknown."},"offices.status":{"table":"asc_office","column":"asc_status","status":"MISSING_LIVE","note":"Region-eligibility business rule (active office) depends on this. Documented in backend/README.md as a deliberate additive FS requirement; removed live, cause unknown."},"offices.leaders":{"table":"asc_office","status":"AMBIGUOUS","note":"Frontend collects up to 3 existing Contact records as leaders (asc_office.asc_leader1_id/2_id/3_id, all removed live). Live now has a single asc_office.asc_officeleaderid lookup to the separate asc_officeleader table (its own name/position/email/phone, not linked to Contact, and singular not up-to-3) - does not match URS §6.3 'up to three senior leaders' or the current frontend. Needs a decision before this can be wired to anything; not mapped to asc_officeleaderid."},"bimProjects.lod":{"table":"asc_bimproject","column":"asc_lod","status":"MISSING_LIVE","note":"Required by URS §6.9 'LOD ... Yes'. Removed live with no replacement found."}},"revenueRegions":{"Middle East":"asc_revenuepct_middleeast","South Asia":"asc_revenuepct_southasia","Europe":"asc_revenuepct_europe","Africa":"asc_revenuepct_africa","Other":"asc_revenuepct_other"},"picklistColumns":{"asc_bimcapability":{"In-house":751050000,"Outsourced":751050001},"asc_projectstatus":{"In progress":751050000,"Completed":751050001,"On hold":751050002,"Cancelled":751050003}},"booleanColumns":["asc_indemnified","asc_litigation","asc_holdspi","asc_esgcert","asc_esgreporting","asc_esgqa"],"integerColumns":["asc_effectiveyear","asc_bimoperatorcount","asc_accreditedcount","asc_headcount","asc_gfa","asc_keys"],"yearDateColumns":["asc_startyear","asc_completionyear"],"decimalColumns":["asc_backloginhand","asc_revenuen1","asc_revenuen2","asc_revenuen3","asc_piperoccurrence","asc_piaggregate","asc_equitypct"]}};
   function initialize() {
     var root = document.querySelector('.consultant-portal');
     if (!root || root.dataset.initialized) return;
@@ -254,6 +263,12 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         if (!entered.length) return '';
         var total = entered.reduce(function (sum, value) { return sum + Number(value); }, 0);
         return Math.abs(total - 100) > 0.5 ? 'Revenue shares total ' + total.toFixed(1) + '%. Check that they total approximately 100%.' : '';
+      },
+      equityWarning: function (values) {
+        var entered = values.filter(function (value) { return value !== '' && value !== undefined && value !== null; });
+        if (!entered.length) return '';
+        var total = entered.reduce(function (sum, value) { return sum + Number(value); }, 0);
+        return Math.abs(total - 100) > 0.5 ? 'Warning: shareholding totals ' + Number(total.toFixed(2)) + '%. It should total about 100%.' : '';
       },
       fileError: function (file, maximum) {
         return file.size > maximum ? file.name + ' exceeds the ' + Math.round(maximum / 1000000) + ' MB limit.' : '';
@@ -367,7 +382,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         var collections = {};
         Object.keys(map.collections).forEach(function (key) {
           collections[key] = ((payload.collections || {})[key] || []).map(function (row) {
-            return { clientId: row.id, liveId: row.liveId || null, table: map.collections[key].table, fields: fields(row, map.collections[key].fields), references: { contactType: row.contactType || null, region: row.region || null, country: row.country || null, type: row.type || null, disciplines: row.disciplines || [], leaders: row.leaders || [] } };
+            return { clientId: row.id, liveId: row.liveId || null, table: map.collections[key].table, fields: fields(row, map.collections[key].fields), references: { contactType: row.contactType || null, region: row.region || null, country: row.country || null, type: row.type || null, disciplines: row.disciplines || [], regions: row.regions || [], operator: row.operator || null, leaders: row.leaders || [] } };
           });
         });
         return { mappingVersion: map.version, consultant: consultant, references: { firmType: payload.identity.firmType || null, disciplines: payload.identity.disciplines || [], sectors: payload.identity.sectors || [], regions: payload.identity.regions || [], bimDisciplines: ((payload.sections || {}).bim || {}).disciplines || [] }, collections: collections, files: payload.files || [] };
@@ -635,6 +650,8 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       if (documentTypes) liveLists.DocumentTypes = documentTypes;
       var projectTypes = syncFetchNames('asc_projecttypes', token, 'asc_projecttypename');
       if (projectTypes) liveLists.ProjectTypes = projectTypes;
+      var operators = syncFetchNames('asc_operators', token);
+      if (operators) liveLists.Operators = operators;
     }
 
     function syncGetJson(url, token) {
@@ -712,6 +729,31 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         return { liveId: row.asc_contactid, fields: rowFields };
       });
 
+      // Shareholders: best-effort like the other reads (empty list if the table is not reachable yet).
+      var shareholderData = syncGetJson('/_api/asc_shareholders?$select=asc_shareholderid,asc_name,asc_equitypct,asc_consultant_id', token);
+      var shareholders = ((shareholderData && shareholderData.value) || []).filter(belongsToThisConsultant).map(function (row) {
+        return { liveId: row.asc_shareholderid, fields: dataverseMapping.reverseRow('shareholders', row) };
+      });
+
+      // Operator approvals: the approval row plus its discipline/region junction rows (names via $expand),
+      // grouped per approval so saveOperatorApprovals() only writes junction rows that are not live yet.
+      var approvalData = syncGetJson('/_api/asc_operatorapprovals?$select=asc_operatorapprovalid,asc_brands,_asc_operator_id_value,_asc_consultant_id_value', token);
+      var approvalDisciplineData = syncGetJson('/_api/asc_operatorapprovaldisciplines?$select=_asc_operatorapproval_id_value&$expand=asc_disciplineid($select=asc_name)', token);
+      var approvalRegionData = syncGetJson('/_api/asc_operatorapprovalsregionses?$select=_asc_operatorapprovalsid_value&$expand=asc_RegionsID($select=asc_name)', token);
+      var operatorApprovals = ((approvalData && approvalData.value) || []).filter(belongsToThisConsultant).map(function (row) {
+        var mine = String(row.asc_operatorapprovalid).toLowerCase();
+        var disciplinesForApproval = ((approvalDisciplineData && approvalDisciplineData.value) || [])
+          .filter(function (link) { return link._asc_operatorapproval_id_value && link._asc_operatorapproval_id_value.toLowerCase() === mine; })
+          .map(function (link) { return link.asc_disciplineid && link.asc_disciplineid.asc_name; }).filter(Boolean);
+        var regionsForApproval = ((approvalRegionData && approvalRegionData.value) || [])
+          .filter(function (link) { return link._asc_operatorapprovalsid_value && link._asc_operatorapprovalsid_value.toLowerCase() === mine; })
+          .map(function (link) { return link.asc_RegionsID && link.asc_RegionsID.asc_name; }).filter(Boolean);
+        return {
+          liveId: row.asc_operatorapprovalid,
+          fields: { operator: row['_asc_operator_id_value@OData.Community.Display.V1.FormattedValue'] || '', brands: row.asc_brands || '', disciplines: disciplinesForApproval, regions: regionsForApproval }
+        };
+      });
+
       var bimData = syncGetJson('/_api/asc_bimprojects?$select=asc_bimprojectid,asc_name,asc_location,asc_gfa,asc_consultant_id', token);
       var bimProjects = ((bimData && bimData.value) || []).filter(belongsToThisConsultant).map(function (row) {
         return { liveId: row.asc_bimprojectid, fields: dataverseMapping.reverseRow('bimProjects', row) };
@@ -780,7 +822,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         return { liveId: row.asc_attachmentid, name: row.asc_filename || '', sizeMb: Number(row.asc_filesizemb) || 0, uploadedOn: row.asc_uploadedon || '', status: ATTACHMENT_STATUS_NAMES[row.asc_status] || '', documentType: row['_asc_documenttype_id_value@OData.Community.Display.V1.FormattedValue'] || '' };
       });
 
-      existingRecord = { identity: reversed.identity, sections: reversed.sections, revenueByRegion: reversed.revenueByRegion, contacts: contacts, bimProjects: bimProjects, projects: projects };
+      existingRecord = { identity: reversed.identity, sections: reversed.sections, revenueByRegion: reversed.revenueByRegion, contacts: contacts, shareholders: shareholders, operatorApprovals: operatorApprovals, bimProjects: bimProjects, projects: projects };
     }
 
     // Secure self-service invitation flow, built 2026-10-13. Real design, confirmed with the
@@ -895,6 +937,82 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       }
       return results;
     }
+    async function saveShareholders(consultantId, payload) {
+      var dto = dataverseMapping.prepare(payload);
+      var rows = (dto.collections && dto.collections.shareholders) || [];
+      var results = [];
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var body = Object.assign({}, row.fields);
+        if (row.liveId) {
+          await webApiRequest('PATCH', '/_api/asc_shareholders(' + row.liveId + ')', body);
+          results.push({ clientId: row.clientId, liveId: row.liveId });
+        } else {
+          body['asc_consultant_id@odata.bind'] = '/asc_consultants(' + consultantId + ')';
+          var response = await webApiRequest('POST', '/_api/asc_shareholders', body);
+          results.push({ clientId: row.clientId, liveId: extractCreatedId(response) });
+        }
+      }
+      return results;
+    }
+    // Operator approvals (asc_operatorapproval). Operator is a lookup to asc_Operator (bound by id, resolved
+    // from the name). Disciplines/regions are junction rows (asc_operatorapprovaldiscipline /
+    // asc_OperatorApprovalsRegions), written only for labels not already live - same rule and same
+    // limitation as project references: removing a discipline/region or deleting an approval is not
+    // written back (no DELETE built). Bind keys use the lookup attribute casing from the export.
+    async function saveOperatorApprovals(consultantId, payload) {
+      var dto = dataverseMapping.prepare(payload);
+      var rows = (dto.collections && dto.collections.operatorApprovals) || [];
+      var live = (existingRecord && existingRecord.operatorApprovals) || [];
+      var results = [];
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var body = Object.assign({}, row.fields);
+        var operatorLabel = row.references && row.references.operator;
+        if (operatorLabel) {
+          var operatorId = await resolveReferenceId('asc_operators', 'asc_operatorid', operatorLabel);
+          if (operatorId) body['asc_operator_id@odata.bind'] = '/asc_operators(' + operatorId + ')';
+        }
+        var approvalId = row.liveId;
+        if (approvalId) {
+          await webApiRequest('PATCH', '/_api/asc_operatorapprovals(' + approvalId + ')', body);
+        } else {
+          body['asc_consultant_id@odata.bind'] = '/asc_consultants(' + consultantId + ')';
+          var response = await webApiRequest('POST', '/_api/asc_operatorapprovals', body);
+          approvalId = extractCreatedId(response);
+        }
+        if (approvalId) {
+          var known = (live.find(function (item) { return item.liveId === approvalId; }) || { fields: {} }).fields;
+          var knownDisciplines = known.disciplines || [];
+          var knownRegions = known.regions || [];
+          var newDisciplines = ((row.references && row.references.disciplines) || []).filter(function (label) { return !knownDisciplines.includes(label); });
+          for (var d = 0; d < newDisciplines.length; d++) {
+            var disciplineId = await resolveReferenceId('asc_disciplines', 'asc_disciplineid', newDisciplines[d]);
+            if (!disciplineId) continue;
+            var disciplineBody = {};
+            disciplineBody['asc_operatorapproval_id@odata.bind'] = '/asc_operatorapprovals(' + approvalId + ')';
+            disciplineBody['asc_disciplineid@odata.bind'] = '/asc_disciplines(' + disciplineId + ')';
+            await webApiRequest('POST', '/_api/asc_operatorapprovaldisciplines', disciplineBody);
+          }
+          var newRegions = ((row.references && row.references.regions) || []).filter(function (label) { return !knownRegions.includes(label); });
+          for (var r = 0; r < newRegions.length; r++) {
+            var regionId = await resolveReferenceId('asc_regions', 'asc_regionid', newRegions[r]);
+            if (!regionId) continue;
+            var regionBody = {};
+            regionBody['asc_OperatorApprovalsID@odata.bind'] = '/asc_operatorapprovals(' + approvalId + ')';
+            regionBody['asc_RegionsID@odata.bind'] = '/asc_regions(' + regionId + ')';
+            await webApiRequest('POST', '/_api/asc_operatorapprovalsregionses', regionBody);
+          }
+          // Remember what is live now so a second save in this session does not re-write it.
+          var entry = live.find(function (item) { return item.liveId === approvalId; });
+          if (!entry) { entry = { liveId: approvalId, fields: {} }; live.push(entry); }
+          entry.fields = { operator: operatorLabel || '', brands: body.asc_brands || '', disciplines: (row.references && row.references.disciplines) || [], regions: (row.references && row.references.regions) || [] };
+        }
+        results.push({ clientId: row.clientId, liveId: approvalId || null });
+      }
+      if (existingRecord) existingRecord.operatorApprovals = live;
+      return results;
+    }
     async function saveBimProjects(consultantId, payload) {
       var dto = dataverseMapping.prepare(payload);
       var rows = (dto.collections && dto.collections.bimProjects) || [];
@@ -991,7 +1109,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       await createConsultantJunctionRows(consultantId, newRegions, 'asc_consultantregionses', 'asc_RegionID', 'asc_regions', 'asc_regionid');
       // Keep the "already associated" cache in sync so a second save later in the same
       // session (no page reload) does not try to re-associate the same labels again.
-      if (!existingRecord) existingRecord = { identity: {}, sections: {}, revenueByRegion: {}, contacts: [], bimProjects: [], projects: [] };
+      if (!existingRecord) existingRecord = { identity: {}, sections: {}, revenueByRegion: {}, contacts: [], shareholders: [], operatorApprovals: [], bimProjects: [], projects: [] };
       existingRecord.identity.disciplines = (payload.identity && payload.identity.disciplines) || [];
       existingRecord.identity.sectors = (payload.identity && payload.identity.sectors) || [];
       existingRecord.identity.regions = (payload.identity && payload.identity.regions) || [];
@@ -1037,14 +1155,14 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     var PORTAL_SUBMISSION_STATUS_VALUES = { Draft: 751050000, Submitted: 751050001, Accepted: 751050002, Rejected: 751050003, Seeded: 751050004 };
     var PORTAL_SUBMISSION_TAB_VALUES = {
       'Identity': 751050000, 'Financial': 751050001, 'Legal': 751050002,
-      'Offices & contacts': 751050003, 'Project references': 751050004,
+      'Offices & contacts': 751050003, 'Project references': 751050004, 'Operator approvals': 751050005,
       'BIM': 751050006, 'Sustainability': 751050007, 'Attachments': 751050010
     };
     var PORTAL_SUBMISSION_STATUS_NAMES = {};
     Object.keys(PORTAL_SUBMISSION_STATUS_VALUES).forEach(function (name) { PORTAL_SUBMISSION_STATUS_NAMES[PORTAL_SUBMISSION_STATUS_VALUES[name]] = name; });
     var PORTAL_SUBMISSION_TAB_NAMES = {};
     Object.keys(PORTAL_SUBMISSION_TAB_VALUES).forEach(function (name) { PORTAL_SUBMISSION_TAB_NAMES[PORTAL_SUBMISSION_TAB_VALUES[name]] = name; });
-    var PORTAL_SUBMISSION_TABS = ['Identity', 'Financial', 'Legal', 'Offices & contacts', 'Project references', 'BIM', 'Sustainability', 'Attachments'];
+    var PORTAL_SUBMISSION_TABS = ['Identity', 'Financial', 'Legal', 'Offices & contacts', 'Project references', 'Operator approvals', 'BIM', 'Sustainability', 'Attachments'];
     function tabSnapshot(source) {
       if (!source) return {};
       return {
@@ -1055,9 +1173,11 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         'Legal': (source.sections && source.sections.legal) || {},
         'Offices & contacts': {
           offices: (source.collections && source.collections.offices) || [],
-          contacts: (source.collections && source.collections.contacts) || source.contacts || []
+          contacts: (source.collections && source.collections.contacts) || source.contacts || [],
+          shareholders: (source.collections && source.collections.shareholders) || source.shareholders || []
         },
         'Project references': (source.collections && source.collections.projects) || [],
+        'Operator approvals': (source.collections && source.collections.operatorApprovals) || source.operatorApprovals || [],
         'BIM': {
           bim: (source.sections && source.sections.bim) || {},
           bimProjects: (source.collections && source.collections.bimProjects) || source.bimProjects || []
@@ -1172,7 +1292,9 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         revenueByRegion: revenueByRegion,
         contacts: submissionRows(officesTab.contacts),
         offices: submissionRows(officesTab.offices),
+        shareholders: submissionRows(officesTab.shareholders),
         projects: submissionRows(afterOf('Project references')),
+        operatorApprovals: submissionRows(afterOf('Operator approvals')),
         bimProjects: submissionRows(bimTab.bimProjects),
         tabStatus: tabStatus
       };
@@ -1209,6 +1331,8 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       prefillRecord = reconstructPrefillRecord(latest);
       if (existingRecord) {
         adoptLiveIds(prefillRecord.contacts, existingRecord.contacts, 'email');
+        adoptLiveIds(prefillRecord.operatorApprovals, existingRecord.operatorApprovals, 'operator');
+        adoptLiveIds(prefillRecord.shareholders, existingRecord.shareholders, 'name');
         adoptLiveIds(prefillRecord.bimProjects, existingRecord.bimProjects, 'name');
         adoptLiveIds(prefillRecord.projects, existingRecord.projects, 'name');
       }
@@ -1407,6 +1531,12 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       var consultantId = await saveConsultant(payload);
       await saveChildTables(consultantId, payload);
       var contacts = await saveContacts(consultantId, payload);
+      // Like operator approvals/projects, never blocks the save (Web API settings or permission may not be deployed yet).
+      var shareholders = [];
+      try { shareholders = await saveShareholders(consultantId, payload); } catch (shareholderError) { console.warn('[ascentis] shareholders write failed', shareholderError); }
+      // Never blocks the save: tables/settings may not be deployed yet (e.g. Web API settings missing).
+      var operatorApprovals = [];
+      try { operatorApprovals = await saveOperatorApprovals(consultantId, payload); } catch (operatorError) { console.warn('[ascentis] operator approvals write failed', operatorError); }
       var bimProjects = await saveBimProjects(consultantId, payload);
       // Project references never block the save: a failure here (e.g. Web API settings not deployed
       // yet) is logged and the staged submission below still carries the project data.
@@ -1414,11 +1544,11 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       try { projects = await saveProjects(consultantId, payload); } catch (projectError) { console.warn('[ascentis] project references write failed', projectError); }
       await saveConsultantReferences(consultantId, payload);
       var attachments = await saveAttachments(consultantId, payload, projects, submissionStatus);
-      await recordPortalSubmissions(consultantId, stampLiveIds(payload, { contacts: contacts, bimProjects: bimProjects, projects: projects }), submissionStatus);
+      await recordPortalSubmissions(consultantId, stampLiveIds(payload, { contacts: contacts, shareholders: shareholders, operatorApprovals: operatorApprovals, bimProjects: bimProjects, projects: projects }), submissionStatus);
       var firmName = (payload.identity && payload.identity.firmName) || '';
       var objectText = 'asc_consultant ' + consultantId + (firmName ? ' (' + firmName + ')' : '');
       await logAuditEvent(submissionStatus === 'Submitted' ? 'Submit' : (wasNewConsultant ? 'Create' : 'Update'), objectText);
-      return { consultantId: consultantId, contacts: contacts, bimProjects: bimProjects, projects: projects, attachments: attachments };
+      return { consultantId: consultantId, contacts: contacts, shareholders: shareholders, operatorApprovals: operatorApprovals, bimProjects: bimProjects, projects: projects, attachments: attachments };
     }
     var portalService = {
       saveDraft: async function (payload) {
@@ -1690,6 +1820,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
           if (type === 'percent') control.max = '100';
         }
       }
+      if (definition.placeholder) control.placeholder = definition.placeholder;
       if (type === 'textarea') control.rows = 4;
       if (type === 'money') {
         control.type = 'text';
@@ -1913,6 +2044,61 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         });
         return;
       }
+      if (id === 'operatorApprovals') {
+        var opTable = dataTable(['Operator', 'Disciplines', 'Brands', 'Regions', '']);
+        collection.rows.forEach(function (row) {
+          var values = readFields(row.group.node);
+          var tr = element('tr');
+          var nameCell = element('td');
+          var nameLink = element('button', 'table-link contact-name-link', values.operator || 'New operator approval');
+          nameLink.type = 'button';
+          nameLink.addEventListener('click', function () { openRecord(row); });
+          nameCell.appendChild(nameLink);
+          tr.appendChild(nameCell);
+          [(values.disciplines || []).join(', '), values.brands, (values.regions || []).join(', ')].forEach(function (value) { tr.appendChild(element('td', '', value || '—')); });
+          var actionCell = element('td', 'row-action');
+          var trash = element('button', 'icon-button', '');
+          trash.type = 'button';
+          trash.setAttribute('aria-label', 'Delete operator approval ' + (values.operator || ''));
+          trash.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>';
+          trash.addEventListener('click', function () { row.node.querySelector('.remove-record').click(); });
+          actionCell.appendChild(trash);
+          tr.appendChild(actionCell);
+          opTable.body.appendChild(tr);
+        });
+        if (collection.rows.length) collection.list.appendChild(opTable.wrap);
+        return;
+      }
+      if (id === 'shareholders') {
+        var shareTable = dataTable(['Shareholder', 'Equity %', '']);
+        shareTable.wrap.classList.add('shareholder-table');
+        collection.rows.forEach(function (row) {
+          var values = readFields(row.group.node);
+          var tr = element('tr');
+          var nameCell = element('td');
+          var nameLink = element('button', 'table-link contact-name-link', values.name || 'New shareholder');
+          nameLink.type = 'button';
+          nameLink.addEventListener('click', function () { openRecord(row); });
+          nameCell.appendChild(nameLink);
+          tr.appendChild(nameCell);
+          var equityCell = element('td', 'equity-cell', values.equity !== '' && values.equity !== undefined ? values.equity + '%' : '—');
+          tr.appendChild(equityCell);
+          var actionCell = element('td', 'row-action');
+          var trash = element('button', 'icon-button', '');
+          trash.type = 'button';
+          trash.setAttribute('aria-label', 'Delete shareholder ' + (values.name || ''));
+          trash.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>';
+          trash.addEventListener('click', function () { row.node.querySelector('.remove-record').click(); });
+          actionCell.appendChild(trash);
+          tr.appendChild(actionCell);
+          shareTable.body.appendChild(tr);
+        });
+        if (collection.rows.length) collection.list.appendChild(shareTable.wrap);
+        var shareWarning = element('p', 'portal-status shareholder-warning', profileRules.equityWarning(collection.rows.map(function (row) { return readFields(row.group.node).equity; })));
+        shareWarning.setAttribute('role', 'status');
+        collection.list.appendChild(shareWarning);
+        return;
+      }
       var table = dataTable(id === 'projects' ? ['Project', 'Country / region', 'Disciplines', 'Type', 'GFA / Keys', 'Status', 'Years'] : ['Name', 'Location', 'GFA', 'LOD', 'Disciplines']);
       collection.rows.forEach(function (row) {
         var values = readFields(row.group.node);
@@ -1992,7 +2178,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       section.appendChild(list);
       var editors = element('div', 'record-editors');
       section.appendChild(editors);
-      var add = element('button', 'text-button add-record', definition.id === 'offices' ? '+ Add' : '+ add ' + (definition.id === 'bimProjects' ? 'project' : definition.singular));
+      var add = element('button', 'text-button add-record', definition.id === 'offices' ? '+ Add' : definition.id === 'shareholders' ? '+ Add shareholder' : definition.id === 'operatorApprovals' ? '+ Add operator' : '+ add ' + (definition.id === 'bimProjects' ? 'project' : definition.singular));
       add.type = 'button';
       add.dataset.add = definition.id;
       section.appendChild(add);
@@ -2004,6 +2190,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       refreshCollection(collection);
     });
     document.getElementById('panel-3').insertBefore(collections.offices.section, collections.contacts.section);
+    document.getElementById('panel-3').insertBefore(collections.shareholders.section, collections.contacts.section);
     collections.contacts.section.querySelector('h2').textContent = 'Contacts — click a name to view or edit';
     document.getElementById('panel-4').appendChild(element('p', 'region-help', 'GFA (m²) is required for non-hotel projects; Keys is required for hotels. Completion year is required only once a project is Completed.'));
 
@@ -2029,6 +2216,8 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
           refreshCollection(collections.offices);
         }
       });
+      (prefillRecord.operatorApprovals || []).forEach(function (row) { addRecord('operatorApprovals', row.fields, false, row.liveId); });
+      (prefillRecord.shareholders || []).forEach(function (row) { addRecord('shareholders', row.fields, false, row.liveId); });
       prefillRecord.projects.forEach(function (row) { addRecord('projects', row.fields, false, row.liveId); });
       prefillRecord.bimProjects.forEach(function (row) { addRecord('bimProjects', row.fields, false, row.liveId); });
     }
@@ -2143,7 +2332,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     document.getElementById('panel-0').appendChild(manageRegions);
 
     // File objects remain in this browser until a future authenticated upload service accepts them.
-    var attachmentPanel = document.getElementById('panel-7');
+    var attachmentPanel = document.getElementById('panel-8');
     attachmentPanel.appendChild(element('h2', '', 'Attachments (max 16 MB each)'));
     attachmentPanel.appendChild(element('p', 'section-description', 'Add supporting documents, up to 16 MB per file. Project attachments also appear here.'));
     var uploadLabel = element('label', '', 'Choose supporting documents');
@@ -2392,7 +2581,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     async function persist(action) {
       if (busy || allTabsLocked() || !validateProfile(action === 'saveDraft')) return;
       busy = true;
-      var buttons = Array.from(form.querySelectorAll('.profile-actions button'));
+      var buttons = Array.from(document.querySelectorAll('.profile-actions button'));
       buttons.forEach(function (button) { button.disabled = true; });
       form.setAttribute('aria-busy', 'true');
       report('profile-status', action === 'saveDraft' ? 'Preparing draft…' : 'Preparing submission…');
@@ -2402,6 +2591,14 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
         // same session (no reload) updates those rows instead of creating duplicates.
         (result.contacts || []).forEach(function (item) {
           var row = collections.contacts.rows.find(function (r) { return r.id === item.clientId; });
+          if (row && item.liveId) row.liveId = item.liveId;
+        });
+        (result.operatorApprovals || []).forEach(function (item) {
+          var row = collections.operatorApprovals.rows.find(function (r) { return r.id === item.clientId; });
+          if (row && item.liveId) row.liveId = item.liveId;
+        });
+        (result.shareholders || []).forEach(function (item) {
+          var row = collections.shareholders.rows.find(function (r) { return r.id === item.clientId; });
           if (row && item.liveId) row.liveId = item.liveId;
         });
         (result.bimProjects || []).forEach(function (item) {
@@ -2440,7 +2637,7 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
     }
     function refreshActionState() {
       var locked = allTabsLocked();
-      form.querySelectorAll('.profile-actions button').forEach(function (button) { button.disabled = locked || busy; });
+      document.querySelectorAll('.profile-actions button').forEach(function (button) { button.disabled = locked || busy; });
       if (locked && !busy) report('profile-status', 'All sections have been submitted and are pending review. Nothing left to save.');
     }
     function applyTabLocks() {
@@ -2505,6 +2702,8 @@ html, body { margin:0; min-height:100%; background:var(--portal-background); }
       });
       addRecord('projects', {name:'Lagoon Resort', country:'AE', region:'Middle East', disciplines:['Architecture'], type:'Hotel', keys:'320', status:'Completed', startYear:'2021', completionYear:'2024'});
       addRecord('projects', {name:'Marina Mixed-use Tower', country:'AE', region:'Middle East', disciplines:['Architecture'], type:'Mixed-use', gfa:'92000', status:'In progress', startYear:'2024'});
+      liveLists.Operators = ['Hilton', 'Hyatt', 'Marriott'];
+      addRecord('operatorApprovals', {operator:'Marriott', disciplines:['Architecture'], regions:['Middle East'], brands:'JW Marriott, Autograph'});
       addRecord('bimProjects', {name:'Coral Bay Hotel', location:'Muscat', gfa:'48000', lod:'LOD 350'});
       function setPreviewFields(id, values) {
         sections[id].fields.forEach(function (field) {

@@ -24,13 +24,13 @@ const output = fs.mkdtempSync(path.join(os.tmpdir(), 'ascentis-ui-check-'));
     const tab = async index => page.locator('#tab-' + index).click();
     const field = (panel, key) => page.locator('#panel-' + panel + ' [data-field-key="' + key + '"]');
     await reset();
-    for (let index = 0; index < 8; index++) {
+    for (let index = 0; index < 9; index++) {
       await tab(index);
       assert.ok(await page.locator('#panel-' + index).isVisible());
       await page.screenshot({path:path.join(output, 'desktop-' + index + '.png'),fullPage:true});
     }
     assert.deepEqual(errors, []);
-    console.log('PASS: all eight profile tabs render without script errors.');
+    console.log('PASS: all nine profile tabs render without script errors.');
 
     await tab(1);
     await field(1, 'yearFormat').selectOption('YYYY/ZZ (Apr–Mar)');
@@ -52,9 +52,9 @@ const output = fs.mkdtempSync(path.join(os.tmpdir(), 'ascentis-ui-check-'));
     await field(2, 'indemnityDetails').fill('Example details');
     await field(2, 'indemnified').selectOption('No');
     assert.ok(await field(2, 'indemnityDetails').isDisabled());
-    await tab(6);
-    await field(6, 'certified').selectOption('No');
-    assert.ok(await field(6, 'certificationDetails').isDisabled());
+    await tab(7);
+    await field(7, 'certified').selectOption('No');
+    assert.ok(await field(7, 'certificationDetails').isDisabled());
     console.log('PASS: fiscal calculations, percentage warnings and conditional validation.');
 
     await reset();
@@ -107,7 +107,7 @@ const output = fs.mkdtempSync(path.join(os.tmpdir(), 'ascentis-ui-check-'));
     console.log('PASS: three-leader selection limit and duplicate contact email validation.');
 
     await reset();
-    await tab(7);
+    await tab(8);
     await page.locator('#profile-files').setInputFiles({name:'too-large.pdf',mimeType:'application/pdf',buffer:Buffer.alloc(25000001)});
     assert.match(await page.locator('#attachment-message').textContent(), /exceeds/);
     await page.locator('#profile-files').setInputFiles({name:'new.pdf',mimeType:'application/pdf',buffer:Buffer.from('example')});
@@ -118,7 +118,7 @@ const output = fs.mkdtempSync(path.join(os.tmpdir(), 'ascentis-ui-check-'));
     await page.getByRole('button',{name:'Lagoon Resort',exact:true}).click();
     await page.locator('dialog[open] input[type="file"]').setInputFiles({name:'project.pdf',mimeType:'application/pdf',buffer:Buffer.from('project')});
     await page.locator('dialog[open]').getByRole('button',{name:'Done',exact:true}).click();
-    await tab(7);
+    await tab(8);
     assert.ok(await page.getByRole('button',{name:'project.pdf',exact:true}).isVisible());
     console.log('PASS: file-size rejection, deletion and project attachment cross-listing.');
 
@@ -129,7 +129,7 @@ const output = fs.mkdtempSync(path.join(os.tmpdir(), 'ascentis-ui-check-'));
       await page.locator('dialog[open]').getByRole('button',{name:'Done',exact:true}).click();
     }
     assert.ok(await page.locator('[data-add="projects"]').isDisabled());
-    await tab(5);
+    await tab(6);
     for (let index = 1; index < 10; index++) {
       await page.locator('[data-add="bimProjects"]').click();
       await page.locator('dialog[open]').getByRole('button',{name:'Done',exact:true}).click();
@@ -146,9 +146,17 @@ const output = fs.mkdtempSync(path.join(os.tmpdir(), 'ascentis-ui-check-'));
     assert.match(await page.locator('#next-revalidation-date').textContent(), /Available after review/);
     console.log('PASS: clearly labelled preview draft and submission response flow.');
 
+    await reset();
+    await tab(5);
+    await page.locator('[data-add="operatorApprovals"]').click();
+    await page.locator('dialog[open] [data-field-key="operator"]').selectOption('Hilton');
+    await page.locator('dialog[open]').getByRole('button',{name:'Done',exact:true}).click();
+    assert.ok(await page.locator('#panel-5').getByRole('button',{name:'Hilton',exact:true}).isVisible());
+    console.log('PASS: operator approval can be added from the Operator approvals tab.');
+
     await page.setViewportSize({width:390,height:844});
     await reset();
-    for (let index = 0; index < 8; index++) {
+    for (let index = 0; index < 9; index++) {
       await tab(index);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth + 1), 'Page overflow on mobile tab ' + index);
       await page.screenshot({path:path.join(output, 'mobile-' + index + '.png'),fullPage:true});

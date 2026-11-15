@@ -24,6 +24,8 @@
       });
       addRecord('projects', {name:'Lagoon Resort', country:'AE', region:'Middle East', disciplines:['Architecture'], type:'Hotel', keys:'320', status:'Completed', startYear:'2021', completionYear:'2024'});
       addRecord('projects', {name:'Marina Mixed-use Tower', country:'AE', region:'Middle East', disciplines:['Architecture'], type:'Mixed-use', gfa:'92000', status:'In progress', startYear:'2024'});
+      liveLists.Operators = ['Hilton', 'Hyatt', 'Marriott'];
+      addRecord('operatorApprovals', {operator:'Marriott', disciplines:['Architecture'], regions:['Middle East'], brands:'JW Marriott, Autograph'});
       addRecord('bimProjects', {name:'Coral Bay Hotel', location:'Muscat', gfa:'48000', lod:'LOD 350'});
       function setPreviewFields(id, values) {
         sections[id].fields.forEach(function (field) {

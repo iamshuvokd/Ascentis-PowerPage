@@ -13,6 +13,8 @@
   "collections": {
     "contacts": {"table":"asc_contact","fields":{"firstName":"asc_firstname","lastName":"asc_lastname","email":"asc_workemail","phone":"asc_phone","jobTitle":"asc_jobtitle","status":"asc_status"}},
     "offices": {"table":"asc_office","fields":{"city":"asc_city","address":"asc_address","status":"asc_status","headcount":"asc_headcount"}},
+    "shareholders": {"table":"asc_shareholder","fields":{"name":"asc_name","equity":"asc_equitypct"}},
+    "operatorApprovals": {"table":"asc_operatorapproval","fields":{"brands":"asc_brands"}},
     "projects": {"table":"asc_projectreference","fields":{"name":"asc_name","brand":"asc_brand","gfa":"asc_gfa","keys":"asc_keys","status":"asc_projectstatus","startYear":"asc_startyear","completionYear":"asc_completionyear"}},
     "bimProjects": {"table":"asc_bimproject","fields":{"name":"asc_name","location":"asc_location","gfa":"asc_gfa","lod":"asc_lod"}}
   },
@@ -21,6 +23,9 @@
     "contacts.contactType": {"column":"asc_ContactType","targetTable":"asc_contacttype","note":"Now a lookup to asc_ContactType (name column asc_contacttypename), found 2026-10-28."},
     "contacts.region": {"column":"asc_regionid","targetTable":"asc_region"},
     "offices.country": {"column":"asc_countryid","targetTable":"asc_country"},
+    "operatorApprovals.operator": {"column":"asc_operator_id","targetTable":"asc_operator","note":"Lookup to asc_Operator (name asc_name). Carried in references.operator."},
+    "operatorApprovals.disciplines": {"column":"asc_disciplineid","targetTable":"asc_discipline","note":"One row per discipline in asc_operatorapprovaldiscipline (asc_operatorapproval_id + asc_disciplineid)."},
+    "operatorApprovals.regions": {"column":"asc_RegionsID","targetTable":"asc_region","note":"One row per region in asc_OperatorApprovalsRegions (asc_OperatorApprovalsID + asc_RegionsID)."},
     "projects.country": {"column":"asc_countryid","targetTable":"asc_country"},
     "projects.region": {"column":"asc_region_id","targetTable":"asc_region"},
     "projects.type": {"column":"asc_projecttype_id","targetTable":"asc_projecttype","note":"2026-10-29: stored as a row in the junction asc_projectreferencetype (asc_projectreference_id + asc_projecttype_id), not a column on asc_projectreference."},
@@ -38,5 +43,5 @@
   "booleanColumns": ["asc_indemnified","asc_litigation","asc_holdspi","asc_esgcert","asc_esgreporting","asc_esgqa"],
   "integerColumns": ["asc_effectiveyear","asc_bimoperatorcount","asc_accreditedcount","asc_headcount","asc_gfa","asc_keys"],
   "yearDateColumns": ["asc_startyear","asc_completionyear"],
-  "decimalColumns": ["asc_backloginhand","asc_revenuen1","asc_revenuen2","asc_revenuen3","asc_piperoccurrence","asc_piaggregate"]
+  "decimalColumns": ["asc_backloginhand","asc_revenuen1","asc_revenuen2","asc_revenuen3","asc_piperoccurrence","asc_piaggregate","asc_equitypct"]
 }

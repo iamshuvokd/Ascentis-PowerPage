@@ -141,6 +141,61 @@
         });
         return;
       }
+      if (id === 'operatorApprovals') {
+        var opTable = dataTable(['Operator', 'Disciplines', 'Brands', 'Regions', '']);
+        collection.rows.forEach(function (row) {
+          var values = readFields(row.group.node);
+          var tr = element('tr');
+          var nameCell = element('td');
+          var nameLink = element('button', 'table-link contact-name-link', values.operator || 'New operator approval');
+          nameLink.type = 'button';
+          nameLink.addEventListener('click', function () { openRecord(row); });
+          nameCell.appendChild(nameLink);
+          tr.appendChild(nameCell);
+          [(values.disciplines || []).join(', '), values.brands, (values.regions || []).join(', ')].forEach(function (value) { tr.appendChild(element('td', '', value || '—')); });
+          var actionCell = element('td', 'row-action');
+          var trash = element('button', 'icon-button', '');
+          trash.type = 'button';
+          trash.setAttribute('aria-label', 'Delete operator approval ' + (values.operator || ''));
+          trash.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>';
+          trash.addEventListener('click', function () { row.node.querySelector('.remove-record').click(); });
+          actionCell.appendChild(trash);
+          tr.appendChild(actionCell);
+          opTable.body.appendChild(tr);
+        });
+        if (collection.rows.length) collection.list.appendChild(opTable.wrap);
+        return;
+      }
+      if (id === 'shareholders') {
+        var shareTable = dataTable(['Shareholder', 'Equity %', '']);
+        shareTable.wrap.classList.add('shareholder-table');
+        collection.rows.forEach(function (row) {
+          var values = readFields(row.group.node);
+          var tr = element('tr');
+          var nameCell = element('td');
+          var nameLink = element('button', 'table-link contact-name-link', values.name || 'New shareholder');
+          nameLink.type = 'button';
+          nameLink.addEventListener('click', function () { openRecord(row); });
+          nameCell.appendChild(nameLink);
+          tr.appendChild(nameCell);
+          var equityCell = element('td', 'equity-cell', values.equity !== '' && values.equity !== undefined ? values.equity + '%' : '—');
+          tr.appendChild(equityCell);
+          var actionCell = element('td', 'row-action');
+          var trash = element('button', 'icon-button', '');
+          trash.type = 'button';
+          trash.setAttribute('aria-label', 'Delete shareholder ' + (values.name || ''));
+          trash.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>';
+          trash.addEventListener('click', function () { row.node.querySelector('.remove-record').click(); });
+          actionCell.appendChild(trash);
+          tr.appendChild(actionCell);
+          shareTable.body.appendChild(tr);
+        });
+        if (collection.rows.length) collection.list.appendChild(shareTable.wrap);
+        var shareWarning = element('p', 'portal-status shareholder-warning', profileRules.equityWarning(collection.rows.map(function (row) { return readFields(row.group.node).equity; })));
+        shareWarning.setAttribute('role', 'status');
+        collection.list.appendChild(shareWarning);
+        return;
+      }
       var table = dataTable(id === 'projects' ? ['Project', 'Country / region', 'Disciplines', 'Type', 'GFA / Keys', 'Status', 'Years'] : ['Name', 'Location', 'GFA', 'LOD', 'Disciplines']);
       collection.rows.forEach(function (row) {
         var values = readFields(row.group.node);
@@ -220,7 +275,7 @@
       section.appendChild(list);
       var editors = element('div', 'record-editors');
       section.appendChild(editors);
-      var add = element('button', 'text-button add-record', definition.id === 'offices' ? '+ Add' : '+ add ' + (definition.id === 'bimProjects' ? 'project' : definition.singular));
+      var add = element('button', 'text-button add-record', definition.id === 'offices' ? '+ Add' : definition.id === 'shareholders' ? '+ Add shareholder' : definition.id === 'operatorApprovals' ? '+ Add operator' : '+ add ' + (definition.id === 'bimProjects' ? 'project' : definition.singular));
       add.type = 'button';
       add.dataset.add = definition.id;
       section.appendChild(add);
@@ -232,6 +287,7 @@
       refreshCollection(collection);
     });
     document.getElementById('panel-3').insertBefore(collections.offices.section, collections.contacts.section);
+    document.getElementById('panel-3').insertBefore(collections.shareholders.section, collections.contacts.section);
     collections.contacts.section.querySelector('h2').textContent = 'Contacts — click a name to view or edit';
     document.getElementById('panel-4').appendChild(element('p', 'region-help', 'GFA (m²) is required for non-hotel projects; Keys is required for hotels. Completion year is required only once a project is Completed.'));
 
@@ -257,6 +313,8 @@
           refreshCollection(collections.offices);
         }
       });
+      (prefillRecord.operatorApprovals || []).forEach(function (row) { addRecord('operatorApprovals', row.fields, false, row.liveId); });
+      (prefillRecord.shareholders || []).forEach(function (row) { addRecord('shareholders', row.fields, false, row.liveId); });
       prefillRecord.projects.forEach(function (row) { addRecord('projects', row.fields, false, row.liveId); });
       prefillRecord.bimProjects.forEach(function (row) { addRecord('bimProjects', row.fields, false, row.liveId); });
     }
@@ -371,7 +429,7 @@
     document.getElementById('panel-0').appendChild(manageRegions);
 
     // File objects remain in this browser until a future authenticated upload service accepts them.
-    var attachmentPanel = document.getElementById('panel-7');
+    var attachmentPanel = document.getElementById('panel-8');
     attachmentPanel.appendChild(element('h2', '', 'Attachments (max 16 MB each)'));
     attachmentPanel.appendChild(element('p', 'section-description', 'Add supporting documents, up to 16 MB per file. Project attachments also appear here.'));
     var uploadLabel = element('label', '', 'Choose supporting documents');
@@ -620,7 +678,7 @@
     async function persist(action) {
       if (busy || allTabsLocked() || !validateProfile(action === 'saveDraft')) return;
       busy = true;
-      var buttons = Array.from(form.querySelectorAll('.profile-actions button'));
+      var buttons = Array.from(document.querySelectorAll('.profile-actions button'));
       buttons.forEach(function (button) { button.disabled = true; });
       form.setAttribute('aria-busy', 'true');
       report('profile-status', action === 'saveDraft' ? 'Preparing draft…' : 'Preparing submission…');
@@ -630,6 +688,14 @@
         // same session (no reload) updates those rows instead of creating duplicates.
         (result.contacts || []).forEach(function (item) {
           var row = collections.contacts.rows.find(function (r) { return r.id === item.clientId; });
+          if (row && item.liveId) row.liveId = item.liveId;
+        });
+        (result.operatorApprovals || []).forEach(function (item) {
+          var row = collections.operatorApprovals.rows.find(function (r) { return r.id === item.clientId; });
+          if (row && item.liveId) row.liveId = item.liveId;
+        });
+        (result.shareholders || []).forEach(function (item) {
+          var row = collections.shareholders.rows.find(function (r) { return r.id === item.clientId; });
           if (row && item.liveId) row.liveId = item.liveId;
         });
         (result.bimProjects || []).forEach(function (item) {
@@ -668,7 +734,7 @@
     }
     function refreshActionState() {
       var locked = allTabsLocked();
-      form.querySelectorAll('.profile-actions button').forEach(function (button) { button.disabled = locked || busy; });
+      document.querySelectorAll('.profile-actions button').forEach(function (button) { button.disabled = locked || busy; });
       if (locked && !busy) report('profile-status', 'All sections have been submitted and are pending review. Nothing left to save.');
     }
     function applyTabLocks() {
