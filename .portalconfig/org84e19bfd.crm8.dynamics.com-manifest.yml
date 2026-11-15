@@ -327,10 +327,6 @@ adx_sitesetting:
   DisplayName: CustomerSupport/DisplayAllUserActivitiesOnTimeline
   CheckSum: c5587022c466662e04d0b3f7bbd4a32dcf5bc7b8eefeb62b15333e9b517272f6
   IsDeleted: false
-- RecordId: eb1521ef-afb1-4582-b331-6478881ffb05
-  DisplayName: Authentication/Registration/AzureADLoginEnabled
-  CheckSum: 2a1770173cb2defb776e259fa1dfbacd71c41283da45c2a075bc040cc043d2db
-  IsDeleted: false
 - RecordId: ec1f4f56-5dc8-454d-99bf-852b4fe3cbad
   DisplayName: Authentication/Registration/LocalLoginEnabled
   CheckSum: 8a7e27c50ac503d53baba2e5cb87abdc065fbc7dfcf56ed44efd9f9f14889818
