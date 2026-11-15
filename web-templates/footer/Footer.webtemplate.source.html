@@ -59,17 +59,22 @@
     }
     function show() {
       if (document.getElementById(id) || !document.body) return;
+      // Ascentis look: cream page, white card, wordmark, green spinner, navy text (same palette as the portal).
       var style = document.createElement("style");
-      style.textContent = "#" + id + "{position:fixed;inset:0;z-index:2147483647;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Segoe UI,Arial,sans-serif;color:#333;text-align:center;padding:24px}" +
-        "#" + id + " .asc-spin{width:48px;height:48px;border:5px solid #e3e3e3;border-top-color:#0b5cab;border-radius:50%;animation:asc-spin 0.9s linear infinite;margin-bottom:20px}" +
-        "#" + id + " p{margin:4px 0;font-size:16px}#" + id + " .asc-sub{color:#666;font-size:14px}" +
-        "@keyframes asc-spin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){#" + id + " .asc-spin{animation-duration:3s}}";
+      style.textContent = "#" + id + "{position:fixed;inset:0;z-index:2147483647;background:#faf9ec;display:flex;align-items:center;justify-content:center;padding:24px;font-family:Arial,Helvetica,sans-serif;color:#00143e;text-align:center;animation:asc-fade .25s ease-out}" +
+        "#" + id + " .asc-card{width:100%;max-width:400px;padding:40px 32px 34px;background:#fff;border:1px solid #dddfea;border-radius:11px;box-shadow:0 1px 2px rgba(0,20,62,.04),0 12px 32px rgba(0,20,62,.06)}" +
+        "#" + id + " .asc-logo{display:block;height:30px;width:auto;margin:0 auto 30px}" +
+        "#" + id + " .asc-spin{width:44px;height:44px;margin:0 auto 24px;border:4px solid #ebf7e4;border-top-color:#287d17;border-radius:50%;animation:asc-spin .9s linear infinite}" +
+        "#" + id + " .asc-title{margin:0 0 8px;font-size:19px;font-weight:600;letter-spacing:-.3px;color:#00143e}" +
+        "#" + id + " .asc-sub{margin:0;font-size:14px;line-height:1.55;color:#697fa5}" +
+        "@keyframes asc-spin{to{transform:rotate(360deg)}}@keyframes asc-fade{from{opacity:0}to{opacity:1}}" +
+        "@media (prefers-reduced-motion:reduce){#" + id + "{animation:none}#" + id + " .asc-spin{animation-duration:3s}}";
       var el = document.createElement("div");
       el.id = id;
       el.setAttribute("role", "status");
       el.setAttribute("aria-live", "polite");
       el.appendChild(style);
-      el.insertAdjacentHTML("beforeend", "<div class='asc-spin' aria-hidden='true'></div><p><strong>Setting up your account&hellip;</strong></p><p class='asc-sub'>Please wait, you will be taken to sign in automatically.</p>");
+      el.insertAdjacentHTML("beforeend", "<div class='asc-card'><img class='asc-logo' src='/logo.png' alt='Ascentis'><div class='asc-spin' aria-hidden='true'></div><p class='asc-title'>Setting up your account&hellip;</p><p class='asc-sub'>Please wait. You will be taken to sign in automatically.</p></div>");
       document.body.appendChild(el);
       timer = setTimeout(hide, 25000);
     }
