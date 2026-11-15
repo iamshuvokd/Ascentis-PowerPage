@@ -41,6 +41,10 @@ const outputs = {'preview.html':preview};
 outputs['web-templates/consultant-portal/Consultant-portal.webtemplate.source.html'] = source('document.html')
   .replace('<!-- portal:css -->', () => css)
   .replace('<!-- portal:js -->', () => js);
+// Branded standalone 'Page not found' document (own page template, no site header/footer).
+outputs['web-templates/ascentis-status-page/Ascentis-status-page.webtemplate.source.html'] = source('status-page.html')
+  .replace(/%%ASCENTIS_LOGO%%/g, () => logoDataUri)
+  .replace('<!-- portal:css -->', () => source('styles/theme.css') + '\n' + source('styles/status-page.css'));
 for (const [suffix, value] of Object.entries({'copy.html':html,'custom_css.css':css,'custom_javascript.js':js})) {
   outputs['web-pages/home/Home.webpage.' + suffix] = value;
   outputs['web-pages/home/content-pages/Home.en-US.webpage.' + suffix] = value;
