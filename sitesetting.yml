@@ -149,7 +149,7 @@
 - adx_description: Enables or disables Azure AD as an external identity provider. By default, it is set to true.
   adx_name: Authentication/Registration/AzureADLoginEnabled
   adx_sitesettingid: eb1521ef-afb1-4582-b331-6478881ffb05
-  adx_value: true
+  adx_value: false
 - adx_name: Authentication/Registration/LocalLoginEnabled
   adx_sitesettingid: ec1f4f56-5dc8-454d-99bf-852b4fe3cbad
   adx_value: false
