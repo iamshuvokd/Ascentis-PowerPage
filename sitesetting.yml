@@ -422,3 +422,7 @@
   adx_name: Webapi/asc_projectreferencetype/fields
   adx_sitesettingid: 0846046d-544c-42f0-b4d0-0d65e130730a
   adx_value: asc_projectreferencetypeid,asc_number,asc_projectreference_id,_asc_projectreference_id_value,asc_projecttype_id,_asc_projecttype_id_value
+- adx_description: 'Home page CDN caching turned off 15 Nov 2026: cached copies kept serving a stale sign-in page after deploys. Value was ["20ad0d32-deba-43a3-a833-5108ab63f16e"].'
+  adx_name: ContentDeliveryNetwork/WebPages
+  adx_sitesettingid: e4b32cb8-a235-409f-88fe-65a4ece7640d
+  adx_value: '[]'
