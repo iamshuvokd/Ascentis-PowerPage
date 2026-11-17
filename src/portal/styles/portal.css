@@ -159,6 +159,10 @@
 .record-dialog::backdrop { background:#14281d66; }
 .record-dialog .record-card { border:0; padding:0; margin:0; }
 .close-editor { float:right; margin-top:14px; }
+.confirm-dialog { max-width:480px; }
+.confirm-dialog .confirm-title { margin:0 0 10px; font-size:22px; }
+.confirm-dialog p { margin:0 0 18px; line-height:1.5; }
+.confirm-actions { display:flex; justify-content:flex-end; gap:12px; }
 .table-scroll { overflow-x:auto; width:100%; }
 .portal-table { width:100%; border-collapse:collapse; font-size:14px; text-align:left; }
 .portal-table th { padding:12px; background:#e5f8ab; color:#5b7062; font-size:12px; font-weight:500; white-space:nowrap; }
@@ -170,6 +174,8 @@
 #panel-8 { position:relative; }
 #panel-8>.section-description { display:none; }
 #panel-8>.upload-button { position:absolute; top:0; right:0; }
+/* A locked Attachments tab cannot take uploads; hiding the button also stops it overlapping the status pill. */
+#panel-8.tab-locked>.upload-button { display:none; }
 #panel-8 .portal-table select { min-width:140px; border:0; padding:0; background:transparent; }
 #panel-8>.region-help,#panel-4>.region-help { margin-top:26px; }
 .visually-hidden,.consultant-portal .native-multi { position:absolute !important; width:1px !important; height:1px !important; min-height:0 !important; padding:0 !important; margin:-1px !important; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
@@ -195,6 +201,11 @@
 [data-section=financial]>.section-description { margin-bottom:20px; }
 [data-section=sustainability] [data-type=textarea] textarea { min-height:100px; }
 
-.pending-review-banner { margin:0 0 16px; padding:10px 14px; border:1px solid #d9b36a; border-radius:8px; background:#fbf3df; color:#77551e; font-weight:600; }
+/* Locked-tab status line: plain text (no coloured box) with a rounded status pill on the right. */
+.pending-review-banner { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:0 0 16px; padding:0; color:var(--portal-text); font-weight:400; }
+.status-pill { flex:none; padding:3px 14px; border-radius:999px; border:1px solid transparent; font-size:13px; font-weight:700; line-height:1.4; }
+.status-pill-submitted { background:#fff; border-color:#d9b36a; color:#77551e; }
+.status-pill-accepted { background:var(--portal-button-background); border-color:var(--portal-button-border); color:var(--portal-accent); }
+.status-pill-rejected { background:#fbe9e9; border-color:#e0a3a3; color:#8f2a2a; }
 .tab-locked [inert] { opacity:.65; }
 .record-dialog .multi-options { position:static; flex:1 0 100%; max-width:none; max-height:180px; margin:0 0 6px; box-shadow:none; }

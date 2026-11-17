@@ -137,10 +137,105 @@ const output = fs.mkdtempSync(path.join(os.tmpdir(), 'ascentis-ui-check-'));
     assert.ok(await page.locator('[data-add="bimProjects"]').isDisabled());
     console.log('PASS: 30-project and 10-BIM-project limits.');
 
+    // Required-field coverage: clear every enabled required control and make sure a real submit rejects each one.
+    await reset();
+    const requiredCount = await page.evaluate(() => {
+      const controls = Array.from(document.querySelectorAll('#profile-form input, #profile-form select, #profile-form textarea')).filter(c => c.required && !c.disabled && c.type !== 'file');
+      controls.forEach(c => { c.value = ''; });
+      return controls.length;
+    });
+    assert.ok(requiredCount >= 20, 'expected many required controls, found ' + requiredCount);
+    await page.getByRole('button',{name:'Submit for review',exact:true}).click();
+    await page.locator('#profile-errors').waitFor({state:'visible'});
+    assert.equal(await page.locator('dialog.confirm-dialog[open]').count(), 0); // invalid form never reaches the confirmation
+    const notRejected = await page.evaluate(() => Array.from(document.querySelectorAll('#profile-form input, #profile-form select, #profile-form textarea'))
+      .filter(c => c.required && !c.disabled && c.type !== 'file' && c.value === '' && c.getAttribute('aria-invalid') !== 'true')
+      .map(c => c.dataset.label || c.name || c.id));
+    assert.deepEqual(notRejected, []);
+    console.log('PASS: every empty required field blocks submission (' + requiredCount + ' controls checked).');
+
+    // Conditional required fields: required only while their controlling answer applies.
+    await reset();
+    const conditionals = [['indemnified','Yes','indemnityDetails'],['litigation','Yes','litigationDetails'],['insured','Yes','perOccurrence'],['insured','Yes','aggregate'],
+      ['capability','In-house','operators'],['certified','Yes','certificationDetails'],['reporting','Yes','frameworkDetails'],['qa','Yes','qaDetails']];
+    for (const [controller, value, dependent] of conditionals) {
+      const state = await page.evaluate(([controller, value, dependent]) => {
+        const c = document.querySelector('#profile-form [data-field-key="' + controller + '"]');
+        const d = document.querySelector('#profile-form [data-field-key="' + dependent + '"]');
+        const set = v => { c.value = v; c.dispatchEvent(new Event('change', {bubbles:true})); };
+        set(value);
+        const whenApplies = {required: d.required, disabled: d.disabled};
+        const other = Array.from(c.options).map(o => o.value).find(v => v && v !== value);
+        set(other);
+        return {whenApplies, whenNot: {required: d.required, disabled: d.disabled}};
+      }, [controller, value, dependent]);
+      assert.deepEqual(state.whenApplies, {required: true, disabled: false}, dependent + ' must be required when ' + controller + ' = ' + value);
+      assert.deepEqual(state.whenNot, {required: false, disabled: true}, dependent + ' must not be required otherwise');
+    }
+    console.log('PASS: conditional required fields switch on and off with their controlling answer.');
+
+    // A locked tab (Submitted/Accepted/Rejected) with an empty required field must not block submitting the rest.
+    await reset();
+    await page.evaluate(() => {
+      document.getElementById('panel-2').dataset.locked = 'true';
+      const legal = document.querySelector('#panel-2 [data-field-key="indemnified"]');
+      legal.value = ''; // required and empty, but the tab is locked
+    });
+    await page.getByRole('button',{name:'Submit for review',exact:true}).click();
+    await page.locator('dialog.confirm-dialog[open]').waitFor({state:'visible'});
+    assert.equal(await page.locator('#profile-errors').isVisible(), false);
+    await page.locator('dialog.confirm-dialog[open]').getByRole('button',{name:'Cancel',exact:true}).click();
+    console.log('PASS: empty required fields in a locked tab do not block submitting the other tabs.');
+
+    // Locked-tab banner with a rounded status pill beside it, and no marker on the tab label.
+    await reset();
+    await page.evaluate(() => {
+      const statuses = {Submitted:'panel-0', Accepted:'panel-1', Rejected:'panel-2'};
+      Object.keys(statuses).forEach(status => {
+        const text = {Submitted:'This section has been submitted', Accepted:'reviewed and accepted by Ascentis', Rejected:'Please contact Ascentis to have it reopened'}[status];
+        const pill = {Submitted:'Pending', Accepted:'Accepted', Rejected:'Rejected'}[status];
+        const banner = document.createElement('p');
+        banner.className = 'pending-review-banner';
+        banner.innerHTML = '<span class="banner-text">' + text + '</span><span class="status-pill status-pill-' + status.toLowerCase() + '">' + pill + '</span>';
+        document.getElementById(statuses[status]).prepend(banner);
+      });
+    });
+    for (const [index, pill] of [[0,'Pending'],[1,'Accepted'],[2,'Rejected']]) {
+      await tab(index);
+      const shown = page.locator('#panel-' + index + ' .status-pill');
+      assert.equal((await shown.textContent()).trim(), pill);
+      const radius = await shown.evaluate(el => getComputedStyle(el).borderRadius);
+      assert.ok(parseFloat(radius) >= 100, 'pill must be fully rounded');
+    }
+    assert.equal(await page.locator('[role=tab] .status-pill').count(), 0);
+    // The absolutely positioned "+ upload" button must not sit on top of the pill when Attachments is locked.
+    await tab(8);
+    assert.equal(await page.locator('#panel-8>.upload-button').isVisible(), true);
+    await page.evaluate(() => {
+      const panel = document.getElementById('panel-8');
+      panel.classList.add('tab-locked');
+      const banner = document.createElement('p');
+      banner.className = 'pending-review-banner';
+      banner.innerHTML = '<span class="banner-text">This section has been submitted and can no longer be edited.</span><span class="status-pill status-pill-submitted">Pending</span>';
+      panel.prepend(banner);
+    });
+    assert.equal(await page.locator('#panel-8>.upload-button').isVisible(), false);
+    console.log('PASS: locked-tab banner shows a rounded status pill; tab labels carry no marker.');
+
     await reset();
     await page.getByRole('button',{name:'Save draft',exact:true}).click();
     await page.waitForFunction(()=>document.querySelector('#profile-status').textContent.includes('in memory'));
+    // Confirmation step: Cancel sends nothing and stays on the profile; "Yes, submit" completes the submission.
     await page.getByRole('button',{name:'Submit for review',exact:true}).click();
+    const confirmDialog = page.locator('dialog.confirm-dialog[open]');
+    await confirmDialog.waitFor({state:'visible'});
+    assert.match(await confirmDialog.textContent(), /Are you sure you want to submit/);
+    assert.match(await confirmDialog.textContent(), /Once submitted, the data cannot be changed/);
+    await confirmDialog.getByRole('button',{name:'Cancel',exact:true}).click();
+    assert.equal(await page.locator('[data-view="submit"]').isVisible(), false);
+    await page.waitForFunction(()=>document.querySelector('#profile-status').textContent.includes('Submission cancelled'));
+    await page.getByRole('button',{name:'Submit for review',exact:true}).click();
+    await confirmDialog.getByRole('button',{name:'Yes, submit',exact:true}).click();
     await page.locator('[data-view="submit"]').waitFor({state:'visible'});
     assert.ok(await page.locator('#submission-preview-note').isVisible());
     assert.match(await page.locator('#next-revalidation-date').textContent(), /Available after review/);

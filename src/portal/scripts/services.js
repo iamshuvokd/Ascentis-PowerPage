@@ -846,6 +846,10 @@
     // only matches Draft).
     var prefillRecord = null;
     var submissionTabStatus = {};
+    // A tab is read-only once it has been submitted and until it is back in Draft: Submitted (pending review),
+    // Accepted and Rejected all lock it (project decision 17 Nov 2026). Draft and Seeded stay editable.
+    var LOCKED_TAB_STATUSES = { Submitted: true, Accepted: true, Rejected: true };
+    function isLockedTabStatus(status) { return LOCKED_TAB_STATUSES[status] === true; }
     function pickLatestSubmissionPerTab(rows, consultantId) {
       var wanted = String(consultantId || '').toLowerCase();
       var latest = {};
@@ -951,8 +955,8 @@
       var before = tabSnapshot(existingRecord);
       for (var i = 0; i < PORTAL_SUBMISSION_TABS.length; i++) {
         var tab = PORTAL_SUBMISSION_TABS[i];
-        // A Submitted tab is locked until reviewed - saving again would create/overwrite a Draft row.
-        if (submissionTabStatus[tab] === 'Submitted') continue;
+        // A Submitted/Accepted/Rejected tab is locked - saving again would create/overwrite a Draft row.
+        if (isLockedTabStatus(submissionTabStatus[tab])) continue;
         try {
           await saveTabSubmission(consultantId, tab, after[tab], before[tab], status);
           submissionTabStatus[tab] = status;

@@ -422,3 +422,9 @@
   adx_name: ContentDeliveryNetwork/WebPages
   adx_sitesettingid: e4b32cb8-a235-409f-88fe-65a4ece7640d
   adx_value: '[]'
+- adx_name: Authentication/OpenIdConnect/EntraExternalID/Caption
+  adx_sitesettingid: 4d34fe03-e456-47a4-b43c-35912acca585
+  adx_value: Sign in with email code
+- adx_name: Authentication/OpenIdConnect/EntraExternalID/AllowContactMappingWithEmail
+  adx_sitesettingid: 6b8a46e8-fad9-44b1-8cdd-d097ceaa3eab
+  adx_value: true

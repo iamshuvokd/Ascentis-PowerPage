@@ -427,6 +427,22 @@ test('recordPortalSubmissions never writes a Submitted (locked) tab, and marks t
   assert.equal(ctx.submissionTabStatus.Identity, 'Draft');
 });
 
+test('Submitted, Accepted and Rejected tabs are locked; Draft, Seeded and unknown are not', () => {
+  const ctx = freshServicesContext();
+  ['Submitted', 'Accepted', 'Rejected'].forEach(s => assert.equal(ctx.isLockedTabStatus(s), true, s));
+  ['Draft', 'Seeded', undefined, null, ''].forEach(s => assert.equal(ctx.isLockedTabStatus(s), false, String(s)));
+});
+
+test('recordPortalSubmissions never writes an Accepted or Rejected tab either', async () => {
+  const ctx = freshServicesContext();
+  ctx.submissionTabStatus = { Legal: 'Accepted', BIM: 'Rejected', Identity: 'Submitted' };
+  const written = [];
+  ctx.saveTabSubmission = async (consultantId, tab) => { written.push(tab); };
+  await ctx.recordPortalSubmissions('c-1', { identity: {} }, 'Draft');
+  ['Legal', 'BIM', 'Identity'].forEach(tab => assert.equal(written.includes(tab), false, tab));
+  assert.equal(written.length, 6);
+});
+
 test('buildAttachmentRequest sends an ASCII-safe x-ms-file-name header for non-Latin file names', () => {
   const ctx = freshServicesContext();
   const r = ctx.buildAttachmentRequest({ file: { name: 'شهادة.pdf', size: 10 }, projectId: null }, { consultantId: 'c-1', documentTypeId: null, uploadedById: 'u-1', uploadedOn: 'x' });
@@ -441,7 +457,7 @@ test('a Seeded row (written by the Power Apps seeding app) is picked as the late
   assert.equal(latest.Identity.status, 'Seeded');
   const r = context.reconstructPrefillRecord({ Identity: { status: 'Seeded', after: JSON.stringify({ firmName: 'Seeded Co' }) } });
   assert.equal(r.identity.firmName, 'Seeded Co');
-  assert.equal(r.tabStatus.Identity, 'Seeded'); // only 'Submitted' locks a tab
+  assert.equal(r.tabStatus.Identity, 'Seeded'); // Seeded stays editable (Submitted/Accepted/Rejected lock a tab)
 });
 
 test('BIM capability/operators live on asc_biminformation (not asc_consultant) and the Choice maps both ways', () => {

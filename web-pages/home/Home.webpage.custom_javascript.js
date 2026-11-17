@@ -1018,6 +1018,10 @@
     // only matches Draft).
     var prefillRecord = null;
     var submissionTabStatus = {};
+    // A tab is read-only once it has been submitted and until it is back in Draft: Submitted (pending review),
+    // Accepted and Rejected all lock it (project decision 17 Nov 2026). Draft and Seeded stay editable.
+    var LOCKED_TAB_STATUSES = { Submitted: true, Accepted: true, Rejected: true };
+    function isLockedTabStatus(status) { return LOCKED_TAB_STATUSES[status] === true; }
     function pickLatestSubmissionPerTab(rows, consultantId) {
       var wanted = String(consultantId || '').toLowerCase();
       var latest = {};
@@ -1123,8 +1127,8 @@
       var before = tabSnapshot(existingRecord);
       for (var i = 0; i < PORTAL_SUBMISSION_TABS.length; i++) {
         var tab = PORTAL_SUBMISSION_TABS[i];
-        // A Submitted tab is locked until reviewed - saving again would create/overwrite a Draft row.
-        if (submissionTabStatus[tab] === 'Submitted') continue;
+        // A Submitted/Accepted/Rejected tab is locked - saving again would create/overwrite a Draft row.
+        if (isLockedTabStatus(submissionTabStatus[tab])) continue;
         try {
           await saveTabSubmission(consultantId, tab, after[tab], before[tab], status);
           submissionTabStatus[tab] = status;
@@ -2275,6 +2279,12 @@
       else control.focus();
     }
 
+    // Fields in a locked tab (Submitted/Accepted/Rejected) cannot be edited, so they must never block a later save or
+    // submit of the other tabs with errors the person has no way to fix.
+    function inLockedTab(node) {
+      return Boolean(node && node.closest && node.closest('[role=tabpanel][data-locked="true"]'));
+    }
+
     function validateProfile(draft) {
       var errors = [];
       var controls = Array.from(form.querySelectorAll('input, select, textarea'));
@@ -2314,7 +2324,7 @@
         fieldIn(row.group, 'completionYear').setCustomValidity(profileRules.yearError(values.startYear, values.completionYear));
       });
       controls.forEach(function (control) {
-        if (control.disabled || control.type === 'file') return;
+        if (control.disabled || control.type === 'file' || inLockedTab(control)) return;
         // A draft may omit required values, but must not contain invalid entered data.
         if (draft && !control.value && !control.validity.badInput) return;
         if (!control.checkValidity()) {
@@ -2327,9 +2337,9 @@
         }
       });
       Object.keys(selected).forEach(function (group) {
-        if (!draft && !selected[group].length) errors.push({ control: root.querySelector('[data-tags="' + group + '"]'), message: 'Select at least one ' + group.toLowerCase() + ' value.' });
+        if (!draft && !selected[group].length && !inLockedTab(root.querySelector('[data-tags="' + group + '"]'))) errors.push({ control: root.querySelector('[data-tags="' + group + '"]'), message: 'Select at least one ' + group.toLowerCase() + ' value.' });
       });
-      if (!draft) {
+      if (!draft && !inLockedTab(root.querySelector('[data-tags="Regions"]'))) {
         var eligible = eligibleRegions();
         var invalidRegions = selected.Regions.filter(function (region) { return !eligible.includes(region); });
         if (invalidRegions.length) errors.push({ control: root.querySelector('[data-tags="Regions"]'), message: 'Add an active office or three completed projects for: ' + invalidRegions.join(', ') + '.' });
@@ -2358,8 +2368,50 @@
       return errors.length === 0;
     }
 
+    // "Are you sure?" step before the final submit. Cancel is the default focus so an accidental Enter does not
+    // submit; Esc or the backdrop-less Cancel button closes without sending anything.
+    var submitConfirmDialog = null;
+    function confirmSubmit() {
+      return new Promise(function (resolve) {
+        if (!submitConfirmDialog) {
+          var dlg = element('dialog', 'record-dialog confirm-dialog');
+          dlg.setAttribute('aria-labelledby', 'confirm-submit-title');
+          var title = element('h2', 'confirm-title', 'Submit for review?');
+          title.id = 'confirm-submit-title';
+          var text = element('p', '', 'Are you sure you want to submit your profile for review? Once submitted, the data cannot be changed.');
+          var actions = element('div', 'confirm-actions', '');
+          var cancel = element('button', 'portal-button', 'Cancel');
+          cancel.type = 'button';
+          var ok = element('button', 'portal-button portal-button-primary', 'Yes, submit');
+          ok.type = 'button';
+          actions.appendChild(cancel);
+          actions.appendChild(ok);
+          dlg.appendChild(title);
+          dlg.appendChild(text);
+          dlg.appendChild(actions);
+          root.appendChild(dlg);
+          dlg.confirmed = false;
+          ok.addEventListener('click', function () { dlg.confirmed = true; dlg.close(); });
+          cancel.addEventListener('click', function () { dlg.confirmed = false; dlg.close(); });
+          submitConfirmDialog = dlg;
+        }
+        var dialogNode = submitConfirmDialog;
+        dialogNode.confirmed = false;
+        dialogNode.addEventListener('close', function onClose() {
+          dialogNode.removeEventListener('close', onClose);
+          resolve(dialogNode.confirmed === true);
+        });
+        dialogNode.showModal();
+        dialogNode.querySelector('.portal-button:not(.portal-button-primary)').focus();
+      });
+    }
+
     async function persist(action) {
       if (busy || allTabsLocked() || !validateProfile(action === 'saveDraft')) return;
+      if (action === 'submit' && !(await confirmSubmit())) {
+        report('profile-status', 'Submission cancelled. Nothing was submitted.');
+        return;
+      }
       busy = true;
       var buttons = Array.from(document.querySelectorAll('.profile-actions button'));
       buttons.forEach(function (button) { button.disabled = true; });
@@ -2396,7 +2448,7 @@
           }
           document.getElementById('next-revalidation-date').textContent = dateText;
           document.getElementById('submission-preview-note').hidden = !result.preview;
-          report('profile-status', result.preview ? 'Example submission only. No data was sent.' : 'Submitted for review. Submitted sections are locked until the review is complete.');
+          report('profile-status', result.preview ? 'Example submission only. No data was sent.' : 'Submitted for review. The submitted sections are now locked and cannot be changed.');
           show('submit', true);
           if (!result.preview) applyTabLocks();
         }
@@ -2409,24 +2461,36 @@
       }
     }
 
-    // A tab whose latest submission is Submitted is pending review: read-only, no unlock action.
+    // A tab whose latest submission is Submitted, Accepted or Rejected is read-only, no unlock action.
     // inert (not disabled) so readFields() still collects its values and record cards stay openable.
-    // With every tab Submitted there is nothing left to save, so both actions are disabled.
+    // With every tab locked there is nothing left to save, so both actions are disabled.
+    var LOCK_BANNER_TEXT = {
+      Submitted: 'This section has been submitted and can no longer be edited.',
+      Accepted: 'This section has been reviewed and accepted by Ascentis and is locked.',
+      Rejected: 'This section was reviewed by Ascentis and is locked. Please contact Ascentis to have it reopened.'
+    };
+    // Rounded status pill shown beside the banner text.
+    var LOCK_PILL_TEXT = { Submitted: 'Pending', Accepted: 'Accepted', Rejected: 'Rejected' };
     function allTabsLocked() {
-      return PORTAL_SUBMISSION_TABS.every(function (tab) { return submissionTabStatus[tab] === 'Submitted'; });
+      return PORTAL_SUBMISSION_TABS.every(function (tab) { return isLockedTabStatus(submissionTabStatus[tab]); });
     }
     function refreshActionState() {
       var locked = allTabsLocked();
       document.querySelectorAll('.profile-actions button').forEach(function (button) { button.disabled = locked || busy; });
-      if (locked && !busy) report('profile-status', 'All sections have been submitted and are pending review. Nothing left to save.');
+      if (locked && !busy) report('profile-status', 'All sections are locked (submitted, accepted or rejected). Nothing left to save.');
     }
     function applyTabLocks() {
       PORTAL_SUBMISSION_TABS.forEach(function (tab, index) {
         var panel = document.getElementById('panel-' + index);
-        if (submissionTabStatus[tab] !== 'Submitted' || !panel || panel.dataset.locked === 'true') return;
+        var status = submissionTabStatus[tab];
+        // No status marker on the tab label itself (project decision 17 Nov 2026); the state is shown by the banner
+        // inside the locked tab.
+        if (!isLockedTabStatus(status) || !panel || panel.dataset.locked === 'true') return;
         panel.dataset.locked = 'true';
         panel.classList.add('tab-locked');
-        var banner = element('p', 'pending-review-banner', 'Pending review — this section has been submitted and cannot be edited until the review is complete.');
+        var banner = element('p', 'pending-review-banner', '');
+        banner.appendChild(element('span', 'banner-text', LOCK_BANNER_TEXT[status]));
+        banner.appendChild(element('span', 'status-pill status-pill-' + status.toLowerCase(), LOCK_PILL_TEXT[status]));
         banner.setAttribute('role', 'status');
         panel.prepend(banner);
         Array.from(panel.children).forEach(function (child) {
