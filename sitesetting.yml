@@ -362,14 +362,14 @@
   adx_name: Webapi/systemuser/fields
   adx_sitesettingid: 9d4f2b8e-3a7c-4e1d-9f6b-2c8e5a4d7b31
   adx_value: systemuserid
-- adx_description: 'Enables the Power Pages Web API for asc_invitation, required by src/portal/scripts/services.js loadInvitationFromUrlSync() (secure self-service invitation flow, 2026-10-13). Read-only, granted to BOTH Anonymous and Authenticated Users - the token lookup happens before the visitor signs in.'
+- adx_description: 'DISABLED 18 Nov 2026. The custom asc_invitation token table is superseded by Power Pages native invitations (15 Oct 2026) and the portal no longer reads it. It was readable by Anonymous Users including asc_token and asc_email, so the Web API is switched off.'
   adx_name: Webapi/asc_invitation/enabled
   adx_sitesettingid: 4b8e2c6a-9f3d-4a7c-8e1b-6d9a3f5c8b27
-  adx_value: true
-- adx_description: 'Fields exposed via the Web API for asc_invitation - read-only, matching every column read by loadInvitationFromUrlSync(). Note: Anonymous Read means these fields (including asc_email and asc_token) are not access-controlled beyond possessing/guessing the exact token - same already-accepted Global-scope risk posture as every other table in this project, just extended here to unauthenticated visitors specifically because the lookup must happen pre-sign-in.'
+  adx_value: false
+- adx_description: 'Reduced 18 Nov 2026 to the primary key only (asc_token and asc_email were exposed to Anonymous Users). The Web API for this table is disabled anyway; see Webapi/asc_invitation/enabled.'
   adx_name: Webapi/asc_invitation/fields
   adx_sitesettingid: 7a4c9e3b-5d8f-4b2a-9c6e-3f8b5a2d9c74
-  adx_value: asc_invitationid,asc_email,asc_token,asc_expireson,asc_revoked,asc_consultant_id,_asc_consultant_id_value
+  adx_value: asc_invitationid
 - adx_description: 'Enables the Power Pages Web API for the Attachment table (asc_attachment), required by src/portal/scripts/services.js saveAttachments() (consultant-level document upload, 2026-10-24).'
   adx_name: Webapi/asc_attachment/enabled
   adx_sitesettingid: 5e1b7d3a-2c9f-4b6e-8a4d-7f3c1e9b5a62
