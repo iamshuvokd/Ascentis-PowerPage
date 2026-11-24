@@ -22,7 +22,11 @@
         Array.from(control.options).forEach(function (option) { option.selected = item[1].includes(option.value); });
         control.refreshMulti();
       });
-      addRecord('projects', {name:'Lagoon Resort', country:'AE', region:'Middle East', disciplines:['Architecture'], type:'Hotel', keys:'320', status:'Completed', startYear:'2021', completionYear:'2024'});
+      // Sample of a project whose files are already saved (shown as read-only tiles in its popup).
+      existingAttachments.push({ liveId: 'sample-att-3', name: 'Lagoon-from-app.txt', sizeMb: 0, status: '', documentType: '', projectLiveId: 'sample-project-1' });
+      existingAttachments.push({ liveId: 'sample-att-2', name: 'Lagoon-draft-plan.pdf', sizeMb: 1.1, status: 'Draft', documentType: 'References', projectLiveId: 'sample-project-1' });
+      existingAttachments.push({ liveId: 'sample-att-1', name: 'Lagoon-brochure.pdf', sizeMb: 2.4, status: 'Submitted', documentType: 'References', projectLiveId: 'sample-project-1' });
+      addRecord('projects', {name:'Lagoon Resort', country:'AE', region:'Middle East', disciplines:['Architecture'], type:'Hotel', keys:'320', status:'Completed', startYear:'2021', completionYear:'2024'}, false, 'sample-project-1');
       addRecord('projects', {name:'Marina Mixed-use Tower', country:'AE', region:'Middle East', disciplines:['Architecture'], type:'Mixed-use', gfa:'92000', status:'In progress', startYear:'2024'});
       liveLists.Operators = ['Hilton', 'Hyatt', 'Marriott'];
       addRecord('operatorApprovals', {operator:'Marriott', disciplines:['Architecture'], regions:['Middle East'], brands:'JW Marriott, Autograph'});
@@ -49,7 +53,7 @@
       renderAttachments();
       Object.keys(choices).forEach(renderTags);
       refreshFinancial();
-      document.getElementById('acknowledged-date').textContent = 'Confidentiality statement acknowledged on 8 Jun 2026.';
+      document.getElementById('acknowledged-date').textContent = 'Confidentiality acknowledged on 8 Jun 2026';
       document.getElementById('preview-screen').addEventListener('change',function () { show(this.value,true); });
       document.getElementById('submission-preview-note').hidden = false;
       document.getElementById('sign-out').addEventListener('click',function (event) { event.preventDefault(); show('signin',true); });

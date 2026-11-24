@@ -33,6 +33,7 @@
         <li><span class="step-number" aria-hidden="true">3</span><span>Update profile</span></li>
         <li><span class="step-number" aria-hidden="true">4</span><span>Submit</span></li>
       </ol>
+      <div class="acknowledgement-banner" hidden><span id="acknowledged-date"></span><button class="text-button" data-download type="button">Download again</button></div>
     </nav>
 <section class="confidentiality-card" data-view="confidentiality" hidden aria-labelledby="confidentiality-title">
       <h1 id="confidentiality-title" tabindex="-1">Confidentiality statement</h1>
@@ -52,17 +53,15 @@
       </form>
     </section>
 <section data-view="profile" hidden aria-label="Update profile">
-  <div class="acknowledgement-banner"><span id="acknowledged-date"></span><button class="text-button" data-download type="button">Download again</button></div>
-  <p class="profile-intro">Review and update your details below, then submit them for our team to check.</p>
   <div class="profile-tabs" role="tablist" aria-label="Profile sections"><button type="button" role="tab" id="tab-0" aria-controls="panel-0" aria-selected="true" tabindex="0">Overview</button><button type="button" role="tab" id="tab-1" aria-controls="panel-1" aria-selected="false" tabindex="-1">Financial</button><button type="button" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1">Legal</button><button type="button" role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1">Offices & contacts</button><button type="button" role="tab" id="tab-4" aria-controls="panel-4" aria-selected="false" tabindex="-1">Project references</button><button type="button" role="tab" id="tab-5" aria-controls="panel-5" aria-selected="false" tabindex="-1">Operator approvals</button><button type="button" role="tab" id="tab-6" aria-controls="panel-6" aria-selected="false" tabindex="-1">BIM</button><button type="button" role="tab" id="tab-7" aria-controls="panel-7" aria-selected="false" tabindex="-1">Sustainability &amp; ESG</button><button type="button" role="tab" id="tab-8" aria-controls="panel-8" aria-selected="false" tabindex="-1">Attachments</button></div>
   <form id="profile-form" class="confidentiality-card profile-card">
     <div id="profile-errors" class="error-summary" role="alert" tabindex="-1" hidden></div>
     <div id="panel-0" role="tabpanel" aria-labelledby="tab-0">
       <div class="field-grid">
-        <label>Firm name <span class="required">*</span><input name="firmName" maxlength="120" aria-describedby="firm-name-help" required autocomplete="organization"><small id="firm-name-help" class="field-help">Maximum 120 characters.</small></label>
-        <label>Website<input name="website" maxlength="200" aria-describedby="website-help" placeholder="example.com"><small id="website-help" class="field-help">Maximum 200 characters.</small></label>
-        <label>Firm type<select name="firmType"><option value="">Select firm type</option><option>Private</option><option>Public</option><option>Partnership</option><option>Sole proprietor</option></select></label>
-        <label>Also known as<input name="alias" maxlength="200" aria-describedby="alias-help"><small id="alias-help" class="field-help">Maximum 200 characters.</small></label>
+        <label>Firm name <span class="required">*</span><input name="firmName" maxlength="120" required autocomplete="organization"></label>
+        <label>Website<input name="website" maxlength="200" placeholder="example.com"></label>
+        <div class="static-select"><label for="firm-type">Firm type</label><select id="firm-type" name="firmType"><option value="">Select firm type</option><option>Private</option><option>Public</option><option>Partnership</option><option>Sole proprietor</option></select></div>
+        <label>Also known as<input name="alias" maxlength="200"></label>
       </div>
       <div class="tag-field"><span id="label-Disciplines">Disciplines <span class="required">*</span></span><div class="tag-list" data-tags="Disciplines" role="group" aria-labelledby="label-Disciplines"></div></div><div class="tag-field"><span id="label-Sectors">Sectors <span class="required">*</span></span><div class="tag-list" data-tags="Sectors" role="group" aria-labelledby="label-Sectors"></div></div><div class="tag-field"><span id="label-Regions">Regions <span class="required">*</span></span><div class="tag-list" data-tags="Regions" role="group" aria-labelledby="label-Regions"></div></div>
       <p class="region-help">Region can be selected only if the Consultant has an active office in that region or if it has completed at least 3 projects in that region.</p>

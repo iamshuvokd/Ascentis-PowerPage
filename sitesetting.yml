@@ -377,7 +377,7 @@
 - adx_description: 'Fields exposed via the Web API for asc_attachment, matching every column written by saveAttachments(). asc_attachedfile is the live file column (Attached File, 32 MB) - NOT asc_file. All lookups on this table have all-lowercase schema names (confirmed via fresh pac solution export 2026-10-24), so bind keys equal LogicalNames. asc_projectreference_id is listed ready for project-level uploads (blocked until project references are writable).'
   adx_name: Webapi/asc_attachment/fields
   adx_sitesettingid: 8c4a6f2e-1d7b-4e3a-9b5c-2a8d6f1e4c73
-  adx_value: asc_attachmentid,asc_name,asc_documenttype_id,asc_consultant_id,asc_projectreference_id,asc_filename,asc_filesizemb,asc_uploadedby_id,asc_uploadedon,asc_attachedfile,asc_status,asc_origin,_asc_consultant_id_value,_asc_documenttype_id_value,_asc_projectreference_id_value
+  adx_value: asc_attachmentid,asc_name,asc_documenttype_id,asc_consultant_id,asc_projectreference_id,asc_filename,asc_filesizemb,asc_uploadedby_id,asc_uploadedon,asc_attachedfile,asc_status,asc_origin,statecode,statuscode,_asc_consultant_id_value,_asc_documenttype_id_value,_asc_projectreference_id_value
 - adx_description: 'Enables the Power Pages Web API for the BIM Information child table (asc_biminformation) - BIM capability/operators moved off asc_consultant live (found 2026-10-28), see services.js saveChildTable()/loadExistingRecordSync().'
   adx_name: Webapi/asc_biminformation/enabled
   adx_sitesettingid: 3f7a1c9e-6b2d-4e8a-9c5f-1d4b8e2a7c36

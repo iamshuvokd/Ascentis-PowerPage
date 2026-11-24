@@ -206,8 +206,7 @@
         {
           "key": "professionals",
           "label": "Number of accredited professionals",
-          "type": "integer",
-          "help": "For example, LEED AP or WELL AP."
+          "type": "integer"
         },
         {
           "key": "qa",
@@ -251,12 +250,16 @@
           "key": "email",
           "label": "Work email",
           "type": "email",
+          "wide": true,
           "required": true
         },
         {
           "key": "phone",
           "label": "Phone",
           "type": "tel",
+          "dial": true,
+          "wide": true,
+          "placeholder": "Phone number",
           "required": true
         },
         {
@@ -467,7 +470,8 @@
           "key": "attachment",
           "label": "Project attachment",
           "type": "file",
-          "help": "Maximum 16 MB. Also listed under Attachments."
+          "multiple": true,
+          "help": "You can select several files. Maximum 16 MB each. Also listed under Attachments."
         }
       ]
     },

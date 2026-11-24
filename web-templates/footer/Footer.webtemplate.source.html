@@ -170,8 +170,8 @@
 
 <script type="text/javascript">
   // Someone who signs in without an active invitation (never invited, or the invitation was revoked/expired) lands on
-  // the native "Sign up with an invitation code" page. Show a plain explanation instead of the raw code form. The
-  // form stays one click away ("I have an invitation code") for people who were given only a code.
+  // the native "Sign up with an invitation code" page. Show a plain explanation instead of the raw code form
+  // (invitations are redeemed through the link in the email, so the manual code form is not offered).
   // Does nothing when the URL carries an invitation code (auto-submit handles it) or when the native page already
   // shows "Invalid invitation code" (the card above handles that).
   document.addEventListener("DOMContentLoaded", function () {
@@ -181,14 +181,12 @@
       var submit = document.getElementById("submit-redeem-invitation");
       var form = submit && (submit.form || submit.closest("form"));
       if (!form || document.getElementById("asc-invite-expired")) return;
-      try { if (window.sessionStorage.getItem("asc-show-code-form") === "1") return; } catch (ignored) {}
       var scope = document.getElementById("content-container") || document.getElementById("mainContent") || document.body;
       var hasInvalidMessage = Array.prototype.slice.call(scope.querySelectorAll("div, p, span, li")).some(function (el) {
         return el.children.length <= 1 && el.offsetParent && /invalid invitation code/i.test(el.textContent || "");
       });
       if (hasInvalidMessage) return;
-      var hidden = [];
-      var hide = function (el) { if (el && el.style.display !== "none") { hidden.push([el, el.style.display]); el.style.display = "none"; } };
+      var hide = function (el) { if (el) el.style.display = "none"; };
       hide(form);
       Array.prototype.slice.call(document.querySelectorAll(".nav-tabs, h1, h2, h3")).forEach(function (el) {
         if (el.closest("header, footer, .navbar")) return;
@@ -201,18 +199,11 @@
         "<style>#asc-no-invitation{max-width:560px;margin:40px auto;padding:32px 28px;background:#fff;border:1px solid #b8bfd3;border-radius:12px;font-family:Segoe UI,Arial,sans-serif;color:#00143e;text-align:center}" +
         "#asc-no-invitation h2{margin:0 0 12px;font-size:24px;display:block!important}" +
         "#asc-no-invitation p{margin:0 0 14px;font-size:16px;line-height:1.5}" +
-        "#asc-no-invitation .asc-small{font-size:14px;color:#697fa5;margin-bottom:0}" +
-        "#asc-no-invitation button.asc-link{background:none;border:0;padding:0;color:#287d17;font:inherit;text-decoration:underline;cursor:pointer}</style>" +
+        "#asc-no-invitation p:last-child{margin-bottom:0}</style>" +
         "<h2>You do not have an active invitation</h2>" +
         "<p>We could not find an active invitation for this account. If you were invited, your invitation may have expired or been withdrawn.</p>" +
-        "<p>Please contact your Ascentis administrator to receive a new invitation, then open the link in the email.</p>" +
-        "<p class='asc-small'>Were you given only an invitation code? <button type='button' class='asc-link'>Enter it here</button></p>";
+        "<p>Please contact your Ascentis administrator to receive a new invitation, then open the link in the email.</p>";
       form.parentNode.insertBefore(card, form);
-      card.querySelector("button.asc-link").addEventListener("click", function () {
-        try { window.sessionStorage.setItem("asc-show-code-form", "1"); } catch (ignored) {}
-        hidden.forEach(function (pair) { pair[0].style.display = pair[1]; });
-        if (card.parentNode) card.parentNode.removeChild(card);
-      });
     } catch (e) { /* leave the native page as is */ }
   });
 </script>

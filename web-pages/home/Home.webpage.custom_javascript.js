@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var portalConfig = {"views":["signin","confidentiality","profile","submit"],"choices":{"Disciplines":["Architecture","Interior design","Engineering","Landscape","MEP"],"Sectors":["Hospitality","Mixed-use","Residential","Commercial"],"Regions":["Middle East","South Asia","Europe","Africa","Other"]},"formSchema":{"limits":{"text":200,"details":2000,"fileBytes":16000000,"projects":30,"bimProjects":10,"operators":8,"leaders":3},"documentTypes":["Company profile","References","Financials","Certificate","Insurance","Other"],"sections":[{"id":"financial","panel":1,"title":"Financial","description":"Enter amounts in USD. Choose your fiscal year to label the three previous years.","fields":[{"key":"effectiveYear","label":"Effective year (N)","type":"year","required":true},{"key":"yearFormat","label":"Fiscal-year format","type":"select","required":true,"options":["YYYY (Jan–Dec)","YYYY/ZZ (Apr–Mar)"]},{"key":"backlog","label":"Current backlog in hand","type":"money"},{"key":"revenue1","label":"Revenue N−1","type":"money","required":true},{"key":"revenue2","label":"Revenue N−2","type":"money","required":true},{"key":"revenue3","label":"Revenue N−3","type":"money","required":true}]},{"id":"legal","panel":2,"title":"Legal","description":"Choose Yes or No for each question. Additional information is required where applicable.","fields":[{"key":"indemnified","label":"Have you indemnified a client?","type":"yesno","required":true},{"key":"indemnityDetails","label":"Indemnification details","type":"textarea","required":true,"when":{"key":"indemnified","value":"Yes"}},{"key":"litigation","label":"Have you lost litigation with a client?","type":"yesno","required":true},{"key":"litigationDetails","label":"Litigation details","type":"textarea","required":true,"when":{"key":"litigation","value":"Yes"}},{"key":"insured","label":"Do you hold professional indemnity insurance?","type":"yesno","required":true},{"key":"perOccurrence","label":"PI insurance — per occurrence","type":"money","required":true,"when":{"key":"insured","value":"Yes"}},{"key":"aggregate","label":"PI insurance — in aggregate","type":"money","required":true,"when":{"key":"insured","value":"Yes"}}]},{"id":"bim","panel":6,"title":"BIM","description":"Tell us how you deliver building information modelling and add relevant projects.","fields":[{"key":"capability","label":"BIM capability","type":"select","required":true,"options":["In-house","Outsourced"]},{"key":"operators","label":"Number of BIM operators","type":"integer","required":true,"when":{"key":"capability","value":"In-house"}},{"key":"disciplines","label":"BIM disciplines","type":"multi","required":true,"source":"Disciplines"}]},{"id":"sustainability","panel":7,"title":"Sustainability & ESG","description":"Share your environmental credentials, reporting practices, and quality assurance approach.","fields":[{"key":"certified","label":"Any environmental or sustainability certification?","type":"yesno","required":true},{"key":"certificationDetails","label":"Certification details","type":"textarea","required":true,"when":{"key":"certified","value":"Yes"}},{"key":"reporting","label":"Formal ESG reporting?","type":"yesno","required":true},{"key":"frameworkDetails","label":"ESG framework details","type":"textarea","required":true,"when":{"key":"reporting","value":"Yes"}},{"key":"professionals","label":"Number of accredited professionals","type":"integer","help":"For example, LEED AP or WELL AP."},{"key":"qa","label":"Is sustainability part of your QA system?","type":"yesno","required":true},{"key":"qaDetails","label":"Implementation details","type":"textarea","required":true,"when":{"key":"qa","value":"Yes"}}]}],"collections":[{"id":"contacts","panel":3,"title":"Contacts","singular":"contact","fields":[{"key":"firstName","label":"First name","type":"text","required":true},{"key":"lastName","label":"Last name","type":"text","required":true},{"key":"email","label":"Work email","type":"email","required":true},{"key":"phone","label":"Phone","type":"tel","required":true},{"key":"jobTitle","label":"Job title","type":"text"},{"key":"region","label":"Region","type":"select","source":"Regions"},{"key":"contactType","label":"Contact type","type":"select","required":true,"options":["Senior leader","Project contact","Primary contact"]},{"key":"status","label":"Contact status","type":"select","required":true,"options":["Active","Inactive"]}]},{"id":"offices","panel":3,"title":"Offices","singular":"office","fields":[{"key":"region","label":"Office region","type":"select","required":true,"source":"Regions"},{"key":"city","label":"City","type":"text"},{"key":"country","label":"Office country","type":"select","required":true,"source":"Countries"},{"key":"address","label":"Office address","type":"textarea"},{"key":"status","label":"Office status","type":"select","required":true,"options":["Active","Inactive"]},{"key":"headcount","label":"Headcount","type":"integer"},{"key":"leaders","label":"Office leaders (up to 3)","type":"multi","source":"contacts","help":"Add contacts above, then select their names here."}]},{"id":"shareholders","panel":3,"title":"Shareholders","singular":"shareholder","fields":[{"key":"name","label":"Shareholder name","type":"text","required":true},{"key":"equity","label":"Equity %","type":"percent","required":true}]},{"id":"projects","panel":4,"title":"Project references","singular":"project","limit":"projects","fields":[{"key":"name","label":"Project name","type":"text","required":true},{"key":"country","label":"Country","type":"select","required":true,"source":"Countries"},{"key":"region","label":"Region","type":"select","source":"Regions","required":true},{"key":"disciplines","label":"Disciplines","type":"multi","source":"Disciplines","required":true},{"key":"type","label":"Project type","type":"select","required":true,"source":"ProjectTypes","options":["Hotel","Mixed-use","Residential","Commercial","Other"]},{"key":"gfa","label":"Gross floor area (m²)","type":"integer","required":true,"when":{"key":"type","not":"Hotel"}},{"key":"keys","label":"Number of hotel keys","type":"integer","required":true,"when":{"key":"type","value":"Hotel"}},{"key":"status","label":"Project status","type":"select","required":true,"options":["In progress","Completed","On hold","Cancelled"]},{"key":"startYear","label":"Start year","type":"year","required":true},{"key":"completionYear","label":"Completion year","type":"year","required":true,"when":{"key":"status","value":"Completed"}},{"key":"attachment","label":"Project attachment","type":"file","help":"Maximum 16 MB. Also listed under Attachments."}]},{"id":"operatorApprovals","panel":5,"title":"Operator approvals","singular":"operator approval","limit":"operators","fields":[{"key":"operator","label":"Operator","type":"select","required":true,"source":"Operators"},{"key":"disciplines","label":"Disciplines","type":"multi","required":true,"source":"Disciplines"},{"key":"regions","label":"Regions","type":"multi","source":"Regions"},{"key":"brands","label":"Brands","type":"text","placeholder":"e.g. JW Marriott, Autograph"}]},{"id":"bimProjects","panel":6,"title":"BIM projects","singular":"BIM project","limit":"bimProjects","fields":[{"key":"name","label":"Project name","type":"text","required":true},{"key":"location","label":"Location","type":"text","required":true},{"key":"gfa","label":"Gross floor area (m²)","type":"integer","required":true},{"key":"lod","label":"Level of development (LOD)","type":"text","required":true},{"key":"disciplines","label":"BIM project disciplines","type":"multi","source":"Disciplines"}]}],"countryCodes":["AE","AU","BD","BH","CA","CH","CN","DE","EG","ES","FR","GB","HK","ID","IN","IT","JP","KE","KW","LK","MA","MU","MV","MY","NG","NL","NP","NZ","OM","PH","PK","PT","QA","SA","SG","TH","TR","US","VN","ZA"]},"dataverseMap":{"version":1,"consultant":{"identity":{"firmName":"asc_name","website":"asc_website","alias":"asc_akaname"}},"childTables":{"_comment":"2026-10-08 live drift: financial/legal/sustainability were removed from asc_consultant entirely and moved into these dedicated 1:1 child tables (asc_financialinformation/asc_legalinformation/asc_sustainabilityesg - placeholder tables added 16 Sept 2026, never wired up until now actually gaining real columns). Same {table, fields} shape as collections below, but exactly one row per consultant, not a list - see saveChildTable()/loadExistingRecordSync() in services.js.","financial":{"table":"asc_financialinformation","fields":{"effectiveYear":"asc_effectiveyear","yearFormat":"asc_fiscalformat","backlog":"asc_backloginhand","revenue1":"asc_revenuen1","revenue2":"asc_revenuen2","revenue3":"asc_revenuen3"}},"legal":{"table":"asc_legalinformation","fields":{"indemnified":"asc_indemnified","indemnityDetails":"asc_indemnitydetails","litigation":"asc_litigation","litigationDetails":"asc_litigationdetails","insured":"asc_holdspi","perOccurrence":"asc_piperoccurrence","aggregate":"asc_piaggregate"}},"bim":{"table":"asc_biminformation","fields":{"capability":"asc_bimcapability","operators":"asc_bimoperatorcount"}},"sustainability":{"table":"asc_sustainabilityesg","fields":{"certified":"asc_esgcert","certificationDetails":"asc_esgcertdetails","reporting":"asc_esgreporting","frameworkDetails":"asc_esgframework","professionals":"asc_accreditedcount","qa":"asc_esgqa","qaDetails":"asc_esgqadetails"}}},"collections":{"contacts":{"table":"asc_contact","fields":{"firstName":"asc_firstname","lastName":"asc_lastname","email":"asc_workemail","phone":"asc_phone","jobTitle":"asc_jobtitle","status":"asc_status"}},"offices":{"table":"asc_office","fields":{"city":"asc_city","address":"asc_address","status":"asc_status","headcount":"asc_headcount"}},"shareholders":{"table":"asc_shareholder","fields":{"name":"asc_name","equity":"asc_equitypct"}},"operatorApprovals":{"table":"asc_operatorapproval","fields":{"brands":"asc_brands"}},"projects":{"table":"asc_projectreference","fields":{"name":"asc_name","brand":"asc_brand","gfa":"asc_gfa","keys":"asc_keys","status":"asc_projectstatus","startYear":"asc_startyear","completionYear":"asc_completionyear"}},"bimProjects":{"table":"asc_bimproject","fields":{"name":"asc_name","location":"asc_location","gfa":"asc_gfa","lod":"asc_lod"}}},"referenceLookupColumns":{"_comment":"Fields moved out of the scalar 'fields' maps above because Dataverse now stores them as lookups, not free text. Carried in dataverseMapping's per-row 'references' object (label/local value) for a trusted service to resolve to the GUID column named here - never written directly as a string.","contacts.contactType":{"column":"asc_ContactType","targetTable":"asc_contacttype","note":"Now a lookup to asc_ContactType (name column asc_contacttypename), found 2026-10-28."},"contacts.region":{"column":"asc_regionid","targetTable":"asc_region"},"offices.country":{"column":"asc_countryid","targetTable":"asc_country"},"operatorApprovals.operator":{"column":"asc_operator_id","targetTable":"asc_operator","note":"Lookup to asc_Operator (name asc_name). Carried in references.operator."},"operatorApprovals.disciplines":{"column":"asc_disciplineid","targetTable":"asc_discipline","note":"One row per discipline in asc_operatorapprovaldiscipline (asc_operatorapproval_id + asc_disciplineid)."},"operatorApprovals.regions":{"column":"asc_RegionsID","targetTable":"asc_region","note":"One row per region in asc_OperatorApprovalsRegions (asc_OperatorApprovalsID + asc_RegionsID)."},"projects.country":{"column":"asc_countryid","targetTable":"asc_country"},"projects.region":{"column":"asc_region_id","targetTable":"asc_region"},"projects.type":{"column":"asc_projecttype_id","targetTable":"asc_projecttype","note":"2026-10-29: stored as a row in the junction asc_projectreferencetype (asc_projectreference_id + asc_projecttype_id), not a column on asc_projectreference."},"projects.disciplines":{"column":"asc_DisciplineID","targetTable":"asc_discipline","note":"2026-10-29: one row per discipline in the junction asc_projectreferencediscipline (asc_ProjectReferenceID + asc_DisciplineID)."}},"unresolvedLiveGaps":{"_comment":"URS/FS-required fields whose Dataverse column no longer exists live. Kept mapped here (not deleted) so requirements aren't silently dropped, per project's no-removal-without-permission rule. Portal writes to these will fail until the columns are restored - do not enable live writes for these fields until resolved.","offices.city":{"table":"asc_office","column":"asc_city","status":"MISSING_LIVE","note":"Documented in backend/README.md as a deliberate additive FS requirement; removed live, cause unknown."},"offices.status":{"table":"asc_office","column":"asc_status","status":"MISSING_LIVE","note":"Region-eligibility business rule (active office) depends on this. Documented in backend/README.md as a deliberate additive FS requirement; removed live, cause unknown."},"offices.leaders":{"table":"asc_office","status":"AMBIGUOUS","note":"Frontend collects up to 3 existing Contact records as leaders (asc_office.asc_leader1_id/2_id/3_id, all removed live). Live now has a single asc_office.asc_officeleaderid lookup to the separate asc_officeleader table (its own name/position/email/phone, not linked to Contact, and singular not up-to-3) - does not match URS §6.3 'up to three senior leaders' or the current frontend. Needs a decision before this can be wired to anything; not mapped to asc_officeleaderid."},"bimProjects.lod":{"table":"asc_bimproject","column":"asc_lod","status":"MISSING_LIVE","note":"Required by URS §6.9 'LOD ... Yes'. Removed live with no replacement found."}},"revenueRegions":{"Middle East":"asc_revenuepct_middleeast","South Asia":"asc_revenuepct_southasia","Europe":"asc_revenuepct_europe","Africa":"asc_revenuepct_africa","Other":"asc_revenuepct_other"},"picklistColumns":{"asc_bimcapability":{"In-house":751050000,"Outsourced":751050001},"asc_projectstatus":{"In progress":751050000,"Completed":751050001,"On hold":751050002,"Cancelled":751050003}},"booleanColumns":["asc_indemnified","asc_litigation","asc_holdspi","asc_esgcert","asc_esgreporting","asc_esgqa"],"integerColumns":["asc_effectiveyear","asc_bimoperatorcount","asc_accreditedcount","asc_headcount","asc_gfa","asc_keys"],"yearDateColumns":["asc_startyear","asc_completionyear"],"decimalColumns":["asc_backloginhand","asc_revenuen1","asc_revenuen2","asc_revenuen3","asc_piperoccurrence","asc_piaggregate","asc_equitypct"]}};
+  var portalConfig = {"views":["signin","confidentiality","profile","submit"],"choices":{"Disciplines":["Architecture","Interior design","Engineering","Landscape","MEP"],"Sectors":["Hospitality","Mixed-use","Residential","Commercial"],"Regions":["Middle East","South Asia","Europe","Africa","Other"]},"formSchema":{"limits":{"text":200,"details":2000,"fileBytes":16000000,"projects":30,"bimProjects":10,"operators":8,"leaders":3},"documentTypes":["Company profile","References","Financials","Certificate","Insurance","Other"],"sections":[{"id":"financial","panel":1,"title":"Financial","description":"Enter amounts in USD. Choose your fiscal year to label the three previous years.","fields":[{"key":"effectiveYear","label":"Effective year (N)","type":"year","required":true},{"key":"yearFormat","label":"Fiscal-year format","type":"select","required":true,"options":["YYYY (Jan–Dec)","YYYY/ZZ (Apr–Mar)"]},{"key":"backlog","label":"Current backlog in hand","type":"money"},{"key":"revenue1","label":"Revenue N−1","type":"money","required":true},{"key":"revenue2","label":"Revenue N−2","type":"money","required":true},{"key":"revenue3","label":"Revenue N−3","type":"money","required":true}]},{"id":"legal","panel":2,"title":"Legal","description":"Choose Yes or No for each question. Additional information is required where applicable.","fields":[{"key":"indemnified","label":"Have you indemnified a client?","type":"yesno","required":true},{"key":"indemnityDetails","label":"Indemnification details","type":"textarea","required":true,"when":{"key":"indemnified","value":"Yes"}},{"key":"litigation","label":"Have you lost litigation with a client?","type":"yesno","required":true},{"key":"litigationDetails","label":"Litigation details","type":"textarea","required":true,"when":{"key":"litigation","value":"Yes"}},{"key":"insured","label":"Do you hold professional indemnity insurance?","type":"yesno","required":true},{"key":"perOccurrence","label":"PI insurance — per occurrence","type":"money","required":true,"when":{"key":"insured","value":"Yes"}},{"key":"aggregate","label":"PI insurance — in aggregate","type":"money","required":true,"when":{"key":"insured","value":"Yes"}}]},{"id":"bim","panel":6,"title":"BIM","description":"Tell us how you deliver building information modelling and add relevant projects.","fields":[{"key":"capability","label":"BIM capability","type":"select","required":true,"options":["In-house","Outsourced"]},{"key":"operators","label":"Number of BIM operators","type":"integer","required":true,"when":{"key":"capability","value":"In-house"}},{"key":"disciplines","label":"BIM disciplines","type":"multi","required":true,"source":"Disciplines"}]},{"id":"sustainability","panel":7,"title":"Sustainability & ESG","description":"Share your environmental credentials, reporting practices, and quality assurance approach.","fields":[{"key":"certified","label":"Any environmental or sustainability certification?","type":"yesno","required":true},{"key":"certificationDetails","label":"Certification details","type":"textarea","required":true,"when":{"key":"certified","value":"Yes"}},{"key":"reporting","label":"Formal ESG reporting?","type":"yesno","required":true},{"key":"frameworkDetails","label":"ESG framework details","type":"textarea","required":true,"when":{"key":"reporting","value":"Yes"}},{"key":"professionals","label":"Number of accredited professionals","type":"integer"},{"key":"qa","label":"Is sustainability part of your QA system?","type":"yesno","required":true},{"key":"qaDetails","label":"Implementation details","type":"textarea","required":true,"when":{"key":"qa","value":"Yes"}}]}],"collections":[{"id":"contacts","panel":3,"title":"Contacts","singular":"contact","fields":[{"key":"firstName","label":"First name","type":"text","required":true},{"key":"lastName","label":"Last name","type":"text","required":true},{"key":"email","label":"Work email","type":"email","wide":true,"required":true},{"key":"phone","label":"Phone","type":"tel","dial":true,"wide":true,"placeholder":"Phone number","required":true},{"key":"jobTitle","label":"Job title","type":"text"},{"key":"region","label":"Region","type":"select","source":"Regions"},{"key":"contactType","label":"Contact type","type":"select","required":true,"options":["Senior leader","Project contact","Primary contact"]},{"key":"status","label":"Contact status","type":"select","required":true,"options":["Active","Inactive"]}]},{"id":"offices","panel":3,"title":"Offices","singular":"office","fields":[{"key":"region","label":"Office region","type":"select","required":true,"source":"Regions"},{"key":"city","label":"City","type":"text"},{"key":"country","label":"Office country","type":"select","required":true,"source":"Countries"},{"key":"address","label":"Office address","type":"textarea"},{"key":"status","label":"Office status","type":"select","required":true,"options":["Active","Inactive"]},{"key":"headcount","label":"Headcount","type":"integer"},{"key":"leaders","label":"Office leaders (up to 3)","type":"multi","source":"contacts","help":"Add contacts above, then select their names here."}]},{"id":"shareholders","panel":3,"title":"Shareholders","singular":"shareholder","fields":[{"key":"name","label":"Shareholder name","type":"text","required":true},{"key":"equity","label":"Equity %","type":"percent","required":true}]},{"id":"projects","panel":4,"title":"Project references","singular":"project","limit":"projects","fields":[{"key":"name","label":"Project name","type":"text","required":true},{"key":"country","label":"Country","type":"select","required":true,"source":"Countries"},{"key":"region","label":"Region","type":"select","source":"Regions","required":true},{"key":"disciplines","label":"Disciplines","type":"multi","source":"Disciplines","required":true},{"key":"type","label":"Project type","type":"select","required":true,"source":"ProjectTypes","options":["Hotel","Mixed-use","Residential","Commercial","Other"]},{"key":"gfa","label":"Gross floor area (m²)","type":"integer","required":true,"when":{"key":"type","not":"Hotel"}},{"key":"keys","label":"Number of hotel keys","type":"integer","required":true,"when":{"key":"type","value":"Hotel"}},{"key":"status","label":"Project status","type":"select","required":true,"options":["In progress","Completed","On hold","Cancelled"]},{"key":"startYear","label":"Start year","type":"year","required":true},{"key":"completionYear","label":"Completion year","type":"year","required":true,"when":{"key":"status","value":"Completed"}},{"key":"attachment","label":"Project attachment","type":"file","multiple":true,"help":"You can select several files. Maximum 16 MB each. Also listed under Attachments."}]},{"id":"operatorApprovals","panel":5,"title":"Operator approvals","singular":"operator approval","limit":"operators","fields":[{"key":"operator","label":"Operator","type":"select","required":true,"source":"Operators"},{"key":"disciplines","label":"Disciplines","type":"multi","required":true,"source":"Disciplines"},{"key":"regions","label":"Regions","type":"multi","source":"Regions"},{"key":"brands","label":"Brands","type":"text","placeholder":"e.g. JW Marriott, Autograph"}]},{"id":"bimProjects","panel":6,"title":"BIM projects","singular":"BIM project","limit":"bimProjects","fields":[{"key":"name","label":"Project name","type":"text","required":true},{"key":"location","label":"Location","type":"text","required":true},{"key":"gfa","label":"Gross floor area (m²)","type":"integer","required":true},{"key":"lod","label":"Level of development (LOD)","type":"text","required":true},{"key":"disciplines","label":"BIM project disciplines","type":"multi","source":"Disciplines"}]}],"countryCodes":["AE","AU","BD","BH","CA","CH","CN","DE","EG","ES","FR","GB","HK","ID","IN","IT","JP","KE","KW","LK","MA","MU","MV","MY","NG","NL","NP","NZ","OM","PH","PK","PT","QA","SA","SG","TH","TR","US","VN","ZA"]},"dataverseMap":{"version":1,"consultant":{"identity":{"firmName":"asc_name","website":"asc_website","alias":"asc_akaname"}},"childTables":{"_comment":"2026-10-08 live drift: financial/legal/sustainability were removed from asc_consultant entirely and moved into these dedicated 1:1 child tables (asc_financialinformation/asc_legalinformation/asc_sustainabilityesg - placeholder tables added 16 Sept 2026, never wired up until now actually gaining real columns). Same {table, fields} shape as collections below, but exactly one row per consultant, not a list - see saveChildTable()/loadExistingRecordSync() in services.js.","financial":{"table":"asc_financialinformation","fields":{"effectiveYear":"asc_effectiveyear","yearFormat":"asc_fiscalformat","backlog":"asc_backloginhand","revenue1":"asc_revenuen1","revenue2":"asc_revenuen2","revenue3":"asc_revenuen3"}},"legal":{"table":"asc_legalinformation","fields":{"indemnified":"asc_indemnified","indemnityDetails":"asc_indemnitydetails","litigation":"asc_litigation","litigationDetails":"asc_litigationdetails","insured":"asc_holdspi","perOccurrence":"asc_piperoccurrence","aggregate":"asc_piaggregate"}},"bim":{"table":"asc_biminformation","fields":{"capability":"asc_bimcapability","operators":"asc_bimoperatorcount"}},"sustainability":{"table":"asc_sustainabilityesg","fields":{"certified":"asc_esgcert","certificationDetails":"asc_esgcertdetails","reporting":"asc_esgreporting","frameworkDetails":"asc_esgframework","professionals":"asc_accreditedcount","qa":"asc_esgqa","qaDetails":"asc_esgqadetails"}}},"collections":{"contacts":{"table":"asc_contact","fields":{"firstName":"asc_firstname","lastName":"asc_lastname","email":"asc_workemail","phone":"asc_phone","jobTitle":"asc_jobtitle","status":"asc_status"}},"offices":{"table":"asc_office","fields":{"city":"asc_city","address":"asc_address","status":"asc_status","headcount":"asc_headcount"}},"shareholders":{"table":"asc_shareholder","fields":{"name":"asc_name","equity":"asc_equitypct"}},"operatorApprovals":{"table":"asc_operatorapproval","fields":{"brands":"asc_brands"}},"projects":{"table":"asc_projectreference","fields":{"name":"asc_name","brand":"asc_brand","gfa":"asc_gfa","keys":"asc_keys","status":"asc_projectstatus","startYear":"asc_startyear","completionYear":"asc_completionyear"}},"bimProjects":{"table":"asc_bimproject","fields":{"name":"asc_name","location":"asc_location","gfa":"asc_gfa","lod":"asc_lod"}}},"referenceLookupColumns":{"_comment":"Fields moved out of the scalar 'fields' maps above because Dataverse now stores them as lookups, not free text. Carried in dataverseMapping's per-row 'references' object (label/local value) for a trusted service to resolve to the GUID column named here - never written directly as a string.","contacts.contactType":{"column":"asc_ContactType","targetTable":"asc_contacttype","note":"Now a lookup to asc_ContactType (name column asc_contacttypename), found 2026-10-28."},"contacts.region":{"column":"asc_regionid","targetTable":"asc_region"},"offices.country":{"column":"asc_countryid","targetTable":"asc_country"},"operatorApprovals.operator":{"column":"asc_operator_id","targetTable":"asc_operator","note":"Lookup to asc_Operator (name asc_name). Carried in references.operator."},"operatorApprovals.disciplines":{"column":"asc_disciplineid","targetTable":"asc_discipline","note":"One row per discipline in asc_operatorapprovaldiscipline (asc_operatorapproval_id + asc_disciplineid)."},"operatorApprovals.regions":{"column":"asc_RegionsID","targetTable":"asc_region","note":"One row per region in asc_OperatorApprovalsRegions (asc_OperatorApprovalsID + asc_RegionsID)."},"projects.country":{"column":"asc_countryid","targetTable":"asc_country"},"projects.region":{"column":"asc_region_id","targetTable":"asc_region"},"projects.type":{"column":"asc_projecttype_id","targetTable":"asc_projecttype","note":"2026-10-29: stored as a row in the junction asc_projectreferencetype (asc_projectreference_id + asc_projecttype_id), not a column on asc_projectreference."},"projects.disciplines":{"column":"asc_DisciplineID","targetTable":"asc_discipline","note":"2026-10-29: one row per discipline in the junction asc_projectreferencediscipline (asc_ProjectReferenceID + asc_DisciplineID)."}},"unresolvedLiveGaps":{"_comment":"URS/FS-required fields whose Dataverse column no longer exists live. Kept mapped here (not deleted) so requirements aren't silently dropped, per project's no-removal-without-permission rule. Portal writes to these will fail until the columns are restored - do not enable live writes for these fields until resolved.","offices.city":{"table":"asc_office","column":"asc_city","status":"MISSING_LIVE","note":"Documented in backend/README.md as a deliberate additive FS requirement; removed live, cause unknown."},"offices.status":{"table":"asc_office","column":"asc_status","status":"MISSING_LIVE","note":"Region-eligibility business rule (active office) depends on this. Documented in backend/README.md as a deliberate additive FS requirement; removed live, cause unknown."},"offices.leaders":{"table":"asc_office","status":"AMBIGUOUS","note":"Frontend collects up to 3 existing Contact records as leaders (asc_office.asc_leader1_id/2_id/3_id, all removed live). Live now has a single asc_office.asc_officeleaderid lookup to the separate asc_officeleader table (its own name/position/email/phone, not linked to Contact, and singular not up-to-3) - does not match URS §6.3 'up to three senior leaders' or the current frontend. Needs a decision before this can be wired to anything; not mapped to asc_officeleaderid."},"bimProjects.lod":{"table":"asc_bimproject","column":"asc_lod","status":"MISSING_LIVE","note":"Required by URS §6.9 'LOD ... Yes'. Removed live with no replacement found."}},"revenueRegions":{"Middle East":"asc_revenuepct_middleeast","South Asia":"asc_revenuepct_southasia","Europe":"asc_revenuepct_europe","Africa":"asc_revenuepct_africa","Other":"asc_revenuepct_other"},"picklistColumns":{"asc_bimcapability":{"In-house":751050000,"Outsourced":751050001},"asc_projectstatus":{"In progress":751050000,"Completed":751050001,"On hold":751050002,"Cancelled":751050003}},"booleanColumns":["asc_indemnified","asc_litigation","asc_holdspi","asc_esgcert","asc_esgreporting","asc_esgqa"],"integerColumns":["asc_effectiveyear","asc_bimoperatorcount","asc_accreditedcount","asc_headcount","asc_gfa","asc_keys"],"yearDateColumns":["asc_startyear","asc_completionyear"],"decimalColumns":["asc_backloginhand","asc_revenuen1","asc_revenuen2","asc_revenuen3","asc_piperoccurrence","asc_piaggregate","asc_equitypct"]}};
   function initialize() {
     var root = document.querySelector('.consultant-portal');
     if (!root || root.dataset.initialized) return;
@@ -465,6 +465,37 @@
     // pattern as loadLiveChoicesSync(). On any failure the form is simply left blank, as it
     // always was before this existed.
     var existingRecord = null;
+    // Saved attachment rows (incl. project-level files). Loaded on its own, after the other live reads, so a failure in
+    // any of those can never leave this list empty; errors are logged instead of swallowed.
+    // Project files are named '<project name> | <file name>'; returns the project name part ('' for other files).
+    function attachmentProjectName(row) {
+      var file = row.asc_filename || '';
+      var name = row.asc_name || '';
+      var tail = ' | ' + file;
+      return file && name.length > tail.length && name.slice(-tail.length) === tail ? name.slice(0, name.length - tail.length) : '';
+    }
+    function loadExistingAttachmentsSync() {
+      existingAttachments = [];
+      if (!liveConsultantId) return;
+      var token = syncGetVerificationToken();
+      if (!token) return;
+      function belongsToThisConsultant(row) {
+        return row._asc_consultant_id_value && row._asc_consultant_id_value.toLowerCase() === liveConsultantId.toLowerCase();
+      }
+      var attachmentData = syncGetJson('/_api/asc_attachments?$select=asc_attachmentid,asc_name,asc_filename,asc_filesizemb,asc_uploadedon,asc_status,statecode,_asc_documenttype_id_value,_asc_consultant_id_value,_asc_projectreference_id_value', token);
+      // Project-level files have no consultant lookup; they belong to this consultant through their project.
+      var ownProjectIds = [];
+      [(existingRecord && existingRecord.projects) || [], (prefillRecord && prefillRecord.projects) || []].forEach(function (list) {
+        list.forEach(function (project) { if (project.liveId) ownProjectIds.push(String(project.liveId).toLowerCase()); });
+      });
+      existingAttachments = ((attachmentData && attachmentData.value) || []).filter(function (row) {
+        if (row.statecode === 1) return false;   // inactive = removed
+        return belongsToThisConsultant(row) || (row._asc_projectreference_id_value && ownProjectIds.indexOf(row._asc_projectreference_id_value.toLowerCase()) !== -1);
+      }).map(function (row) {
+        return { liveId: row.asc_attachmentid, name: row.asc_filename || '', sizeMb: Number(row.asc_filesizemb) || 0, uploadedOn: row.asc_uploadedon || '', status: ATTACHMENT_STATUS_NAMES[row.asc_status] || '', documentType: row['_asc_documenttype_id_value@OData.Community.Display.V1.FormattedValue'] || '', projectLiveId: row._asc_projectreference_id_value || '', projectName: attachmentProjectName(row) };
+      });
+    }
+
     function loadExistingRecordSync() {
       if (!liveConsultantId) return;
       var token = syncGetVerificationToken();
@@ -591,15 +622,6 @@
           fields: dataverseMapping.reverseRow('projects', row),
           references: { disciplines: disciplinesForProject, type: (typeLink && typeLink.asc_projecttype_id && typeLink.asc_projecttype_id.asc_projecttypename) || '' }
         };
-      });
-
-      var attachmentData = syncGetJson('/_api/asc_attachments?$select=asc_attachmentid,asc_filename,asc_filesizemb,asc_uploadedon,asc_status,asc_documenttype_id,asc_consultant_id,asc_projectreference_id', token);
-      // Project-level files have no consultant lookup; they belong to this consultant through their project.
-      var ownProjectIds = projects.map(function (project) { return project.liveId.toLowerCase(); });
-      existingAttachments = ((attachmentData && attachmentData.value) || []).filter(function (row) {
-        return belongsToThisConsultant(row) || (row._asc_projectreference_id_value && ownProjectIds.indexOf(row._asc_projectreference_id_value.toLowerCase()) !== -1);
-      }).map(function (row) {
-        return { liveId: row.asc_attachmentid, name: row.asc_filename || '', sizeMb: Number(row.asc_filesizemb) || 0, uploadedOn: row.asc_uploadedon || '', status: ATTACHMENT_STATUS_NAMES[row.asc_status] || '', documentType: row['_asc_documenttype_id_value@OData.Community.Display.V1.FormattedValue'] || '' };
       });
 
       existingRecord = { identity: reversed.identity, sections: reversed.sections, revenueByRegion: reversed.revenueByRegion, contacts: contacts, shareholders: shareholders, operatorApprovals: operatorApprovals, bimProjects: bimProjects, projects: projects };
@@ -964,7 +986,8 @@
         },
         'Sustainability': (source.sections && source.sections.sustainability) || {},
         'Attachments': (source.files || []).map(function (item) {
-          return { documentType: item.documentType, projectId: item.projectId, name: item.file && item.file.name };
+          // projectId is a session-local form id; projectName is what identifies the project for the reviewer app.
+          return Object.assign({ documentType: item.documentType, projectId: item.projectId, name: item.file && item.file.name }, item.projectName ? { projectName: item.projectName } : {});
         })
       };
     }
@@ -1125,6 +1148,8 @@
     async function recordPortalSubmissions(consultantId, payload, status) {
       var after = tabSnapshot(payload);
       var before = tabSnapshot(existingRecord);
+      // The confidentiality acknowledgement is kept with the Identity submission (not on the consultant row).
+      if (pendingAcknowledgement) after.Identity = Object.assign({}, after.Identity, { confidentialityAcknowledgedBy: pendingAcknowledgement.by, confidentialityAcknowledgedOn: pendingAcknowledgement.date });
       for (var i = 0; i < PORTAL_SUBMISSION_TABS.length; i++) {
         var tab = PORTAL_SUBMISSION_TABS[i];
         // A Submitted/Accepted/Rejected tab is locked - saving again would create/overwrite a Draft row.
@@ -1209,7 +1234,8 @@
     function buildAttachmentRequest(entry, ids) {
       var file = entry.file;
       var body = {
-        asc_name: file.name,
+        // Project files are tagged '<project name> | <file name>' (the project row is not created by the portal any more).
+        asc_name: entry.projectName ? entry.projectName + ' | ' + file.name : file.name,
         asc_filename: file.name,
         asc_filesizemb: Math.round((file.size / 1000000) * 1000) / 1000,
         asc_uploadedon: ids.uploadedOn,
@@ -1219,7 +1245,7 @@
       if (ids.uploadedById) body['asc_uploadedby_id@odata.bind'] = '/systemusers(' + ids.uploadedById + ')';
       // Always tied to the consultant (reviewers filter by it); project files are also tied to their project.
       body['asc_consultant_id@odata.bind'] = '/asc_consultants(' + ids.consultantId + ')';
-      if (entry.projectId) body['asc_projectreference_id@odata.bind'] = '/asc_projectreferences(' + entry.projectLiveId + ')';
+      if (entry.projectLiveId) body['asc_projectreference_id@odata.bind'] = '/asc_projectreferences(' + entry.projectLiveId + ')';
       if (ids.documentTypeId) body['asc_documenttype_id@odata.bind'] = '/asc_documenttypes(' + ids.documentTypeId + ')';
       return {
         body: body,
@@ -1242,17 +1268,6 @@
       for (var i = 0; i < files.length; i++) {
         var entry = files[i];
         if (!entry.file || uploadedAttachmentFiles.has(entry.file)) continue;
-        // Project-scoped attachments bind to the live asc_projectreference row saved by saveProjects()
-        // earlier in this same save. If that project could not be saved, skip loudly.
-        if (entry.projectId) {
-          var savedProject = (projectResults || []).find(function (item) { return item.clientId === entry.projectId && item.liveId; });
-          if (!savedProject) {
-            console.warn('[ascentis] project-level attachment not uploaded - its project reference was not saved:', entry.file.name);
-            results.skipped++;
-            continue;
-          }
-          entry = Object.assign({}, entry, { projectLiveId: savedProject.liveId });
-        }
         try {
           var documentTypeId = await resolveReferenceId('asc_documenttypes', 'asc_documenttypeid', entry.documentType);
           var request = buildAttachmentRequest(entry, { consultantId: consultantId, documentTypeId: documentTypeId, uploadedById: auditActorId(), uploadedOn: new Date().toISOString(), status: newStatus });
@@ -1273,7 +1288,7 @@
           }
           uploadedAttachmentFiles.add(entry.file);
           // Track it so a Submit in this same session (no reload) promotes it too.
-          existingAttachments.push({ liveId: attachmentId, name: entry.file.name, sizeMb: request.body.asc_filesizemb, uploadedOn: request.body.asc_uploadedon, status: newStatus, documentType: entry.documentType || '' });
+          existingAttachments.push({ liveId: attachmentId, name: entry.file.name, sizeMb: request.body.asc_filesizemb, uploadedOn: request.body.asc_uploadedon, status: newStatus, documentType: entry.documentType || '', projectLiveId: entry.projectLiveId || '', projectName: entry.projectName || '' });
           results.uploaded++;
         } catch (error) {
           console.warn('[ascentis] attachment write failed', entry.file && entry.file.name, error);
@@ -1310,31 +1325,29 @@
       });
       return Object.assign({}, payload, { collections: collections });
     }
+    // Staging model (decided 23 Nov 2026): Save draft / Submit write ONLY to asc_portalsubmission (one row per tab, the
+    // JSON snapshot the form is rebuilt from) and asc_auditlog. The live tables (consultant, contacts, projects, ...)
+    // are no longer written by the portal - the reviewer app moves accepted data there. Uploaded files are the one
+    // exception: a file cannot live in JSON, so it is stored as an asc_attachment row (Draft until Submit) tied to
+    // the consultant and, for project files, tagged with the project name. The functions that used to write the
+    // live tables (saveConsultant, saveContacts, saveProjects, ...) are kept for reference/tests but are not called.
     async function saveAll(payload, submissionStatus) {
-      var wasNewConsultant = !liveConsultantId;
-      var consultantId = await saveConsultant(payload);
-      await saveChildTables(consultantId, payload);
-      var contacts = await saveContacts(consultantId, payload);
-      // Like operator approvals/projects, never blocks the save (Web API settings or permission may not be deployed yet).
-      var shareholders = [];
-      try { shareholders = await saveShareholders(consultantId, payload); } catch (shareholderError) { console.warn('[ascentis] shareholders write failed', shareholderError); }
-      // Never blocks the save: tables/settings may not be deployed yet (e.g. Web API settings missing).
-      var operatorApprovals = [];
-      try { operatorApprovals = await saveOperatorApprovals(consultantId, payload); } catch (operatorError) { console.warn('[ascentis] operator approvals write failed', operatorError); }
-      var bimProjects = await saveBimProjects(consultantId, payload);
-      // Project references never block the save: a failure here (e.g. Web API settings not deployed
-      // yet) is logged and the staged submission below still carries the project data.
-      var projects = [];
-      try { projects = await saveProjects(consultantId, payload); } catch (projectError) { console.warn('[ascentis] project references write failed', projectError); }
-      await saveConsultantReferences(consultantId, payload);
-      var attachments = await saveAttachments(consultantId, payload, projects, submissionStatus);
-      await recordPortalSubmissions(consultantId, stampLiveIds(payload, { contacts: contacts, shareholders: shareholders, operatorApprovals: operatorApprovals, bimProjects: bimProjects, projects: projects }), submissionStatus);
+      if (!liveConsultantId) throw new Error('No consultant record is linked to this account, so the profile cannot be saved.');
+      var consultantId = liveConsultantId;
+      var attachments = await saveAttachments(consultantId, payload, [], submissionStatus);
+      await recordPortalSubmissions(consultantId, payload, submissionStatus);
       var firmName = (payload.identity && payload.identity.firmName) || '';
       var objectText = 'asc_consultant ' + consultantId + (firmName ? ' (' + firmName + ')' : '');
-      await logAuditEvent(submissionStatus === 'Submitted' ? 'Submit' : (wasNewConsultant ? 'Create' : 'Update'), objectText);
-      return { consultantId: consultantId, contacts: contacts, shareholders: shareholders, operatorApprovals: operatorApprovals, bimProjects: bimProjects, projects: projects, attachments: attachments };
+      await logAuditEvent(submissionStatus === 'Submitted' ? 'Submit' : 'Update', objectText);
+      return { consultantId: consultantId, contacts: [], shareholders: [], operatorApprovals: [], bimProjects: [], projects: [], attachments: attachments };
     }
     var portalService = {
+      deleteAttachment: async function (liveId) {
+        if (preview) return { preview: true };
+        // Deactivate instead of deleting (needs only Write permission; reversible; the portal lists active rows only).
+        await webApiRequest('PATCH', '/_api/asc_attachments(' + liveId + ')', { statecode: 1, statuscode: 2 });
+        return { preview: false };
+      },
       saveDraft: async function (payload) {
         if (preview) { previewDraft = payload; return { preview: true }; }
         var result = await saveAll(payload, 'Draft');
@@ -1353,6 +1366,7 @@
       root.querySelectorAll('[data-view]').forEach(function (el) { el.hidden = el.dataset.view !== view; });
       root.querySelector('.portal-content').hidden = view === 'signin';
       root.querySelector('.portal-account').hidden = view === 'signin';
+      root.querySelector('.acknowledgement-banner').hidden = view !== 'profile';
       root.querySelectorAll('.portal-steps li').forEach(function (el, i) {
         var current = views.indexOf(view);
         el.className = i < current ? 'is-complete' : i === current ? 'is-current' : '';
@@ -1407,9 +1421,9 @@
       var button = document.getElementById('download-confidentiality');
       if (!preview && button.dataset.flowId) { downloadFromFlow(button.dataset.flowId); return; }
       var configured = button.dataset.pdfUrl;
-      if (!configured) { window.alert('The confidentiality PDF is not available yet.'); return; }
+      if (!configured) { portalDialog({ title: 'Confidentiality statement', message: 'The confidentiality PDF is not available yet.', noCancel: true }); return; }
       try { var url = new URL(configured, location.href); if (url.protocol !== 'https:' && !(url.protocol === 'http:' && url.origin === location.origin)) throw new Error(); location.assign(url.href); }
-      catch (_) { window.alert('The confidentiality PDF link is unavailable.'); }
+      catch (_) { portalDialog({ title: 'Confidentiality statement', message: 'The confidentiality PDF link is unavailable.', noCancel: true }); }
     }
     root.querySelectorAll('#download-confidentiality,[data-download]').forEach(function (el) { el.addEventListener('click', download); });
     document.getElementById('confidentiality-form').addEventListener('submit', function (event) {
@@ -1418,17 +1432,17 @@
       var now = new Date();
       var dateLabel = now.toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
       if (preview) {
-        document.getElementById('acknowledged-date').textContent = 'Confidentiality statement acknowledged on ' + dateLabel + '.';
+        document.getElementById('acknowledged-date').textContent = 'Confidentiality acknowledged on ' + dateLabel;
       } else {
         // DEMO acknowledgement: records who (the signed-in user's display name, already
-        // rendered by Liquid into #account-name) and when, actually written to
-        // asc_consultant.asc_confackn/asc_confacknby/asc_confackndate the next time the
-        // consultant record saves (services.js's pendingAcknowledgement). Not the full
+        // rendered by Liquid into #account-name) and when. Since 23 Nov 2026 it is stored with the
+        // Identity asc_portalsubmission snapshot (services.js pendingAcknowledgement) and in the audit log - not on asc_consultant. Not the full
         // production feature - no OTP-specific identity binding beyond whatever Entra
         // already established at sign-in, and no signed PDF. See backend/README.md.
         var acknowledgerName = (document.getElementById('account-name').textContent || '').trim() || 'Signed-in user';
         pendingAcknowledgement = { by: acknowledgerName, date: now.toISOString() };
-        document.getElementById('acknowledged-date').textContent = 'Confidentiality statement acknowledged by ' + acknowledgerName + ' on ' + dateLabel + ' — recorded when your profile is saved.';
+        document.getElementById('acknowledged-date').textContent = 'Confidentiality acknowledged on ' + dateLabel;
+        document.getElementById('acknowledged-date').title = 'Acknowledged by ' + acknowledgerName + ' — recorded when your profile is saved.';
         // Fire-and-forget - logAuditEvent catches its own errors and this must never block
         // moving on to the profile screen.
         logAuditEvent('AcknowledgeConfidentiality', acknowledgerName);
@@ -1495,9 +1509,33 @@
       return definition.options || portalConfig.choices[definition.source] || [];
     }
 
+    // Calling codes for the countries in schema.countryCodes; the phone field's country-code list is built from them.
+    var DIAL_CODES = {AE:'971',AU:'61',BD:'880',BH:'973',CA:'1',CH:'41',CN:'86',DE:'49',EG:'20',ES:'34',FR:'33',GB:'44',HK:'852',ID:'62',IN:'91',IT:'39',JP:'81',KE:'254',KW:'965',LK:'94',MA:'212',MU:'230',MV:'960',MY:'60',NG:'234',NL:'31',NP:'977',NZ:'64',OM:'968',PH:'63',PK:'92',PT:'351',QA:'974',SA:'966',SG:'65',TH:'66',TR:'90',US:'1',VN:'84',ZA:'27'};
+    function dialOptions() {
+      return schema.countryCodes.filter(function (code) { return DIAL_CODES[code]; }).map(function (code) { return { value: code, label: code + ' +' + DIAL_CODES[code] }; });
+    }
+    // Split a stored phone such as "+971 4 555 0100" into the country (longest matching calling code) and the rest.
+    function splitPhone(text) {
+      var value = String(text || '').trim();
+      var match = value.match(/^\+(\d+)/);
+      if (!match) return { country: '', number: value };
+      var digits = match[1], best = '';
+      Object.keys(DIAL_CODES).forEach(function (code) {
+        if (digits.indexOf(DIAL_CODES[code]) === 0 && (!best || DIAL_CODES[code].length > DIAL_CODES[best].length || (DIAL_CODES[code].length === DIAL_CODES[best].length && code === 'IN'))) best = code;
+      });
+      return best ? { country: best, number: value.slice(1 + DIAL_CODES[best].length).trim() } : { country: '', number: value };
+    }
+
+    // A saved attachment can be removed while it has no review status yet (files added from the reviewer app have none) or is a Draft.
+    function isRemovableAttachment(item) { return Boolean(item) && (!item.status || item.status === 'Draft'); }
+
     function fieldValue(control) {
+      if (control.dialSelect) {
+        var number = control.value.trim();
+        return number ? '+' + DIAL_CODES[control.dialSelect.value] + ' ' + number : '';
+      }
+      if (control.type === 'file') return control.multiple ? Array.from(control.files) : (control.files[0] || null);
       if (control.multiple) return Array.from(control.selectedOptions).map(function (option) { return option.value; });
-      if (control.type === 'file') return control.files[0] || null;
       if (control.closest('[data-type="money"]')) return control.value.replace(/,/g, '').trim();
       return control.value.trim();
     }
@@ -1527,11 +1565,48 @@
       if (control.refreshMulti) control.refreshMulti();
     }
 
-    function multiPicker(control, wrapper) {
+    // ---- Floating menus (dropdown lists and the multi-picker checklist) ----
+    // The menus are position:fixed and placed from the anchor's viewport rectangle, so they are never clipped by a
+    // scrolling ancestor (record dialogs, panels) and can overlap the edge of a popup. They open below the anchor, or
+    // above it when there is more room there, are limited to the free height, stay inside the viewport horizontally,
+    // and follow the anchor while the page or a dialog scrolls or the window is resized.
+    var menuRepositionBound = false;
+    function placeMenu(menu, anchor) {
+      var rect = anchor.getBoundingClientRect();
+      var viewportWidth = document.documentElement.clientWidth;
+      var viewportHeight = window.innerHeight;
+      var pill = menu.parentNode && menu.parentNode.classList && menu.parentNode.classList.contains('dd-pill');
+      menu.style.top = 'auto';
+      menu.style.bottom = 'auto';
+      menu.style.maxHeight = '';
+      menu.style.minWidth = menu.classList.contains('dd-menu') && !pill ? Math.round(rect.width) + 'px' : '';
+      var natural = Math.min(menu.scrollHeight + 2, 260);
+      var below = viewportHeight - rect.bottom - 10;
+      var above = rect.top - 10;
+      var down = below >= natural || below >= above;
+      menu.style.maxHeight = Math.max(110, Math.min(260, down ? below : above)) + 'px';
+      if (down) menu.style.top = Math.round(rect.bottom + 6) + 'px';
+      else menu.style.bottom = Math.round(viewportHeight - rect.top + 6) + 'px';
+      menu.style.left = Math.round(Math.max(8, Math.min(rect.left, viewportWidth - menu.offsetWidth - 8))) + 'px';
+      menu._ddAnchor = anchor;
+      if (!menuRepositionBound) {
+        menuRepositionBound = true;
+        var again = function () {
+          document.querySelectorAll('.dd-menu:not([hidden]), .multi-options:not([hidden])').forEach(function (open) { if (open._ddAnchor) placeMenu(open, open._ddAnchor); });
+        };
+        window.addEventListener('scroll', again, true);
+        window.addEventListener('resize', again);
+      }
+    }
+
+    function multiPicker(control, wrapper, inlineChoices) {
       control.classList.add('native-multi');
       control.tabIndex = -1;
       control.setAttribute('aria-hidden', 'true');
       var widget = element('div', 'multi-picker');
+      // Inside a record popup the choices are shown inline as a row of checkboxes (no "+ add" button, chips or floating menu).
+      var inline = Boolean(inlineChoices);
+      if (inline) widget.classList.add('multi-inline');
       var chips = element('div', 'multi-chips');
       var add = element('button', 'text-button', '+ add');
       add.type = 'button';
@@ -1543,9 +1618,13 @@
       add.setAttribute('aria-controls', menu.id);
       widget.append(chips, add, menu);
       wrapper.appendChild(widget);
-      function close() { menu.hidden = true; add.setAttribute('aria-expanded', 'false'); }
-      add.addEventListener('click', function () { menu.hidden = !menu.hidden; add.setAttribute('aria-expanded', String(!menu.hidden)); });
-      widget.addEventListener('keydown', function (event) { if (event.key === 'Escape') { close(); add.focus(); } });
+      function close() { if (inline) return; menu.hidden = true; add.setAttribute('aria-expanded', 'false'); }
+      add.addEventListener('click', function () {
+        menu.hidden = !menu.hidden;
+        add.setAttribute('aria-expanded', String(!menu.hidden));
+        if (!menu.hidden) placeMenu(menu, add);
+      });
+      widget.addEventListener('keydown', function (event) { if (event.key === 'Escape' && !inline) { close(); add.focus(); } });
       widget.addEventListener('focusout', function (event) { if (!widget.contains(event.relatedTarget)) close(); });
       control.refreshMulti = function () {
         chips.replaceChildren();
@@ -1567,14 +1646,250 @@
             option.selected = checkbox.checked;
             control.dispatchEvent(new Event('change', {bubbles:true}));
             control.refreshMulti();
-            add.focus();
+            if (!inline) add.focus();
           });
           label.append(checkbox, document.createTextNode(option.textContent));
           menu.appendChild(label);
         });
         if (!control.options.length) menu.appendChild(element('p', 'field-help', 'Add contacts first to choose office leaders.'));
+        if (!menu.hidden && !inline) placeMenu(menu, add);
       };
+      if (inline) menu.hidden = false;
       control.refreshMulti();
+    }
+
+    // ---- Themed modal (replaces the browser's window.confirm / window.alert) ----
+    // portalDialog({title, message, confirmLabel, cancelLabel, icon, danger, noCancel, focus}) resolves true when the
+    // confirm button is used and false on Cancel, Esc or a click on the backdrop. The dialog is built on <dialog>, so
+    // focus is trapped, Esc works and it stacks above any open record popup. Cancel has the initial focus for
+    // destructive/irreversible questions (danger or focus:'cancel') so an accidental Enter never confirms.
+    var portalDialogSequence = 0;
+    function portalDialog(options) {
+      return new Promise(function (resolve) {
+        var id = 'portal-dialog-' + (++portalDialogSequence);
+        var dlg = element('dialog', 'record-dialog confirm-dialog portal-dialog' + (options.danger ? ' portal-dialog-danger' : ''));
+        dlg.setAttribute('role', options.danger || options.noCancel ? 'alertdialog' : 'dialog');
+        dlg.setAttribute('aria-labelledby', id + '-title');
+        dlg.setAttribute('aria-describedby', id + '-text');
+        var icon = element('span', 'portal-dialog-icon', options.icon || (options.danger ? '!' : options.noCancel ? 'i' : '?'));
+        icon.setAttribute('aria-hidden', 'true');
+        var title = element('h2', 'confirm-title', options.title || '');
+        title.id = id + '-title';
+        var text = element('p', '', options.message || '');
+        text.id = id + '-text';
+        var actions = element('div', 'confirm-actions', '');
+        var cancel = null;
+        if (!options.noCancel) {
+          cancel = element('button', 'portal-button', options.cancelLabel || 'Cancel');
+          cancel.type = 'button';
+          actions.appendChild(cancel);
+        }
+        var ok = element('button', 'portal-button ' + (options.danger ? 'portal-button-danger' : 'portal-button-primary'), options.confirmLabel || 'OK');
+        ok.type = 'button';
+        actions.appendChild(ok);
+        dlg.append(icon, title, text, actions);
+        var confirmed = false;
+        ok.addEventListener('click', function () { confirmed = true; dlg.close(); });
+        if (cancel) cancel.addEventListener('click', function () { dlg.close(); });
+        dlg.addEventListener('click', function (event) {
+          if (event.target !== dlg || !cancel) return;
+          var box = dlg.getBoundingClientRect();
+          if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) dlg.close();
+        });
+        dlg.addEventListener('close', function () {
+          if (dlg.parentNode) dlg.parentNode.removeChild(dlg);
+          resolve(confirmed);
+        });
+        root.appendChild(dlg);
+        dlg.showModal();
+        ((cancel && (options.danger || options.focus === 'cancel')) ? cancel : ok).focus();
+      });
+    }
+
+    // ---- Themed single-select dropdown (desktop pointers only) ----
+    // The browser's own option list cannot be styled, so on devices with a mouse the <select> is replaced visually by
+    // a button + listbox. The native <select> stays in the DOM (visually hidden) as the single source of truth for the
+    // value, validation, required/disabled state and the Dataverse mapping; the button and list only mirror it, and
+    // every programmatic change (select.value = ..., disabled, rebuilt options) is picked up. Phones and tablets keep
+    // the native picker, which is better there. Keyboard: Up/Down/Home/End, Enter/Space, Esc, type-ahead.
+    var ddSequence = 0;
+    var ddDocumentListener = false;
+    function enhanceSelect(select) {
+      if (!select || select.multiple || select.dataset.enhanced || !select.parentNode) return;
+      if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+      select.dataset.enhanced = 'true';
+      var pill = select.classList.contains('tag-picker') || select.classList.contains('share-picker');
+      var wrap = element('div', 'dd' + (pill ? ' dd-pill' : ''));
+      select.parentNode.insertBefore(wrap, select);
+      wrap.appendChild(select);
+      select.tabIndex = -1;
+      select.setAttribute('aria-hidden', 'true');
+      var id = 'dd-' + (++ddSequence);
+      var button = element('button', 'dd-button', '');
+      button.type = 'button';
+      button.id = id + '-btn';
+      // A <label> (wrapping the select, or pointing at it with for=) activates its control with a click - which
+      // opened the browser's own list from the hidden <select>. Re-point every label of this select at the
+      // visible button instead, so label text and list rows never reach the native control.
+      Array.from(select.labels || []).forEach(function (label) { label.htmlFor = button.id; });
+      button.setAttribute('role', 'combobox');
+      button.setAttribute('aria-haspopup', 'listbox');
+      button.setAttribute('aria-expanded', 'false');
+      button.setAttribute('aria-controls', id + '-list');
+      var text = element('span', 'dd-text', '');
+      button.appendChild(text);
+      var menu = element('div', 'dd-menu');
+      menu.id = id + '-list';
+      menu.setAttribute('role', 'listbox');
+      menu.hidden = true;
+      wrap.append(button, menu);
+      var items = [];
+      var active = -1;
+      var typed = '';
+      var typedAt = 0;
+
+      function sync() {
+        var option = select.options[select.selectedIndex];
+        var empty = !option || option.value === '';
+        text.textContent = option ? option.textContent : '';
+        button.classList.toggle('dd-placeholder', empty && !pill);
+        var accessibleName = select.getAttribute('aria-label') || select.dataset.label || '';
+        if (accessibleName) button.setAttribute('aria-label', accessibleName);
+        else button.removeAttribute('aria-label');   // name then comes from the field's <label for=...>, never an empty aria-label
+        button.setAttribute('aria-disabled', String(select.disabled));
+        button.setAttribute('aria-required', String(select.required));
+        button.tabIndex = select.disabled ? -1 : 0;
+        if (select.getAttribute('aria-invalid') === 'true') button.setAttribute('aria-invalid', 'true');
+        else button.removeAttribute('aria-invalid');
+        if (select.disabled && !menu.hidden) close(false);
+      }
+      function render() {
+        menu.replaceChildren();
+        items = [];
+        Array.from(select.options).forEach(function (option, index) {
+          if (pill && option.value === '') return;
+          var item = element('div', 'dd-option', option.textContent);
+          item.id = id + '-opt-' + index;
+          item.setAttribute('role', 'option');
+          item.dataset.index = String(index);
+          item.setAttribute('aria-selected', String(!pill && index === select.selectedIndex));
+          if (option.disabled) item.setAttribute('aria-disabled', 'true');
+          if (option.value === '') item.classList.add('dd-empty');
+          item.addEventListener('click', function () { choose(index); });
+          menu.appendChild(item);
+          items.push(item);
+        });
+        if (!items.length) {
+          var none = element('div', 'dd-option dd-empty', 'Nothing left to add');
+          none.setAttribute('role', 'option');
+          none.setAttribute('aria-disabled', 'true');
+          menu.appendChild(none);
+          items.push(none);
+        }
+      }
+      function enabledFrom(start, step) {
+        for (var i = start; i >= 0 && i < items.length; i += step) if (items[i].getAttribute('aria-disabled') !== 'true') return i;
+        return -1;
+      }
+      function setActive(index) {
+        items.forEach(function (item) { item.removeAttribute('data-active'); });
+        active = index;
+        if (index < 0 || !items[index]) { button.removeAttribute('aria-activedescendant'); return; }
+        items[index].setAttribute('data-active', 'true');
+        button.setAttribute('aria-activedescendant', items[index].id);
+        if (items[index].scrollIntoView) items[index].scrollIntoView({ block: 'nearest' });
+      }
+      function move(step) {
+        var next = enabledFrom(active + step, step);
+        if (next >= 0) setActive(next);
+      }
+      function open() {
+        if (select.disabled || !menu.hidden) return;
+        render();
+        menu.hidden = false;
+        wrap.classList.add('dd-open');
+        button.setAttribute('aria-expanded', 'true');
+        placeMenu(menu, button);
+        var current = items.findIndex(function (item) { return item.getAttribute('aria-selected') === 'true'; });
+        setActive(current >= 0 ? current : enabledFrom(0, 1));
+      }
+      function close(returnFocus) {
+        menu.hidden = true;
+        wrap.classList.remove('dd-open');
+        button.setAttribute('aria-expanded', 'false');
+        setActive(-1);
+        if (returnFocus) button.focus();
+      }
+      function choose(index) {
+        var option = select.options[index];
+        if (!option || option.disabled) return;
+        var changed = select.selectedIndex !== index;
+        select.selectedIndex = index;
+        sync();
+        close(true);
+        // Pill pickers act on every pick (they add a chip), regular dropdowns only when the value changed.
+        if (changed || pill) {
+          select.dispatchEvent(new Event('input', { bubbles: true }));
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+
+      // Keep the mirror in step with programmatic changes of the native select.
+      ['value', 'selectedIndex'].forEach(function (property) {
+        var base = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, property);
+        Object.defineProperty(select, property, {
+          configurable: true,
+          get: function () { return base.get.call(select); },
+          set: function (value) { base.set.call(select, value); sync(); }
+        });
+      });
+      new MutationObserver(function () { sync(); if (!menu.hidden) { render(); placeMenu(menu, button); } })
+        .observe(select, { attributes: true, attributeFilter: ['disabled', 'required', 'aria-invalid'], childList: true, subtree: true });
+      select.addEventListener('change', sync);
+      select.addEventListener('focus', function () { if (!select.disabled) button.focus(); });
+      // Code that focuses the field (validation error links, "focus the first field") must land on the visible button.
+      select.focus = function (focusOptions) { if (!select.disabled) button.focus(focusOptions); };
+      // A click inside the list is handled by the list; stop it from being forwarded to any label's control.
+      menu.addEventListener('click', function (event) { event.preventDefault(); });
+
+      button.addEventListener('click', function () { if (menu.hidden) open(); else close(false); });
+      menu.addEventListener('mousedown', function (event) { event.preventDefault(); });
+      wrap.addEventListener('focusout', function (event) { if (!wrap.contains(event.relatedTarget)) close(false); });
+      button.addEventListener('keydown', function (event) {
+        if (select.disabled) return;
+        var key = event.key;
+        var isOpen = !menu.hidden;
+        if (key === 'ArrowDown' || key === 'ArrowUp') {
+          event.preventDefault();
+          if (!isOpen) open(); else move(key === 'ArrowDown' ? 1 : -1);
+        } else if (key === 'Home' || key === 'End') {
+          if (isOpen) { event.preventDefault(); setActive(key === 'Home' ? enabledFrom(0, 1) : enabledFrom(items.length - 1, -1)); }
+        } else if (key === 'Enter' || key === ' ') {
+          event.preventDefault();
+          if (!isOpen) open(); else if (active >= 0) choose(Number(items[active].dataset.index));
+        } else if (key === 'Escape') {
+          if (isOpen) { event.preventDefault(); event.stopPropagation(); close(true); }
+        } else if (key === 'Tab') {
+          if (isOpen) close(false);
+        } else if (key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+          if (isOpen === false) open();
+          var now = Date.now();
+          typed = (now - typedAt > 700 ? '' : typed) + key.toLowerCase();
+          typedAt = now;
+          for (var step = 0; step < items.length; step++) {
+            var index = (Math.max(active, 0) + (typed.length > 1 ? 0 : 1) + step) % items.length;
+            if (items[index].getAttribute('aria-disabled') !== 'true' && items[index].textContent.toLowerCase().indexOf(typed) === 0) { setActive(index); break; }
+          }
+        }
+      });
+      wrap._ddClose = function () { if (!menu.hidden) close(false); };
+      if (!ddDocumentListener) {
+        ddDocumentListener = true;
+        document.addEventListener('pointerdown', function (event) {
+          document.querySelectorAll('.dd.dd-open').forEach(function (open) { if (!open.contains(event.target) && open._ddClose) open._ddClose(); });
+        });
+      }
+      sync();
     }
 
     function createField(definition, group) {
@@ -1605,6 +1920,7 @@
         }
       }
       if (definition.placeholder) control.placeholder = definition.placeholder;
+      if (type === 'file' && definition.multiple) control.multiple = true;
       if (type === 'textarea') control.rows = 4;
       if (type === 'money') {
         control.type = 'text';
@@ -1627,12 +1943,101 @@
         money.appendChild(element('span', '', '$'));
         money.appendChild(control);
         wrapper.appendChild(money);
+      } else if (type === 'tel' && definition.dial) {
+        var phone = element('div', 'phone-control');
+        var dial = element('select');
+        dial.id = id + '-dial';
+        dial.setAttribute('aria-label', 'Country calling code');
+        setOptions(dial, dialOptions());
+        if (dial.options[0] && dial.options[0].value === '') dial.remove(0);
+        dial.value = 'IN';
+        control.dialSelect = dial;
+        phone.appendChild(dial);
+        phone.appendChild(control);
+        wrapper.appendChild(phone);
+        enhanceSelect(dial);
       } else wrapper.appendChild(control);
-      if (type === 'multi') multiPicker(control, wrapper);
+      if (definition.wide) wrapper.classList.add('field-wide');
+      // The field group is already attached to its card, so a field inside a record popup can be recognised here
+      // (the field's own wrapper is not attached yet).
+      if (type === 'multi') multiPicker(control, wrapper, Boolean(group.closest && group.closest('.record-popup')));
+      else if (control.tagName === 'SELECT') {
+        enhanceSelect(control);
+        // select.labels is empty for elements that are not attached to the page yet, so point this field's label at
+        // the visible button explicitly (otherwise a label click would be forwarded to the hidden native select).
+        var enhancedButton = wrapper.querySelector('.dd-button');
+        if (enhancedButton) label.htmlFor = enhancedButton.id;
+      }
+
+      if (type === 'file' && definition.multiple) {
+        // Gallery of the files chosen so far (name, size, remove) under the picker.
+        var gallery = element('ul', 'file-gallery');
+        gallery.setAttribute('aria-label', definition.label + ' – selected files');
+        var renderGallery = function () {
+          control.keptFiles = Array.from(control.files);
+          gallery.replaceChildren();
+          var saved = control.savedFiles ? control.savedFiles() : [];
+          // Files chosen here and already uploaded by a save show as saved tiles, not twice.
+          var fresh = Array.from(control.files).filter(function (file) { return !(typeof uploadedAttachmentFiles !== 'undefined' && uploadedAttachmentFiles.has(file)); });
+          gallery.hidden = !(saved.length + fresh.length);
+          saved.forEach(function (item) {
+            var tile = element('li', 'file-tile file-tile-saved');
+            tile.appendChild(element('span', 'file-tile-icon', ((item.name || '').split('.').pop() || 'file').slice(0, 4).toUpperCase()));
+            var meta = element('span', 'file-tile-meta');
+            meta.appendChild(element('span', 'file-tile-name', item.name || '(unnamed file)'));
+            meta.appendChild(element('span', 'file-tile-size', (item.sizeMb ? Number(item.sizeMb).toFixed(1) + ' MB' : '') + (item.status ? (item.sizeMb ? ' · ' : '') + item.status : '')));
+            tile.appendChild(meta);
+            if (isRemovableAttachment(item) && control.removeSaved) {
+              var removeSaved = element('button', 'file-tile-remove', '×');
+              removeSaved.type = 'button';
+              removeSaved.setAttribute('aria-label', 'Remove ' + (item.name || 'file'));
+              removeSaved.addEventListener('click', function () { control.removeSaved(item); });
+              tile.appendChild(removeSaved);
+            }
+            gallery.appendChild(tile);
+          });
+          fresh.forEach(function (file) {
+            var tile = element('li', 'file-tile');
+            tile.appendChild(element('span', 'file-tile-icon', (file.name.split('.').pop() || 'file').slice(0, 4).toUpperCase()));
+            var meta = element('span', 'file-tile-meta');
+            meta.appendChild(element('span', 'file-tile-name', file.name));
+            meta.appendChild(element('span', 'file-tile-size', (file.size / 1000000).toFixed(1) + ' MB'));
+            tile.appendChild(meta);
+            var remove = element('button', 'file-tile-remove', '×');
+            remove.type = 'button';
+            remove.setAttribute('aria-label', 'Remove ' + file.name);
+            remove.addEventListener('click', function () {
+              var keep = new DataTransfer();
+              Array.from(control.files).forEach(function (other) { if (other !== file) keep.items.add(other); });
+              control.files = keep.files;
+              control.skipMerge = true;
+              control.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+            tile.appendChild(remove);
+            gallery.appendChild(tile);
+          });
+        };
+        // A native file input replaces its list on every selection; keep the earlier files and add the new ones.
+        control.addEventListener('change', function () {
+          if (control.skipMerge) { control.skipMerge = false; return; }
+          var merged = new DataTransfer();
+          var seen = {};
+          (control.keptFiles || []).concat(Array.from(control.files)).forEach(function (file) {
+            var id = file.name + '|' + file.size;
+            if (!seen[id]) { seen[id] = true; merged.items.add(file); }
+          });
+          control.files = merged.files;
+        });
+        control.addEventListener('gallery-refresh', renderGallery);
+        control.addEventListener('change', renderGallery);
+        renderGallery();
+        wrapper.appendChild(gallery);
+      }
 
       var help = element('small', 'field-help', definition.help || '');
       help.id = id + '-help';
-      if (control.maxLength > 0) help.textContent += (help.textContent ? ' ' : '') + 'Maximum ' + control.maxLength + ' characters.';
+      // No automatic "Maximum N characters." hint (project decision 22 Nov 2026): the input's maxlength still enforces the
+      // limit; only an explicit definition.help (e.g. the file size note) is shown.
       if (type === 'money') help.textContent = 'USD';
       wrapper.appendChild(help);
       var error = element('small', 'field-error');
@@ -1666,7 +2071,11 @@
         if (initial && initial[definition.key] !== undefined && definition.type !== 'file') {
           if (field.control.multiple) Array.from(field.control.options).forEach(function (option) { option.selected = initial[definition.key].includes(option.value); });
           else {
-            field.control.value = initial[definition.key];
+            if (field.control.dialSelect) {
+              var parts = splitPhone(initial[definition.key]);
+              if (parts.country) { field.control.dialSelect.value = parts.country; field.control.dialSelect.dispatchEvent(new Event('change')); }
+              field.control.value = parts.number;
+            } else field.control.value = initial[definition.key];
             // Stored values can differ from the option text only by case (e.g. 'In Progress' vs
             // 'In progress'); an unmatched value would leave the select blank, so match loosely.
             if (field.control.tagName === 'SELECT' && field.control.selectedIndex <= 0 && initial[definition.key]) {
@@ -1696,10 +2105,11 @@
     // confidentiality screen was shown), so on a first sign-in - empty browser storage - the loaders below saw no
     // consultant id and left the form blank until the next page refresh.
     if (!preview && root.dataset.authenticated === 'true') { try { resolveInvitationConsultant(); } catch (ignored) { /* fall back to stored id */ } }
-    if (!preview) { try { loadExistingRecordSync(); } catch (ignored) { /* start from a blank form */ } }
+    if (!preview) { try { loadExistingRecordSync(); } catch (loadError) { try { console.warn('[ascentis] loading existing record failed:', loadError && loadError.message); } catch (ignored) {} } }
     // Form values come from each tab's latest asc_portalsubmission row; existingRecord (live tables)
     // is still loaded above for asc_before, junction diffing and live-row ID caches.
-    if (!preview) { try { loadPrefillRecordSync(); } catch (ignored) { prefillRecord = null; /* blank form */ } }
+    if (!preview) { try { loadPrefillRecordSync(); } catch (loadError) { prefillRecord = null; try { console.warn('[ascentis] loading submissions failed:', loadError && loadError.message); } catch (ignored) {} } }
+    if (!preview) { try { loadExistingAttachmentsSync(); } catch (loadError) { try { console.warn('[ascentis] loading attachments failed:', loadError && loadError.message); } catch (ignored) {} } }
     var choices = portalConfig.choices;
     var selected = {
       Disciplines: (prefillRecord && prefillRecord.identity.disciplines.slice()) || [],
@@ -1712,6 +2122,9 @@
       if (prefillRecord.identity.alias) form.elements.alias.value = prefillRecord.identity.alias;
       if (prefillRecord.identity.firmType) form.elements.firmType.value = prefillRecord.identity.firmType;
     }
+    // The Firm type select is static markup (not built by createField), so it is upgraded here; later changes to its
+    // options or value are mirrored automatically.
+    enhanceSelect(form.elements.firmType);
 
     function activate(index, focus) {
       tabs.forEach(function (tab, i) {
@@ -1768,17 +2181,20 @@
       var limit = collection.definition.limit && schema.limits[collection.definition.limit];
       collection.count.textContent = collection.rows.length + (limit ? ' / ' + limit : '') + ' added';
       collection.add.disabled = Boolean(limit && collection.rows.length >= limit);
-      collection.empty.hidden = collection.rows.length !== 0;
+      // Project and BIM tables show their empty message inside the table, under the heading row.
+      collection.empty.hidden = collection.rows.length !== 0 || ['projects', 'bimProjects'].includes(collection.definition.id);
       collection.rows.forEach(function (row, index) {
         var values = readFields(row.group.node);
         var name = values.name || [values.firstName, values.lastName].filter(Boolean).join(' ') || values.region;
-        row.heading.textContent = collection.definition.singular + ' ' + (index + 1) + (name ? ' — ' + name : '');
+        row.heading.textContent = (row.isNew ? 'Add ' : 'Edit ') + collection.definition.singular + (!row.isNew && name ? ' — ' + name : '');
       });
       renderCollection(collection);
     }
 
     function openRecord(row) {
       if (!row.dialog.open) row.dialog.showModal();
+      var openedAttachment = fieldIn(row.group, 'attachment');
+      if (openedAttachment) openedAttachment.dispatchEvent(new Event('gallery-refresh'));
       row.group.fields[0].control.focus();
     }
 
@@ -1795,7 +2211,30 @@
       return { wrap: wrap, body: body };
     }
 
+    // Delete (trash) cell at the end of a table row; it runs the record's own Remove action (themed confirmation).
+    function trashButton(ariaLabel, onClick) {
+      var trash = element('button', 'icon-button', '');
+      trash.type = 'button';
+      trash.setAttribute('aria-label', ariaLabel);
+      trash.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>';
+      trash.addEventListener('click', onClick);
+      return trash;
+    }
+    function trashCell(row, ariaLabel) {
+      var actionCell = element('td', 'row-action');
+      actionCell.appendChild(trashButton(ariaLabel, function () { row.node.querySelector('.remove-record').click(); }));
+      return actionCell;
+    }
+
     function renderCollection(collection) {
+      renderCollectionRows(collection);
+      // A locked (submitted / accepted / rejected) tab cannot lose records: its delete icons are not operable.
+      if (collection.list.closest('[data-locked="true"]')) {
+        collection.list.querySelectorAll('.icon-button').forEach(function (button) { button.setAttribute('inert', ''); });
+      }
+    }
+
+    function renderCollectionRows(collection) {
       collection.list.replaceChildren();
       var id = collection.definition.id;
       if (id === 'contacts') {
@@ -1840,14 +2279,7 @@
           nameCell.appendChild(nameLink);
           tr.appendChild(nameCell);
           [(values.disciplines || []).join(', '), values.brands, (values.regions || []).join(', ')].forEach(function (value) { tr.appendChild(element('td', '', value || '—')); });
-          var actionCell = element('td', 'row-action');
-          var trash = element('button', 'icon-button', '');
-          trash.type = 'button';
-          trash.setAttribute('aria-label', 'Delete operator approval ' + (values.operator || ''));
-          trash.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>';
-          trash.addEventListener('click', function () { row.node.querySelector('.remove-record').click(); });
-          actionCell.appendChild(trash);
-          tr.appendChild(actionCell);
+          tr.appendChild(trashCell(row, 'Delete operator approval ' + (values.operator || '')));
           opTable.body.appendChild(tr);
         });
         if (collection.rows.length) collection.list.appendChild(opTable.wrap);
@@ -1867,14 +2299,7 @@
           tr.appendChild(nameCell);
           var equityCell = element('td', 'equity-cell', values.equity !== '' && values.equity !== undefined ? values.equity + '%' : '—');
           tr.appendChild(equityCell);
-          var actionCell = element('td', 'row-action');
-          var trash = element('button', 'icon-button', '');
-          trash.type = 'button';
-          trash.setAttribute('aria-label', 'Delete shareholder ' + (values.name || ''));
-          trash.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>';
-          trash.addEventListener('click', function () { row.node.querySelector('.remove-record').click(); });
-          actionCell.appendChild(trash);
-          tr.appendChild(actionCell);
+          tr.appendChild(trashCell(row, 'Delete shareholder ' + (values.name || '')));
           shareTable.body.appendChild(tr);
         });
         if (collection.rows.length) collection.list.appendChild(shareTable.wrap);
@@ -1883,7 +2308,7 @@
         collection.list.appendChild(shareWarning);
         return;
       }
-      var table = dataTable(id === 'projects' ? ['Project', 'Country / region', 'Disciplines', 'Type', 'GFA / Keys', 'Status', 'Years'] : ['Name', 'Location', 'GFA', 'LOD', 'Disciplines']);
+      var table = dataTable(id === 'projects' ? ['Project', 'Country / region', 'Disciplines', 'Type', 'GFA / Keys', 'Status', 'Years', ''] : ['Name', 'Location', 'GFA', 'LOD', 'Disciplines', '']);
       collection.rows.forEach(function (row) {
         var values = readFields(row.group.node);
         var tr = element('tr');
@@ -1899,8 +2324,16 @@
             values.status, [values.startYear, values.status === 'Completed' ? values.completionYear : ''].filter(Boolean).join('–')]
           : [values.location, values.gfa ? Number(values.gfa).toLocaleString('en-US') : '—', values.lod, (values.disciplines || []).join(', ')];
         cells.forEach(function (value) { tr.appendChild(element('td', '', value || '—')); });
+        tr.appendChild(trashCell(row, 'Delete ' + collection.definition.singular + ' ' + (values.name || '')));
         table.body.appendChild(tr);
       });
+      if (!collection.rows.length) {
+        var emptyRow = element('tr');
+        var emptyCell = element('td', 'empty-state', collection.empty.textContent);
+        emptyCell.colSpan = id === 'projects' ? 8 : 6;
+        emptyRow.appendChild(emptyCell);
+        table.body.appendChild(emptyRow);
+      }
       collection.list.appendChild(table.wrap);
     }
 
@@ -1909,26 +2342,66 @@
       var limit = collection.definition.limit && schema.limits[collection.definition.limit];
       if (limit && collection.rows.length >= limit) return;
       var recordId = id + '-' + (++collectionSequence);
+      var singular = collection.definition.singular;
       var card = element('fieldset', 'record-card');
-      var dialog = element('dialog', 'record-dialog');
-      dialog.setAttribute('aria-label', 'Edit ' + collection.definition.singular);
+      var dialog = element('dialog', 'record-dialog record-popup');
       dialog.appendChild(card);
-      var heading = element('legend');
+      // Popup layout: title + close (x) at the top, the fields, and an action bar at the bottom. A record that was just
+      // added from "+ Add ..." is "new": Cancel / x discard it (asking first if something was typed) and the primary
+      // button reads "Add <name>". An existing record opened from the list reads "Save <name>", offers Remove, and
+      // x just closes it (edits are kept as they are typed).
+      var heading = element('legend', 'record-title');
       card.appendChild(heading);
+      var closeX = element('button', 'record-x', '');
+      closeX.type = 'button';
+      closeX.setAttribute('aria-label', 'Close');
+      closeX.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+      card.appendChild(closeX);
       var group = createFields(card, collection.definition.fields, initial);
-      var remove = element('button', 'text-button remove-record', 'Remove ' + collection.definition.singular);
+      group.fields.forEach(function (field) {
+        var control = field.control;
+        if (control.tagName === 'SELECT' && !control.multiple) {
+          var first = control.options[0];
+          if (first && first.value === '') first.textContent = 'Select ' + field.definition.label;
+        } else if (control.tagName === 'TEXTAREA' && !control.placeholder) {
+          control.placeholder = 'Enter text';
+        } else if (control.tagName === 'INPUT' && control.type !== 'checkbox' && control.type !== 'file' && !control.placeholder) {
+          control.placeholder = ['money', 'integer', 'decimal', 'year', 'percent'].includes(field.definition.type) ? 'Enter number' : 'Enter text';
+        }
+      });
+      var footer = element('div', 'record-footer');
+      var remove = element('button', 'text-button remove-record', 'Remove ' + singular);
       remove.type = 'button';
-      card.appendChild(remove);
-      var close = element('button', 'portal-button portal-button-primary close-editor', 'Done');
+      var cancel = element('button', 'portal-button record-cancel', 'Cancel');
+      cancel.type = 'button';
+      var close = element('button', 'portal-button portal-button-primary close-editor', '');
       close.type = 'button';
-      card.appendChild(close);
-      var row = { id: recordId, liveId: liveId || null, node: card, dialog: dialog, group: group, heading: heading };
+      footer.append(remove, cancel, close);
+      card.appendChild(footer);
+      var row = { id: recordId, liveId: liveId || null, node: card, dialog: dialog, group: group, heading: heading, isNew: Boolean(focus) };
+      var attachmentControl = id === 'projects' ? fieldIn(group, 'attachment') : null;
+      if (attachmentControl) {
+        // Files already saved for this project (read-only tiles in the gallery).
+        attachmentControl.savedFiles = function () {
+          if (typeof existingAttachments === 'undefined') return [];
+          var projectName = String(readFields(group.node).name || '').trim().toLowerCase();
+          return existingAttachments.filter(function (saved) {
+            if (row.liveId && saved.projectLiveId && saved.projectLiveId.toLowerCase() === String(row.liveId).toLowerCase()) return true;
+            return Boolean(projectName) && Boolean(saved.projectName) && saved.projectName.trim().toLowerCase() === projectName;
+          });
+        };
+        attachmentControl.removeSaved = function (item) { removeSavedAttachment(item); };
+        attachmentControl.dispatchEvent(new Event('gallery-refresh'));
+      }
+      function applyMode() {
+        dialog.classList.toggle('record-new', row.isNew);
+        dialog.setAttribute('aria-label', (row.isNew ? 'Add ' : 'Edit ') + singular);
+        close.textContent = dialog.closest('[data-locked="true"]') || card.closest('[data-locked="true"]') ? 'Close' : (row.isNew ? 'Add ' : 'Save ') + singular;
+      }
+      applyMode();
       collection.rows.push(row);
       collection.editors.appendChild(dialog);
-      close.addEventListener('click', function () { dialog.close(); refreshCollection(collection); refreshRelatedData(); });
-      dialog.addEventListener('close', function () { refreshCollection(collection); });
-      remove.addEventListener('click', function () {
-        if (!window.confirm('Remove this ' + collection.definition.singular + ' and its entered details?')) return;
+      function removeRow() {
         collection.rows = collection.rows.filter(function (item) { return item !== row; });
         fieldGroups = fieldGroups.filter(function (item) { return item !== group; });
         dialog.close();
@@ -1936,7 +2409,46 @@
         refreshCollection(collection);
         refreshRelatedData();
         collection.add.focus();
-        report('profile-status', 'Removed from the current form. Submit your changes for review when ready.');
+      }
+      function hasEnteredValues() {
+        return Object.keys(readFields(group.node)).some(function (key) {
+          var value = readFields(group.node)[key];
+          return Array.isArray(value) ? value.length > 0 : String(value === undefined || value === null ? '' : value).trim() !== '';
+        });
+      }
+      async function dismiss() {
+        if (!row.isNew) { dialog.close(); return; }
+        if (hasEnteredValues()) {
+          var discard = await portalDialog({
+            title: 'Discard this ' + singular + '?',
+            message: 'The details you entered will be lost.',
+            confirmLabel: 'Discard',
+            danger: true
+          });
+          if (!discard) return;
+        }
+        removeRow();
+      }
+      close.addEventListener('click', function () {
+        row.isNew = false;
+        applyMode();
+        dialog.close();
+        refreshCollection(collection);
+        refreshRelatedData();
+      });
+      closeX.addEventListener('click', dismiss);
+      cancel.addEventListener('click', dismiss);
+      dialog.addEventListener('cancel', function (event) { event.preventDefault(); dismiss(); });
+      dialog.addEventListener('close', function () { refreshCollection(collection); });
+      remove.addEventListener('click', async function () {
+        var confirmed = await portalDialog({
+          title: 'Remove ' + singular + '?',
+          message: 'This removes the ' + singular + ' and all the details you entered for it.',
+          confirmLabel: 'Remove',
+          danger: true
+        });
+        if (!confirmed) return;
+        removeRow();
       });
       card.addEventListener('input', function () { refreshCollection(collection); });
       card.addEventListener('change', function () { refreshCollection(collection); });
@@ -1956,7 +2468,7 @@
       var count = element('p', 'collection-count');
       count.setAttribute('aria-live', 'polite');
       section.appendChild(count);
-      var empty = element('p', 'empty-state', 'No ' + definition.title.toLowerCase() + ' added yet.');
+      var empty = element('p', 'empty-state', 'No ' + definition.title.split(' ').map(function (word) { return word === word.toUpperCase() ? word : word.toLowerCase(); }).join(' ') + ' added yet.');
       section.appendChild(empty);
       var list = element('div', 'record-list');
       section.appendChild(list);
@@ -1976,7 +2488,6 @@
     document.getElementById('panel-3').insertBefore(collections.offices.section, collections.contacts.section);
     document.getElementById('panel-3').insertBefore(collections.shareholders.section, collections.contacts.section);
     collections.contacts.section.querySelector('h2').textContent = 'Contacts — click a name to view or edit';
-    document.getElementById('panel-4').appendChild(element('p', 'region-help', 'GFA (m²) is required for non-hotel projects; Keys is required for hotels. Completion year is required only once a project is Completed.'));
 
     // Prefill every collection from the staged asc_after rows. Contacts go first: offices
     // reference them as leaders by local row id, which is regenerated on load, so the old ids are
@@ -2050,6 +2561,7 @@
     }
     addShare.addEventListener('change', function () { if (this.value) addShareRegion(this.value); });
     financialPanel.appendChild(addShare);
+    enhanceSelect(addShare);
     refreshSharePicker();
     var revenueWarning = element('p', 'portal-status');
     revenueWarning.id = 'revenue-warning';
@@ -2108,6 +2620,7 @@
         container.querySelector('select').focus();
       });
       container.appendChild(select);
+      enhanceSelect(select);
     }
 
     var manageRegions = element('button', 'text-button', 'Add offices and contacts to establish region eligibility');
@@ -2146,9 +2659,34 @@
     function allFiles() {
       var projectFiles = collections.projects.rows.flatMap(function (row) {
         var values = readFields(row.group.node);
-        return values.attachment ? [{ id: row.id + '-file', file: values.attachment, documentType: 'References', projectId: row.id, control: fieldIn(row.group, 'attachment'), projectName: values.name || 'Untitled project' }] : [];
+        return (values.attachment || []).map(function (file, index) {
+          return { id: row.id + '-file-' + index, file: file, documentType: 'References', projectId: row.id, projectLiveId: row.liveId || null, control: fieldIn(row.group, 'attachment'), projectName: values.name || 'Untitled project' };
+        });
       });
       return attachments.concat(projectFiles);
+    }
+
+    // Only Draft files can be removed (Submitted/Accepted/Rejected/Seeded are with the reviewers). The list only ever holds
+    // this consultant's own files.
+    async function removeSavedAttachment(saved) {
+      if (!isRemovableAttachment(saved)) return;
+      var confirmed = await portalDialog({ title: 'Remove file?', message: 'Remove "' + (saved.name || 'this file') + '"? It will no longer be listed in your portal.', confirmLabel: 'Remove', danger: true });
+      if (!confirmed) return;
+      try {
+        await portalService.deleteAttachment(saved.liveId);
+      } catch (error) {
+        if (attachmentMessage) attachmentMessage.textContent = 'The file could not be removed. Please try again.';
+        try { console.warn('[ascentis] attachment delete failed', error); } catch (ignored) {}
+        return;
+      }
+      var at = existingAttachments.indexOf(saved);
+      if (at >= 0) existingAttachments.splice(at, 1);
+      if (attachmentMessage) attachmentMessage.textContent = 'File removed.';
+      renderAttachments();
+      collections.projects.rows.forEach(function (projectRow) {
+        var control = fieldIn(projectRow.group, 'attachment');
+        if (control) control.dispatchEvent(new Event('gallery-refresh'));
+      });
     }
 
     function renderAttachments() {
@@ -2166,7 +2704,9 @@
         var locked = saved.status === 'Accepted' || saved.status === 'Rejected' || saved.status === 'Seeded';
         tr.appendChild(element('td', '', (saved.status || '—') + (locked ? ' (locked)' : '')));
         tr.appendChild(element('td', '', saved.sizeMb ? saved.sizeMb.toFixed(1) + ' MB' : '—'));
-        tr.appendChild(element('td'));
+        var savedAction = element('td', 'row-action');
+        if (isRemovableAttachment(saved)) savedAction.appendChild(trashButton('Delete ' + (saved.name || 'file'), function () { removeSavedAttachment(saved); }));
+        tr.appendChild(savedAction);
         table.body.appendChild(tr);
       });
       files.forEach(function (item) {
@@ -2191,24 +2731,29 @@
         select.id = 'document-type-' + item.id;
         select.setAttribute('aria-label', 'Document type for ' + item.file.name);
         setOptions(select, liveLists.DocumentTypes || schema.documentTypes);
+        if (select.options[0] && select.options[0].value === '') select.options[0].textContent = 'Select document type';
         select.value = item.documentType || '';
         select.disabled = Boolean(item.projectId);
         select.addEventListener('change', function () { item.documentType = this.value; });
-        typeCell.appendChild(select); tr.appendChild(typeCell);
+        typeCell.appendChild(select);
+        enhanceSelect(select);                    // same themed dropdown as everywhere else (floating list, never clipped by the table)
+        tr.appendChild(typeCell);
         tr.appendChild(element('td', '', item.exampleDate || 'Not uploaded'));
         tr.appendChild(element('td', '', 'Not saved yet'));
         tr.appendChild(element('td', '', (item.file.size / 1000000).toFixed(1) + ' MB'));
-        var action = element('td');
-        var remove = element('button', 'text-button', 'Delete');
-        remove.type = 'button';
-        remove.setAttribute('aria-label', 'Delete ' + item.file.name);
-        remove.addEventListener('click', function () {
-          if (item.control) item.control.value = '';
+        var action = element('td', 'row-action');
+        action.appendChild(trashButton('Delete ' + item.file.name, function () {
+          if (item.control) {
+            // Remove only this file from the project's multi-file input.
+            var keep = new DataTransfer();
+            Array.from(item.control.files).forEach(function (file) { if (file !== item.file) keep.items.add(file); });
+            item.control.files = keep.files;
+          }
           else attachments = attachments.filter(function (file) { return file !== item; });
           renderAttachments();
           uploadButton.focus();
-        });
-        action.appendChild(remove); tr.appendChild(action); table.body.appendChild(tr);
+        }));
+        tr.appendChild(action); table.body.appendChild(tr);
       });
       attachmentList.appendChild(table.wrap);
       if (!files.length && !(typeof existingAttachments !== 'undefined' && existingAttachments.length)) attachmentList.appendChild(element('p', 'empty-state', 'No documents selected.'));
@@ -2240,13 +2785,20 @@
     form.addEventListener('change', function (event) {
       if (event.target.closest('#panel-1')) refreshFinancial();
       if (event.target.closest('#panel-3, #panel-4')) refreshRelatedData();
-      if (event.target.type === 'file' && event.target !== uploadInput && event.target.files[0]) {
-        var error = profileRules.fileError(event.target.files[0], schema.limits.fileBytes);
-        if (error) {
-          event.target.value = '';
-          report('profile-status', error + ' Please choose a smaller file.');
-          renderAttachments();
+      if (event.target.type === 'file' && event.target !== uploadInput && event.target.files.length) {
+        // Keep the valid files, drop (and report) the ones that are too large.
+        var errors = [];
+        var valid = new DataTransfer();
+        Array.from(event.target.files).forEach(function (file) {
+          var error = profileRules.fileError(file, schema.limits.fileBytes);
+          if (error) errors.push(error); else valid.items.add(file);
+        });
+        if (errors.length) {
+          event.target.files = valid.files;
+          report('profile-status', errors.join(' ') + ' Please choose a smaller file.');
+          event.target.dispatchEvent(new Event('gallery-refresh'));
         }
+        renderAttachments();
       }
     });
 
@@ -2266,7 +2818,7 @@
       });
       var shares = readFields(regionShares.node);
       revenueRegionNames.forEach(function (region, index) { payload.revenueByRegion[region] = shares['region-' + index]; });
-      payload.files = allFiles().map(function (item) { return { file: item.file, documentType: item.documentType, projectId: item.projectId || null }; });
+      payload.files = allFiles().map(function (item) { return { file: item.file, documentType: item.documentType, projectId: item.projectId || null, projectName: item.projectId ? item.projectName : '', projectLiveId: item.projectLiveId || null }; });
       return payload;
     }
 
@@ -2275,7 +2827,11 @@
       if (panel) activate(Number(panel.id.split('-')[1]));
       var dialog = control.closest('dialog');
       if (dialog && !dialog.open) dialog.showModal();
-      if (control.multiple) control.closest('.form-field').querySelector('.multi-picker>.text-button').focus();
+      if (control.multiple) {
+        var picker = control.closest('.form-field').querySelector('.multi-picker');
+        var target = picker.classList.contains('multi-inline') ? (picker.querySelector('input') || picker) : picker.querySelector('.text-button');
+        target.focus();
+      }
       else control.focus();
     }
 
@@ -2370,39 +2926,12 @@
 
     // "Are you sure?" step before the final submit. Cancel is the default focus so an accidental Enter does not
     // submit; Esc or the backdrop-less Cancel button closes without sending anything.
-    var submitConfirmDialog = null;
     function confirmSubmit() {
-      return new Promise(function (resolve) {
-        if (!submitConfirmDialog) {
-          var dlg = element('dialog', 'record-dialog confirm-dialog');
-          dlg.setAttribute('aria-labelledby', 'confirm-submit-title');
-          var title = element('h2', 'confirm-title', 'Submit for review?');
-          title.id = 'confirm-submit-title';
-          var text = element('p', '', 'Are you sure you want to submit your profile for review? Once submitted, the data cannot be changed.');
-          var actions = element('div', 'confirm-actions', '');
-          var cancel = element('button', 'portal-button', 'Cancel');
-          cancel.type = 'button';
-          var ok = element('button', 'portal-button portal-button-primary', 'Yes, submit');
-          ok.type = 'button';
-          actions.appendChild(cancel);
-          actions.appendChild(ok);
-          dlg.appendChild(title);
-          dlg.appendChild(text);
-          dlg.appendChild(actions);
-          root.appendChild(dlg);
-          dlg.confirmed = false;
-          ok.addEventListener('click', function () { dlg.confirmed = true; dlg.close(); });
-          cancel.addEventListener('click', function () { dlg.confirmed = false; dlg.close(); });
-          submitConfirmDialog = dlg;
-        }
-        var dialogNode = submitConfirmDialog;
-        dialogNode.confirmed = false;
-        dialogNode.addEventListener('close', function onClose() {
-          dialogNode.removeEventListener('close', onClose);
-          resolve(dialogNode.confirmed === true);
-        });
-        dialogNode.showModal();
-        dialogNode.querySelector('.portal-button:not(.portal-button-primary)').focus();
+      return portalDialog({
+        title: 'Submit for review?',
+        message: 'Are you sure you want to submit your profile for review? Once submitted, the data cannot be changed.',
+        confirmLabel: 'Yes, submit',
+        focus: 'cancel'
       });
     }
 
@@ -2431,6 +2960,10 @@
         });
         (result.shareholders || []).forEach(function (item) {
           var row = collections.shareholders.rows.find(function (r) { return r.id === item.clientId; });
+          if (row && item.liveId) row.liveId = item.liveId;
+        });
+        (result.projects || []).forEach(function (item) {
+          var row = collections.projects.rows.find(function (r) { return r.id === item.clientId; });
           if (row && item.liveId) row.liveId = item.liveId;
         });
         (result.bimProjects || []).forEach(function (item) {
@@ -2496,12 +3029,15 @@
         Array.from(panel.children).forEach(function (child) {
           if (child === banner) return;
           if (child.classList.contains('collection-section')) {
-            child.querySelectorAll('.form-field, .add-record, .remove-record').forEach(function (node) { node.setAttribute('inert', ''); });
-            // Record cards open in a modal dialog: keep only its Done button live so a submitted
-            // record can be viewed but nothing inside it (fields, pickers, Remove) can change.
+            child.querySelectorAll('.form-field, .add-record, .remove-record, .icon-button').forEach(function (node) { node.setAttribute('inert', ''); });
+            // Record cards open in a modal dialog: keep only its title, close (x) and action bar live (the bar's
+            // Remove is already inert above and its primary button reads "Close") so a submitted record can be
+            // viewed but nothing inside it (fields, pickers, Remove) can change.
             child.querySelectorAll('.record-card').forEach(function (card) {
+              var primary = card.querySelector('.close-editor');
+              if (primary) primary.textContent = 'Close';
               Array.from(card.children).forEach(function (part) {
-                if (part.tagName !== 'LEGEND' && !part.classList.contains('close-editor')) part.setAttribute('inert', '');
+                if (part.tagName !== 'LEGEND' && !part.classList.contains('record-x') && !part.classList.contains('record-footer')) part.setAttribute('inert', '');
               });
             });
           }
@@ -2544,7 +3080,11 @@
         Array.from(control.options).forEach(function (option) { option.selected = item[1].includes(option.value); });
         control.refreshMulti();
       });
-      addRecord('projects', {name:'Lagoon Resort', country:'AE', region:'Middle East', disciplines:['Architecture'], type:'Hotel', keys:'320', status:'Completed', startYear:'2021', completionYear:'2024'});
+      // Sample of a project whose files are already saved (shown as read-only tiles in its popup).
+      existingAttachments.push({ liveId: 'sample-att-3', name: 'Lagoon-from-app.txt', sizeMb: 0, status: '', documentType: '', projectLiveId: 'sample-project-1' });
+      existingAttachments.push({ liveId: 'sample-att-2', name: 'Lagoon-draft-plan.pdf', sizeMb: 1.1, status: 'Draft', documentType: 'References', projectLiveId: 'sample-project-1' });
+      existingAttachments.push({ liveId: 'sample-att-1', name: 'Lagoon-brochure.pdf', sizeMb: 2.4, status: 'Submitted', documentType: 'References', projectLiveId: 'sample-project-1' });
+      addRecord('projects', {name:'Lagoon Resort', country:'AE', region:'Middle East', disciplines:['Architecture'], type:'Hotel', keys:'320', status:'Completed', startYear:'2021', completionYear:'2024'}, false, 'sample-project-1');
       addRecord('projects', {name:'Marina Mixed-use Tower', country:'AE', region:'Middle East', disciplines:['Architecture'], type:'Mixed-use', gfa:'92000', status:'In progress', startYear:'2024'});
       liveLists.Operators = ['Hilton', 'Hyatt', 'Marriott'];
       addRecord('operatorApprovals', {operator:'Marriott', disciplines:['Architecture'], regions:['Middle East'], brands:'JW Marriott, Autograph'});
@@ -2571,7 +3111,7 @@
       renderAttachments();
       Object.keys(choices).forEach(renderTags);
       refreshFinancial();
-      document.getElementById('acknowledged-date').textContent = 'Confidentiality statement acknowledged on 8 Jun 2026.';
+      document.getElementById('acknowledged-date').textContent = 'Confidentiality acknowledged on 8 Jun 2026';
       document.getElementById('preview-screen').addEventListener('change',function () { show(this.value,true); });
       document.getElementById('submission-preview-note').hidden = false;
       document.getElementById('sign-out').addEventListener('click',function (event) { event.preventDefault(); show('signin',true); });

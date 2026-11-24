@@ -54,13 +54,30 @@
 .profile-tabs button[aria-selected=true] { border-bottom-color:var(--portal-accent); color:var(--portal-text); font-weight:600; }
 .profile-card { padding:18px 20px; }
 .field-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-.profile-card select { appearance:none; }
+/* Dropdowns: one consistent look - custom chevron, hover/focus states, muted placeholder, disabled state.
+   (The share picker, attachment-table selects and the hidden native multi-select keep their own styling.) */
+.profile-card select:not([multiple]):not(.share-picker) {
+  appearance:none; -webkit-appearance:none; cursor:pointer; padding-right:40px; background-color:#fff;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23697fa5' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 15px center; background-size:12px 8px;
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.profile-card select:not([multiple]):not(.share-picker):hover { border-color:var(--portal-secondary); }
+.profile-card select:not([multiple]):not(.share-picker):focus-visible { outline:none; border-color:var(--portal-accent); box-shadow:0 0 0 3px #287d1730; }
+.profile-card select:not([multiple]):not(.share-picker):has(option[value=""]:checked) { color:var(--portal-muted); }
+.profile-card select:not([multiple]):not(.share-picker):disabled { cursor:not-allowed; color:var(--portal-muted); background-color:#f3f4f7; border-color:#dde1ea; }
+.profile-card select option { color:var(--portal-text); }
 .required { color:#ae3546; margin-left:4px; }
 .tag-field { margin-top:12px; }
 .tag-list { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:5px; }
 .tag { border:0; border-radius:20px; padding:4px 11px; font:12px/18px Arial,Helvetica,sans-serif; color:var(--portal-text); background:#dffa9f; cursor:pointer; }
 .tag:nth-child(2) { background:#d3e0da; }.tag:nth-child(3) { background:#b0e09c; }
-.tag-list select { width:auto; max-width:200px; min-height:28px; padding:3px; }
+/* "+ Add ..." pickers beside the chips: a soft green pill instead of a cramped native select. */
+.profile-card .tag-list select, .profile-card select.share-picker { appearance:none; -webkit-appearance:none; cursor:pointer; width:auto; min-width:160px; max-width:220px; min-height:32px; padding:4px 36px 4px 14px; border-radius:999px; border-color:var(--portal-button-border); background-color:var(--portal-button-background); color:var(--portal-accent); font:600 13px Arial,Helvetica,sans-serif;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' fill='none' stroke='%23287d17' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position:right 13px center; background-size:11px 7px; }
+.profile-card .tag-list select:hover, .profile-card select.share-picker:hover { border-color:var(--portal-accent); background-color:#dff3d2; }
+.profile-card .tag-list select:not([multiple]):has(option[value=""]:checked), .profile-card select.share-picker:has(option[value=""]:checked) { color:var(--portal-accent); }
 .region-help { color:var(--portal-muted); font-style:italic; margin:8px 0 0; }
 .profile-actions { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-top:22px; color:var(--portal-muted); }
 .submission-card { text-align:center; padding:40px; }
@@ -74,8 +91,9 @@
 .field-help { display:block; color:#61718f; font-size:12px; margin-top:5px; overflow-wrap:anywhere; }
 .field-error { display:block; color:#a12638; font-size:13px; margin-top:5px; }
 .form-field:has(textarea), .form-field:has(select[multiple]) { grid-column:1/-1; }
-.profile-card select { appearance:auto; }
 .profile-card select[multiple] { min-height:112px; }
+#panel-1>.dd-pill, #panel-1>select.share-picker { margin-top:8px; }
+#panel-1 .dd-pill .dd-menu { min-width:220px; }
 .profile-card textarea { resize:vertical; }
 .profile-card input[type=file] { white-space:normal; max-width:100%; }
 .profile-card [aria-invalid=true] { border-color:#a12638; background:#fff8f8; }
@@ -84,7 +102,9 @@
 .money-control input { padding-left:28px !important; }
 .section-description { color:#61718f; margin:0 0 20px; }
 .collection-section { margin:0 0 26px; }
-.collection-section + .collection-section { padding-top:24px; border-top:1px solid #e2e5eb; }
+/* No divider line between stacked sections (e.g. Regional offices / Shareholders); spacing only, as a top margin so the
+   "+ Add ..." button stays level with its heading. */
+.collection-section + .collection-section { margin-top:28px; padding-top:0; border-top:0; }
 .collection-count { color:#61718f; font-size:12px; margin:-10px 0 14px; }
 .record-card { border:1px solid #dce1e8; border-radius:8px; padding:16px; margin:0 0 16px; min-width:0; }
 .record-card legend { font-weight:600; padding:0 6px; font-size:14px; overflow-wrap:anywhere; }
@@ -95,7 +115,7 @@
 .error-summary ul { margin-bottom:0; padding-left:20px; }
 .error-summary .text-button { color:#a12638; text-align:left; text-decoration:underline; margin:4px 0; }
 .tag-ineligible { outline:1px solid #a12638; }
-.tag-list .tag-picker { max-width:100%; }
+.profile-card .tag-list .tag-picker { max-width:220px; }
 .attachment-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
 .attachment-card { border:1px solid #dce1e8; border-radius:8px; padding:14px; overflow-wrap:anywhere; }
 .attachment-card label { margin-top:12px; }
@@ -123,7 +143,7 @@
 [data-section=financial]>h2 { display:none; }
 [data-section=financial]>.field-grid>[data-key=backlog] { grid-column:1/-1; }
 [data-section=legal]>.field-grid>[data-type=yesno], [data-section=sustainability]>.field-grid>.form-field { grid-column:1/-1; }
-[data-section=legal] [data-type=yesno]>select,[data-section=sustainability] [data-type=yesno]>select { max-width:180px; }
+[data-section=legal] [data-type=yesno]>select,[data-section=sustainability] [data-type=yesno]>select,[data-section=legal] [data-type=yesno]>.dd,[data-section=sustainability] [data-type=yesno]>.dd { max-width:180px; }
 [data-section=sustainability] [data-type=integer]>input { max-width:180px; }
 [data-section=bim]>.collection-section { margin-top:24px; }
 .revenue-shares { display:block; }
@@ -132,7 +152,6 @@
 .revenue-shares>.form-field:after { content:'%'; color:var(--portal-muted); }
 .revenue-shares .field-help,.revenue-shares .field-error:empty { display:none; }
 .revenue-shares .field-error { grid-column:1/-1; }
-.consultant-portal .share-picker { width:auto; max-width:240px; color:var(--portal-accent); border:0; margin-top:6px; padding-left:0; background:transparent; }
 .derived-value { padding:0; background:none; }
 .collection-section { position:relative; margin-bottom:20px; }
 .collection-count { position:absolute; right:0; top:24px; font-size:10px; margin:0; }
@@ -141,12 +160,12 @@
 [data-collection=contacts] { border:0 !important; padding-top:4px !important; }
 [data-collection=contacts] h2 { font-size:14px; color:var(--portal-muted); font-weight:400; }
 [data-collection=contacts] .collection-count { display:none; }
-[data-collection=contacts]>.add-record { position:static; margin-top:12px; }
 [data-collection=contacts]>.record-list { display:inline; }
 [data-collection=shareholders] .collection-count { display:none; }
 .shareholder-table .portal-table th:nth-child(2),.shareholder-table .portal-table td.equity-cell { text-align:right; width:110px; }
 .shareholder-table .portal-table td.row-action { width:44px; text-align:right; }
 .shareholder-table .portal-table td:first-child { min-width:0; }
+.portal-table td.row-action { width:44px; text-align:right; padding-left:4px; }
 .contact-name-link { color:var(--portal-accent); font-weight:600; text-decoration:underline; }
 .icon-button { border:0; background:none; padding:4px; color:var(--portal-muted); cursor:pointer; line-height:0; }
 .icon-button:hover { color:var(--portal-text); }
@@ -154,15 +173,57 @@
 .contact-link { margin:0 7px 0 0; padding-right:7px; border-right:1px solid #bdc7b5; }
 .office-summary { display:block; width:100%; padding:16px; margin-bottom:20px; border:1px solid #dce1e8; border-radius:8px; background:white; color:var(--portal-text); font:inherit; text-align:left; cursor:pointer; }
 .office-summary:hover { background:#fafcf7; }
-.office-summary-top { display:flex; justify-content:space-between; gap:14px; margin-bottom:10px; }
+.office-summary-top { display:flex; justify-content:space-between; gap:14px; margin-bottom:10px; font-weight:600; }
+/* The Contacts heading carries 4px of top padding; keep its "+ add contact" level with it (top-right like the other sections). */
+[data-collection=contacts]>.add-record { top:4px; }
 .record-dialog { max-width:760px; width:calc(100% - 32px); max-height:85vh; overflow:auto; border:1px solid #c9d3c1; border-radius:12px; padding:20px; color:var(--portal-text); background:white; }
 .record-dialog::backdrop { background:#14281d66; }
 .record-dialog .record-card { border:0; padding:0; margin:0; }
 .close-editor { float:right; margin-top:14px; }
+/* Record popups (add / edit a project, contact, office, BIM project ...): title + close (x) on top, the fields, and an
+   action bar (Cancel / Add <name>, or Remove / Save <name> for an existing record) pinned to the bottom. */
+.record-dialog.record-popup { max-width:720px; padding:0; border:0; border-radius:16px; box-shadow:0 20px 50px #00143e40; }
+.record-popup[open] { animation:portal-dialog-in .16s ease-out; }
+@media (prefers-reduced-motion:reduce) { .record-popup[open] { animation:none; } }
+.record-popup .record-card { position:relative; }
+.record-popup .record-title { float:left; box-sizing:border-box; width:calc(100% - 64px); margin:0; padding:22px 24px 6px; font-size:18px; font-weight:700; letter-spacing:-.2px; color:var(--portal-text); }
+.record-x { position:absolute; top:14px; right:16px; display:flex; align-items:center; justify-content:center; width:36px; height:36px; padding:0; border:0; border-radius:8px; background:transparent; color:#58719c; cursor:pointer; }
+.record-x:hover, .record-x:focus-visible { background:#eef1f7; color:var(--portal-text); outline:none; }
+.record-popup .field-grid { clear:both; padding:14px 24px 26px; gap:18px 20px; }
+.record-popup .form-field>label { margin-bottom:6px; font-size:13px; font-weight:600; color:#3a4a6b; }
+.record-popup input::placeholder, .record-popup textarea::placeholder { color:#8d97ae; opacity:1; }
+.record-popup .field-help { margin-top:4px; font-size:12px; color:#8d97ae; }
+.record-footer { position:sticky; bottom:0; clear:both; display:flex; align-items:center; justify-content:flex-end; gap:12px; padding:16px 24px; background:#f6f5ee; border-radius:0 0 16px 16px; }
+.record-footer .remove-record { margin:0 auto 0 0; font-weight:600; }
+.record-footer .record-cancel { border-color:transparent; background:transparent; font-weight:600; color:var(--portal-text); }
+.record-footer .record-cancel:hover { background:#ebe9dd; filter:none; }
+.record-footer .close-editor { float:none; margin:0; min-height:42px; padding:10px 22px; border-color:#2d6a1b; background:#2d6a1b; color:#fff; font-weight:600; }
+.record-footer .close-editor:hover, .record-footer .close-editor:focus-visible { background:#245815; border-color:#245815; filter:none; }
+.record-popup.record-new .remove-record, .record-popup:not(.record-new) .record-cancel { display:none; }
+/* Multi-select choices (disciplines, regions, office leaders) are shown inline as checkboxes inside a popup. */
+.multi-inline .multi-chips, .multi-inline>.text-button { display:none; }
+.multi-inline { display:block; margin:2px 0 0; }
+.multi-inline .multi-options { position:static; display:flex; flex-wrap:wrap; gap:8px 28px; min-width:0; max-width:none; max-height:none; padding:0; border:0; box-shadow:none; background:transparent; overflow:visible; }
+.multi-inline .profile-card .multi-option, .record-popup .multi-option { padding:4px 0; border-radius:0; }
+.record-popup .multi-option:hover { background:transparent; }
+.record-popup .multi-option input { width:20px; height:20px; }
+@media (max-width:600px) { .record-footer { flex-wrap:wrap; padding:14px 16px; } .record-popup .record-title { padding:18px 16px 6px; } .record-popup .field-grid { padding:12px 16px 22px; } }
 .confirm-dialog { max-width:480px; }
 .confirm-dialog .confirm-title { margin:0 0 10px; font-size:22px; }
 .confirm-dialog p { margin:0 0 18px; line-height:1.5; }
 .confirm-actions { display:flex; justify-content:flex-end; gap:12px; }
+/* Themed confirmation / notice modal (portalDialog in form-fields.js) - replaces the browser's own confirm()/alert(). */
+.portal-dialog { max-width:440px; padding:28px 28px 24px; border:0; border-radius:16px; box-shadow:0 20px 50px #00143e40; overflow:visible; }
+.portal-dialog[open] { animation:portal-dialog-in .16s ease-out; }
+@keyframes portal-dialog-in { from { opacity:0; transform:translateY(8px) scale(.98); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce) { .portal-dialog[open] { animation:none; } }
+.portal-dialog-icon { display:flex; align-items:center; justify-content:center; width:44px; height:44px; margin:0 0 14px; border-radius:50%; background:var(--portal-button-background); border:1px solid var(--portal-button-border); color:var(--portal-accent); font:700 22px/1 Arial,Helvetica,sans-serif; }
+.portal-dialog-danger .portal-dialog-icon { background:#fbe9e9; border-color:#e0a3a3; color:#a12638; }
+.portal-dialog .confirm-title { margin:0 0 8px; font-size:20px; color:var(--portal-text); }
+.portal-dialog p { margin:0 0 22px; color:#3a4a6b; font-size:15px; line-height:1.55; }
+.portal-dialog .confirm-actions .portal-button { min-width:96px; }
+.portal-button-danger { background:#fbe9e9; border-color:#e0a3a3; color:#a12638; font-weight:600; }
+.portal-button-danger:hover, .portal-button-danger:focus-visible { background:#f6d6d6; border-color:#c97a7a; filter:none; }
 .table-scroll { overflow-x:auto; width:100%; }
 .portal-table { width:100%; border-collapse:collapse; font-size:14px; text-align:left; }
 .portal-table th { padding:12px; background:#e5f8ab; color:#5b7062; font-size:12px; font-weight:500; white-space:nowrap; }
@@ -176,14 +237,48 @@
 #panel-8>.upload-button { position:absolute; top:0; right:0; }
 /* A locked Attachments tab cannot take uploads; hiding the button also stops it overlapping the status pill. */
 #panel-8.tab-locked>.upload-button { display:none; }
-#panel-8 .portal-table select { min-width:140px; border:0; padding:0; background:transparent; }
+/* Document type in the attachments table: same dropdown look as every other dropdown, sized for a table cell. */
+#panel-8 .portal-table .dd, #panel-8 .portal-table select { min-width:210px; }
+#panel-8 .portal-table .dd-button { min-height:38px; padding-top:7px; padding-bottom:7px; }
 #panel-8>.region-help,#panel-4>.region-help { margin-top:26px; }
 .visually-hidden,.consultant-portal .native-multi { position:absolute !important; width:1px !important; height:1px !important; min-height:0 !important; padding:0 !important; margin:-1px !important; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 .multi-picker { position:relative; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:6px 0; }
 .multi-chips { display:contents; }
-.multi-options { position:absolute; top:100%; left:0; min-width:220px; max-width:100%; max-height:200px; overflow:auto; padding:12px; background:white; border:1px solid #dce1e8; border-radius:8px; box-shadow:0 4px 18px #00143e20; z-index:3; }
-.profile-card .multi-option { display:flex; align-items:center; gap:10px; color:var(--portal-text); margin:8px 0; }
-.multi-option input { width:16px; height:16px; accent-color:var(--portal-accent); }
+/* Themed single-select dropdown (see enhanceSelect in form-fields.js): a button + listbox that mirrors the visually hidden
+   native <select>. Only used on devices with a mouse; touch devices keep the native picker. */
+.dd { position:relative; }
+.dd>select { position:absolute !important; width:1px !important; height:1px !important; min-height:0 !important; padding:0 !important; margin:-1px !important; overflow:hidden; clip-path:inset(50%); opacity:0; pointer-events:none; }
+.dd-button { position:relative; display:flex; align-items:center; width:100%; min-height:41px; padding:9px 40px 9px 12px; text-align:left; font:14px Arial,Helvetica,sans-serif; color:var(--portal-text); background:#fff; border:1px solid var(--portal-input-border); border-radius:8px; cursor:pointer; transition:border-color .15s ease, box-shadow .15s ease; }
+.dd-button::after { content:""; position:absolute; right:15px; top:50%; width:12px; height:8px; margin-top:-4px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23697fa5' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px 8px no-repeat; transition:transform .15s ease; }
+.dd-open .dd-button::after { transform:rotate(180deg); }
+.dd-text { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dd-button:hover { border-color:var(--portal-secondary); }
+.dd-button:focus-visible, .dd-open .dd-button { outline:none; border-color:var(--portal-accent); box-shadow:0 0 0 3px #287d1730; }
+.dd-button.dd-placeholder { color:var(--portal-muted); }
+.dd-button[aria-disabled=true] { cursor:not-allowed; color:var(--portal-muted); background:#f3f4f7; border-color:#dde1ea; }
+.dd-button[aria-invalid=true] { border-color:#a12638; background:#fff8f8; }
+/* Menus are position:fixed and placed by placeMenu() (form-fields.js) so scrolling dialogs/panels never clip them. */
+.dd-menu { position:fixed; left:0; top:0; max-width:min(520px, calc(100vw - 16px)); max-height:260px; overflow:auto; padding:6px; background:#fff; border:1px solid #d5dde8; border-radius:10px; box-shadow:0 8px 24px #00143e26; z-index:2147483000; }
+.dd-option { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:9px 12px; border-radius:6px; font:14px Arial,Helvetica,sans-serif; line-height:1.35; color:var(--portal-text); cursor:pointer; }
+.dd-option[data-active=true], .dd-option:hover { background:#f1f7ec; }
+.dd-option[aria-selected=true] { font-weight:600; }
+.dd-option[aria-selected=true]::after { content:""; flex:none; width:14px; height:10px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='10' viewBox='0 0 14 10'%3E%3Cpath d='M1.5 5.2l3.8 3.8L12.5 1.5' fill='none' stroke='%23287d17' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px 10px no-repeat; }
+.dd-option.dd-empty { color:var(--portal-muted); }
+.dd-option[aria-disabled=true] { color:var(--portal-muted); cursor:not-allowed; background:none; }
+/* Pill variant for the "+ Add disciplines / sectors / regions" pickers beside the chips. */
+.dd-pill { display:inline-block; }
+.dd-pill .dd-button { width:auto; min-width:170px; max-width:240px; min-height:32px; padding:4px 36px 4px 14px; border-color:var(--portal-button-border); border-radius:999px; background:var(--portal-button-background); color:var(--portal-accent); font:600 13px Arial,Helvetica,sans-serif; }
+.dd-pill .dd-button::after { right:13px; width:11px; height:7px; margin-top:-3px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' fill='none' stroke='%23287d17' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-size:11px 7px; }
+.dd-pill .dd-button:hover { border-color:var(--portal-accent); background:#dff3d2; }
+.dd-pill .dd-menu { min-width:300px; max-width:360px; }
+.dd-pill .dd-option { font-size:13px; }
+/* The checklist menu behind a multi-picker "+ add" button, and the button itself as a matching pill. */
+.multi-picker>.text-button { min-height:32px; padding:4px 16px; border:1px solid var(--portal-button-border); border-radius:999px; background:var(--portal-button-background); color:var(--portal-accent); font:600 13px Arial,Helvetica,sans-serif; text-decoration:none; cursor:pointer; transition:background-color .15s ease, border-color .15s ease; }
+.multi-picker>.text-button:hover { border-color:var(--portal-accent); background:#dff3d2; }
+.multi-options { position:fixed; top:0; left:0; min-width:250px; max-width:min(420px, calc(100vw - 16px)); max-height:240px; overflow:auto; padding:6px; background:white; border:1px solid #d5dde8; border-radius:10px; box-shadow:0 8px 24px #00143e26; z-index:3; }
+.profile-card .multi-option { display:flex; align-items:center; gap:12px; color:var(--portal-text); margin:0; padding:9px 10px; border-radius:6px; font-size:14px; cursor:pointer; }
+.profile-card .multi-option:hover { background:#f1f7ec; }
+.multi-option input { width:18px; height:18px; accent-color:var(--portal-accent); cursor:pointer; }
 .form-field:has(.multi-picker) { position:relative; }
 .field-help:empty { display:none; }
 @media(max-width:600px) {
@@ -208,4 +303,28 @@
 .status-pill-accepted { background:var(--portal-button-background); border-color:var(--portal-button-border); color:var(--portal-accent); }
 .status-pill-rejected { background:#fbe9e9; border-color:#e0a3a3; color:#8f2a2a; }
 .tab-locked [inert] { opacity:.65; }
-.record-dialog .multi-options { position:static; flex:1 0 100%; max-width:none; max-height:180px; margin:0 0 6px; box-shadow:none; }
+
+.file-gallery { list-style:none; margin:10px 0 0; padding:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:8px; }
+.file-gallery[hidden] { display:none; }
+.file-tile { display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--portal-border,#d8deea); border-radius:10px; background:#f7f9fc; min-width:0; }
+.file-tile-icon { flex:none; width:38px; height:38px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:#e3e9f6; color:#34508a; font-size:11px; font-weight:700; }
+.file-tile-meta { display:flex; flex-direction:column; min-width:0; flex:1; }
+.file-tile-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; font-size:13px; }
+.file-tile-size { font-size:12px; color:var(--portal-muted); }
+.file-tile-remove { flex:none; border:0; background:none; font-size:20px; line-height:1; color:var(--portal-muted); cursor:pointer; padding:2px 6px; border-radius:6px; }
+.file-tile-remove:hover, .file-tile-remove:focus-visible { background:#e8ecf5; color:var(--portal-text); outline:none; }
+.record-popup [data-type="file"] { grid-column:1 / -1; }
+
+.field-grid > .field-wide { grid-column:1 / -1; }
+.phone-control { display:flex; gap:10px; align-items:stretch; }
+.phone-control > .dd { flex:0 0 130px; width:130px; }
+.phone-control > input { flex:1; min-width:0; }
+.add-record, .upload-button, .contact-name-link, .table-link { font-weight:700; }
+.portal-table td.empty-state { border:0; border-radius:0; background:transparent; padding:18px 14px; }
+
+/* Acknowledgement sits on the progress-steps row (right side) as a short line instead of a green bar. */
+.portal-content > nav { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:8px 24px; }
+.portal-content > nav .acknowledgement-banner { background:none; padding:0; margin-top:3px; font-size:13px; gap:10px; justify-content:flex-end; }
+.portal-content > nav .acknowledgement-banner[hidden] { display:none; }
+.portal-content > nav .acknowledgement-banner #acknowledged-date::before { content:'\2713\00a0'; }
+@media (max-width:600px) { .portal-content > nav .acknowledgement-banner { flex-direction:row; margin:-30px 0 20px; } }

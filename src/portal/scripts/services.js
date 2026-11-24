@@ -293,6 +293,37 @@
     // pattern as loadLiveChoicesSync(). On any failure the form is simply left blank, as it
     // always was before this existed.
     var existingRecord = null;
+    // Saved attachment rows (incl. project-level files). Loaded on its own, after the other live reads, so a failure in
+    // any of those can never leave this list empty; errors are logged instead of swallowed.
+    // Project files are named '<project name> | <file name>'; returns the project name part ('' for other files).
+    function attachmentProjectName(row) {
+      var file = row.asc_filename || '';
+      var name = row.asc_name || '';
+      var tail = ' | ' + file;
+      return file && name.length > tail.length && name.slice(-tail.length) === tail ? name.slice(0, name.length - tail.length) : '';
+    }
+    function loadExistingAttachmentsSync() {
+      existingAttachments = [];
+      if (!liveConsultantId) return;
+      var token = syncGetVerificationToken();
+      if (!token) return;
+      function belongsToThisConsultant(row) {
+        return row._asc_consultant_id_value && row._asc_consultant_id_value.toLowerCase() === liveConsultantId.toLowerCase();
+      }
+      var attachmentData = syncGetJson('/_api/asc_attachments?$select=asc_attachmentid,asc_name,asc_filename,asc_filesizemb,asc_uploadedon,asc_status,statecode,_asc_documenttype_id_value,_asc_consultant_id_value,_asc_projectreference_id_value', token);
+      // Project-level files have no consultant lookup; they belong to this consultant through their project.
+      var ownProjectIds = [];
+      [(existingRecord && existingRecord.projects) || [], (prefillRecord && prefillRecord.projects) || []].forEach(function (list) {
+        list.forEach(function (project) { if (project.liveId) ownProjectIds.push(String(project.liveId).toLowerCase()); });
+      });
+      existingAttachments = ((attachmentData && attachmentData.value) || []).filter(function (row) {
+        if (row.statecode === 1) return false;   // inactive = removed
+        return belongsToThisConsultant(row) || (row._asc_projectreference_id_value && ownProjectIds.indexOf(row._asc_projectreference_id_value.toLowerCase()) !== -1);
+      }).map(function (row) {
+        return { liveId: row.asc_attachmentid, name: row.asc_filename || '', sizeMb: Number(row.asc_filesizemb) || 0, uploadedOn: row.asc_uploadedon || '', status: ATTACHMENT_STATUS_NAMES[row.asc_status] || '', documentType: row['_asc_documenttype_id_value@OData.Community.Display.V1.FormattedValue'] || '', projectLiveId: row._asc_projectreference_id_value || '', projectName: attachmentProjectName(row) };
+      });
+    }
+
     function loadExistingRecordSync() {
       if (!liveConsultantId) return;
       var token = syncGetVerificationToken();
@@ -419,15 +450,6 @@
           fields: dataverseMapping.reverseRow('projects', row),
           references: { disciplines: disciplinesForProject, type: (typeLink && typeLink.asc_projecttype_id && typeLink.asc_projecttype_id.asc_projecttypename) || '' }
         };
-      });
-
-      var attachmentData = syncGetJson('/_api/asc_attachments?$select=asc_attachmentid,asc_filename,asc_filesizemb,asc_uploadedon,asc_status,asc_documenttype_id,asc_consultant_id,asc_projectreference_id', token);
-      // Project-level files have no consultant lookup; they belong to this consultant through their project.
-      var ownProjectIds = projects.map(function (project) { return project.liveId.toLowerCase(); });
-      existingAttachments = ((attachmentData && attachmentData.value) || []).filter(function (row) {
-        return belongsToThisConsultant(row) || (row._asc_projectreference_id_value && ownProjectIds.indexOf(row._asc_projectreference_id_value.toLowerCase()) !== -1);
-      }).map(function (row) {
-        return { liveId: row.asc_attachmentid, name: row.asc_filename || '', sizeMb: Number(row.asc_filesizemb) || 0, uploadedOn: row.asc_uploadedon || '', status: ATTACHMENT_STATUS_NAMES[row.asc_status] || '', documentType: row['_asc_documenttype_id_value@OData.Community.Display.V1.FormattedValue'] || '' };
       });
 
       existingRecord = { identity: reversed.identity, sections: reversed.sections, revenueByRegion: reversed.revenueByRegion, contacts: contacts, shareholders: shareholders, operatorApprovals: operatorApprovals, bimProjects: bimProjects, projects: projects };
@@ -792,7 +814,8 @@
         },
         'Sustainability': (source.sections && source.sections.sustainability) || {},
         'Attachments': (source.files || []).map(function (item) {
-          return { documentType: item.documentType, projectId: item.projectId, name: item.file && item.file.name };
+          // projectId is a session-local form id; projectName is what identifies the project for the reviewer app.
+          return Object.assign({ documentType: item.documentType, projectId: item.projectId, name: item.file && item.file.name }, item.projectName ? { projectName: item.projectName } : {});
         })
       };
     }
@@ -953,6 +976,8 @@
     async function recordPortalSubmissions(consultantId, payload, status) {
       var after = tabSnapshot(payload);
       var before = tabSnapshot(existingRecord);
+      // The confidentiality acknowledgement is kept with the Identity submission (not on the consultant row).
+      if (pendingAcknowledgement) after.Identity = Object.assign({}, after.Identity, { confidentialityAcknowledgedBy: pendingAcknowledgement.by, confidentialityAcknowledgedOn: pendingAcknowledgement.date });
       for (var i = 0; i < PORTAL_SUBMISSION_TABS.length; i++) {
         var tab = PORTAL_SUBMISSION_TABS[i];
         // A Submitted/Accepted/Rejected tab is locked - saving again would create/overwrite a Draft row.
@@ -1037,7 +1062,8 @@
     function buildAttachmentRequest(entry, ids) {
       var file = entry.file;
       var body = {
-        asc_name: file.name,
+        // Project files are tagged '<project name> | <file name>' (the project row is not created by the portal any more).
+        asc_name: entry.projectName ? entry.projectName + ' | ' + file.name : file.name,
         asc_filename: file.name,
         asc_filesizemb: Math.round((file.size / 1000000) * 1000) / 1000,
         asc_uploadedon: ids.uploadedOn,
@@ -1047,7 +1073,7 @@
       if (ids.uploadedById) body['asc_uploadedby_id@odata.bind'] = '/systemusers(' + ids.uploadedById + ')';
       // Always tied to the consultant (reviewers filter by it); project files are also tied to their project.
       body['asc_consultant_id@odata.bind'] = '/asc_consultants(' + ids.consultantId + ')';
-      if (entry.projectId) body['asc_projectreference_id@odata.bind'] = '/asc_projectreferences(' + entry.projectLiveId + ')';
+      if (entry.projectLiveId) body['asc_projectreference_id@odata.bind'] = '/asc_projectreferences(' + entry.projectLiveId + ')';
       if (ids.documentTypeId) body['asc_documenttype_id@odata.bind'] = '/asc_documenttypes(' + ids.documentTypeId + ')';
       return {
         body: body,
@@ -1070,17 +1096,6 @@
       for (var i = 0; i < files.length; i++) {
         var entry = files[i];
         if (!entry.file || uploadedAttachmentFiles.has(entry.file)) continue;
-        // Project-scoped attachments bind to the live asc_projectreference row saved by saveProjects()
-        // earlier in this same save. If that project could not be saved, skip loudly.
-        if (entry.projectId) {
-          var savedProject = (projectResults || []).find(function (item) { return item.clientId === entry.projectId && item.liveId; });
-          if (!savedProject) {
-            console.warn('[ascentis] project-level attachment not uploaded - its project reference was not saved:', entry.file.name);
-            results.skipped++;
-            continue;
-          }
-          entry = Object.assign({}, entry, { projectLiveId: savedProject.liveId });
-        }
         try {
           var documentTypeId = await resolveReferenceId('asc_documenttypes', 'asc_documenttypeid', entry.documentType);
           var request = buildAttachmentRequest(entry, { consultantId: consultantId, documentTypeId: documentTypeId, uploadedById: auditActorId(), uploadedOn: new Date().toISOString(), status: newStatus });
@@ -1101,7 +1116,7 @@
           }
           uploadedAttachmentFiles.add(entry.file);
           // Track it so a Submit in this same session (no reload) promotes it too.
-          existingAttachments.push({ liveId: attachmentId, name: entry.file.name, sizeMb: request.body.asc_filesizemb, uploadedOn: request.body.asc_uploadedon, status: newStatus, documentType: entry.documentType || '' });
+          existingAttachments.push({ liveId: attachmentId, name: entry.file.name, sizeMb: request.body.asc_filesizemb, uploadedOn: request.body.asc_uploadedon, status: newStatus, documentType: entry.documentType || '', projectLiveId: entry.projectLiveId || '', projectName: entry.projectName || '' });
           results.uploaded++;
         } catch (error) {
           console.warn('[ascentis] attachment write failed', entry.file && entry.file.name, error);
@@ -1138,31 +1153,29 @@
       });
       return Object.assign({}, payload, { collections: collections });
     }
+    // Staging model (decided 23 Nov 2026): Save draft / Submit write ONLY to asc_portalsubmission (one row per tab, the
+    // JSON snapshot the form is rebuilt from) and asc_auditlog. The live tables (consultant, contacts, projects, ...)
+    // are no longer written by the portal - the reviewer app moves accepted data there. Uploaded files are the one
+    // exception: a file cannot live in JSON, so it is stored as an asc_attachment row (Draft until Submit) tied to
+    // the consultant and, for project files, tagged with the project name. The functions that used to write the
+    // live tables (saveConsultant, saveContacts, saveProjects, ...) are kept for reference/tests but are not called.
     async function saveAll(payload, submissionStatus) {
-      var wasNewConsultant = !liveConsultantId;
-      var consultantId = await saveConsultant(payload);
-      await saveChildTables(consultantId, payload);
-      var contacts = await saveContacts(consultantId, payload);
-      // Like operator approvals/projects, never blocks the save (Web API settings or permission may not be deployed yet).
-      var shareholders = [];
-      try { shareholders = await saveShareholders(consultantId, payload); } catch (shareholderError) { console.warn('[ascentis] shareholders write failed', shareholderError); }
-      // Never blocks the save: tables/settings may not be deployed yet (e.g. Web API settings missing).
-      var operatorApprovals = [];
-      try { operatorApprovals = await saveOperatorApprovals(consultantId, payload); } catch (operatorError) { console.warn('[ascentis] operator approvals write failed', operatorError); }
-      var bimProjects = await saveBimProjects(consultantId, payload);
-      // Project references never block the save: a failure here (e.g. Web API settings not deployed
-      // yet) is logged and the staged submission below still carries the project data.
-      var projects = [];
-      try { projects = await saveProjects(consultantId, payload); } catch (projectError) { console.warn('[ascentis] project references write failed', projectError); }
-      await saveConsultantReferences(consultantId, payload);
-      var attachments = await saveAttachments(consultantId, payload, projects, submissionStatus);
-      await recordPortalSubmissions(consultantId, stampLiveIds(payload, { contacts: contacts, shareholders: shareholders, operatorApprovals: operatorApprovals, bimProjects: bimProjects, projects: projects }), submissionStatus);
+      if (!liveConsultantId) throw new Error('No consultant record is linked to this account, so the profile cannot be saved.');
+      var consultantId = liveConsultantId;
+      var attachments = await saveAttachments(consultantId, payload, [], submissionStatus);
+      await recordPortalSubmissions(consultantId, payload, submissionStatus);
       var firmName = (payload.identity && payload.identity.firmName) || '';
       var objectText = 'asc_consultant ' + consultantId + (firmName ? ' (' + firmName + ')' : '');
-      await logAuditEvent(submissionStatus === 'Submitted' ? 'Submit' : (wasNewConsultant ? 'Create' : 'Update'), objectText);
-      return { consultantId: consultantId, contacts: contacts, shareholders: shareholders, operatorApprovals: operatorApprovals, bimProjects: bimProjects, projects: projects, attachments: attachments };
+      await logAuditEvent(submissionStatus === 'Submitted' ? 'Submit' : 'Update', objectText);
+      return { consultantId: consultantId, contacts: [], shareholders: [], operatorApprovals: [], bimProjects: [], projects: [], attachments: attachments };
     }
     var portalService = {
+      deleteAttachment: async function (liveId) {
+        if (preview) return { preview: true };
+        // Deactivate instead of deleting (needs only Write permission; reversible; the portal lists active rows only).
+        await webApiRequest('PATCH', '/_api/asc_attachments(' + liveId + ')', { statecode: 1, statuscode: 2 });
+        return { preview: false };
+      },
       saveDraft: async function (payload) {
         if (preview) { previewDraft = payload; return { preview: true }; }
         var result = await saveAll(payload, 'Draft');

@@ -310,7 +310,7 @@ test('buildAttachmentRequest binds project-level entries to the project, never t
   assert.equal(r.tooLargeForSingleRequest, true);
 });
 
-test('saveAttachments uploads consultant-level files once, skips project-level/oversize, never throws', async () => {
+test('saveAttachments uploads consultant-level and project files once, skips oversize, never throws', async () => {
   const ctx = freshServicesContext();
   const calls = [];
   ctx.resolveReferenceId = async () => 'd-1';
@@ -319,8 +319,8 @@ test('saveAttachments uploads consultant-level files once, skips project-level/o
   const ok = { name: 'a.pdf', size: 10 };
   const payload = { files: [{ file: ok, documentType: 'X', projectId: null }, { file: { name: 'p.pdf', size: 10 }, projectId: 'r1' }, { file: { name: 'big.pdf', size: 20000000 }, projectId: null }] };
   const first = await ctx.saveAttachments('c-1', payload);
-  assert.equal(json(first), json({ uploaded: 1, skipped: 2, failed: 0, submitted: 0 }));
-  assert.equal(json(calls), json([['POST', '/_api/asc_attachments'], ['PUT', '/_api/asc_attachments(11111111-2222-3333-4444-555555555555)/asc_attachedfile']]));
+  assert.equal(json(first), json({ uploaded: 2, skipped: 1, failed: 0, submitted: 0 }));
+  assert.equal(json(calls), json([['POST', '/_api/asc_attachments'], ['PUT', '/_api/asc_attachments(11111111-2222-3333-4444-555555555555)/asc_attachedfile'], ['POST', '/_api/asc_attachments'], ['PUT', '/_api/asc_attachments(11111111-2222-3333-4444-555555555555)/asc_attachedfile']]));
   const again = await ctx.saveAttachments('c-1', { files: [payload.files[0]] });
   assert.equal(json(again), json({ uploaded: 0, skipped: 0, failed: 0, submitted: 0 }));
   ctx.uploadAttachmentBytes = async () => { throw new Error('boom'); };
@@ -552,17 +552,29 @@ test('saveProjects PATCHes a live project and only writes junction rows that are
   assert.equal(junctions[0][2]['asc_DisciplineID@odata.bind'], '/asc_disciplines(di-Structure)');
 });
 
-test('saveAttachments uploads a project-level file bound to the saved project, and skips one whose project was not saved', async () => {
+test('a project file is tagged with its project name and tied to the consultant (the portal creates no project row)', async () => {
   const ctx = freshServicesContext();
   const calls = [];
   ctx.resolveReferenceId = async () => 'd-1';
   ctx.webApiRequest = async (method, url, body) => { calls.push([method, url, body]); return fakeCreateResponse('11111111-2222-3333-4444-555555555555'); };
   ctx.uploadAttachmentBytes = async (p) => { calls.push(['PUT', p]); };
-  const payload = { files: [{ file: { name: 'p.pdf', size: 10 }, documentType: 'References', projectId: 'p1' }, { file: { name: 'q.pdf', size: 10 }, documentType: 'References', projectId: 'p2' }] };
-  const results = await ctx.saveAttachments('c-1', payload, [{ clientId: 'p1', liveId: 'live-1' }, { clientId: 'p2', liveId: null }]);
-  assert.equal(json(results), json({ uploaded: 1, skipped: 1, failed: 0, submitted: 0 }));
-  assert.equal(calls[0][2]['asc_projectreference_id@odata.bind'], '/asc_projectreferences(live-1)');
-  assert.equal(calls[0][2]['asc_consultant_id@odata.bind'], '/asc_consultants(c-1)');
+  const payload = { files: [{ file: { name: 'p.pdf', size: 10 }, documentType: 'References', projectId: 'p1', projectName: 'Lagoon Resort' }, { file: { name: 'q.pdf', size: 10 }, documentType: 'References', projectId: 'p2', projectName: 'Old Project', projectLiveId: 'live-2' }] };
+  const results = await ctx.saveAttachments('c-1', payload, [], 'Draft');
+  assert.equal(json(results), json({ uploaded: 2, skipped: 0, failed: 0, submitted: 0 }));
+  const posts = calls.filter(c => c[0] === 'POST');
+  assert.equal(posts[0][2].asc_name, 'Lagoon Resort | p.pdf');
+  assert.equal(posts[0][2].asc_filename, 'p.pdf');
+  assert.equal(posts[0][2]['asc_consultant_id@odata.bind'], '/asc_consultants(c-1)');
+  assert.equal(posts[0][2]['asc_projectreference_id@odata.bind'], undefined);
+  assert.equal(posts[1][2]['asc_projectreference_id@odata.bind'], '/asc_projectreferences(live-2)', 'a project that already exists live is still linked');
+});
+
+test('attachmentProjectName reads the project name back from "<project> | <file>" rows only', () => {
+  const ctx = freshServicesContext();
+  assert.equal(ctx.attachmentProjectName({ asc_name: 'Lagoon Resort | p.pdf', asc_filename: 'p.pdf' }), 'Lagoon Resort');
+  assert.equal(ctx.attachmentProjectName({ asc_name: 'p.pdf', asc_filename: 'p.pdf' }), '');
+  assert.equal(ctx.attachmentProjectName({ asc_name: 'Some name', asc_filename: 'p.pdf' }), '');
+  assert.equal(ctx.attachmentProjectName({ asc_name: '', asc_filename: '' }), '');
 });
 
 test('attachments: new rows are Draft on Save draft; Submit promotes only the portal-owned Draft rows', async () => {

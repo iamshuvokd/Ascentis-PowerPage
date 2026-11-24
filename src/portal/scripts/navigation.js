@@ -4,6 +4,7 @@
       root.querySelectorAll('[data-view]').forEach(function (el) { el.hidden = el.dataset.view !== view; });
       root.querySelector('.portal-content').hidden = view === 'signin';
       root.querySelector('.portal-account').hidden = view === 'signin';
+      root.querySelector('.acknowledgement-banner').hidden = view !== 'profile';
       root.querySelectorAll('.portal-steps li').forEach(function (el, i) {
         var current = views.indexOf(view);
         el.className = i < current ? 'is-complete' : i === current ? 'is-current' : '';
