@@ -2,6 +2,15 @@
 
 This file is the project's persistent handoff note. Read it before continuing; update it after changes. It is a record in the workspace, not a claim of permanent assistant memory.
 
+## CURRENT STATE (24 Nov 2026) - read this first
+
+- **Environments:** Production (org7fc54203, consultant.powerappsportals.com), Test (org3db46cb7) and Dev (org84e19bfd) all run the same build, verified by fresh `pac pages download` on 23-24 Nov. Repo `main` = fcf644d+ (everything committed and pushed).
+- **Persistence (user decision 23 Nov):** Save draft / Submit write ONLY `asc_portalsubmission` (one row per tab, Draft row updated in place), `asc_auditlog`, and `asc_attachment` rows for files (project files named `<project> | <file>`, no project lookup). Live tables are written by the Power Apps reviewer app on Accept. Confidentiality ack lives in the Identity JSON. Handoff for the app developer: `docs/powerapps-reviewer-handoff.txt` (updated 24 Nov). See also CONSULTANT-PORTAL.md "Persistence model".
+- **Tab status:** newest submission row per tab decides; Submitted/Accepted/Rejected lock the tab (pills Pending/Accepted/Rejected), Draft/Seeded are editable; status is read at page load (a reviewer action shows after reload). Reopen a tab = app writes a new Seeded row.
+- **Files:** multi-file project attachment + gallery, saved files shown (loader bug fixed: select `_asc_*_value`), saved status-less/Draft files removable = deactivate (statecode=1; Webapi fields include statecode,statuscode). No Delete permission enabled.
+- **Deploy rule:** only `scripts/deploy-clean.ps1`; user says "upload in production" (design tweaks go to Production first; Test/Dev when asked); verify by download; user clears the Power Pages cache; confirm with a curl of the served page (server cache serves old page HTML for minutes).
+- **Open items:** (1) Operator approval 403 (0x90040106) seen in Production before the staging change - table permission Active state unchecked; should no longer occur; (2) all table permissions Global (any signed-in user can read every consultant's rows incl. attachments/submissions; Parental child scope does not work, options A/B/C in the 18 Nov entry); (3) Production reference data empty (firm types, countries - Country dropdown empty, document types, project types); (4) site is Public, Redirect URI/Entra provider items (see assistant memory prod-public-site-security-todo); (5) Test invitation mail (Pending Send/mailbox approval) and Test Redirect URI unverified; (6) the reviewer app must read the new JSON (liveId null, confidentiality keys, projectName) and apply Accepted data to the live tables; (7) only Edge/Chromium tested; (8) unused old live-write functions remain in services.js (saveConsultant, saveContacts, saveProjects...) with tests - candidates for removal later.
+
 ## User objective and decisions
 
 - Build the external Ascentis consultant Power Pages portal to the supplied screenshots and Phase 1 functional specification.

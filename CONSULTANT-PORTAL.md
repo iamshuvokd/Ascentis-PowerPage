@@ -31,6 +31,11 @@ Script fragments are assembled in the order in `scripts/build-portal.cjs` and sh
 - **Record popups** (project, BIM project, contact, office, shareholder, operator approval): title + close (x), fields, sticky action bar. A *new* record shows Cancel + "Add <name>" (x/Cancel/Esc discard it, asking first if something was typed); an *existing* record shows Remove + "Save <name>" (x just closes); locked tabs are view-only ("Close"). Choice lists inside a popup are inline checkboxes.
 - **Tabs** lock when their latest submission is Submitted, Accepted or Rejected (`isLockedTabStatus`); only Draft/Seeded stay editable. Delete (trash) icons and fields in locked tabs are inert.
 - No automatic "Maximum N characters." hint; `maxlength` still enforces limits.
+- **Add buttons** (`.add-record`, `.upload-button`) and table name links (`.table-link`, `.contact-name-link`) are bold (700). Empty Project/BIM tables show "No ... added yet." INSIDE the table under the heading row.
+- **Project attachment** is a multi-file field with a gallery (`.file-gallery`): new files have an x, files already saved for that project show as read-only tiles (name, size, status) and can be removed (deactivated) while status is empty or Draft. Selecting files again ADDS to the list (the native input would replace it). The popup matches saved files by project liveId or project name.
+- **Phone** (contacts) is `dial: true`: a themed country-calling-code dropdown (`DIAL_CODES` in form-fields.js, 40 countries, default IN +91) + number; stored as ONE string "+code number".
+- The confidentiality acknowledgement is one short line on the progress-steps row (`.acknowledgement-banner` lives in shell.html, shown only on the profile view); the green bar and the "Review and update..." intro were removed.
+- `loadExistingAttachmentsSync()` selects lookups as `_asc_*_value` (the code reads those names; selecting `asc_consultant_id` returned rows that never matched). Load failures are `console.warn`ed, not swallowed.
 
 ## Build and checks
 
@@ -62,7 +67,7 @@ The supplied schema, initial migration and remaining integration requirements ar
 
 `collectProfile()` in `profile.js` prepares `schemaVersion`, `identity`, `sections`, `collections`, `revenueByRegion` and `files`. Record IDs are temporary local keys; values are strings/arrays until explicitly mapped and converted. Files are a separate list containing browser File objects, document type and optional local project ID. Do not send this object unchanged as a Dataverse table payload.
 
-`portalService.saveDraft(payload)` and `portalService.submit(payload)` in `services.js` are the asynchronous integration boundary. Live implementations currently reject with a clear unavailable-service message. The preview adapter keeps a session-memory draft and returns an explicitly marked example submission response. The submit response can provide `nextRevalidationDate`; absent a confirmed date, the UI shows Available after review.
+`portalService.saveDraft(payload)` and `portalService.submit(payload)` in `services.js` are the asynchronous integration boundary. Live, they stage the data (see "Persistence model" at the end of this file: only `asc_portalsubmission`, `asc_auditlog` and `asc_attachment`); `portalService.deleteAttachment(id)` deactivates a saved file row. The preview adapter keeps a session-memory draft and returns an explicitly marked example submission response. The submit response can provide `nextRevalidationDate`; absent a confirmed date, the UI shows Available after review.
 
 When integrating: load only the authenticated consultant's permitted data, map canonical IDs, validate on the trusted service side, upload files and await completion, enforce ownership and concurrency, and return success only after durable persistence. Use per-tab metadata and separate submitted/published data as described in `docs/dataverse-integration.md`. Pending operations disable the action buttons and show status; failures retain entered values. Never put credentials in source files.
 

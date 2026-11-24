@@ -443,3 +443,8 @@ bimproject_discipline, consultant_bimdiscipline (new), consultant_discipline, co
   asc_issuperuser:bit *
   asc_user:lookup
   asc_userrolesnumber:nvarchar *
+
+## Portal usage notes (24 Nov 2026) - NO schema change
+- Portal writes only: asc_portalsubmission (asc_tab/asc_status choices, asc_before/asc_after JSON, asc_submittedon, asc_isreview=false, asc_consultant_id), asc_auditlog, asc_attachment. Live tables are written by the Power Apps reviewer app (Accept).
+- asc_attachment as used: asc_consultant_id always set; project files have asc_projectreference_id EMPTY and asc_name = "<project name> | <file name>" (asc_filename = file name); asc_status Draft/Submitted (portal) or empty/Accepted/Rejected/Seeded (app); removal = deactivate (statecode 1, statuscode 2). Web API fields for asc_attachment now include statecode,statuscode.
+- Web API lookups must be selected as _<lookup>_value (e.g. _asc_consultant_id_value) for the portal to read them back.
