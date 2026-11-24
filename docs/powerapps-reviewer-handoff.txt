@@ -6,9 +6,37 @@ SOURCE TABLE
   Environments: CDB Development  https://org84e19bfd.crm8.dynamics.com
                 CDB Testing      https://org3db46cb7.crm8.dynamics.com
                 CDB Production   https://org7fc54203.crm8.dynamics.com
-  (same table and same JSON formats in all three; updated 15 Nov 2026: new
-   "Operator approvals" tab and "shareholders" inside Offices & contacts)
-  The Consultant Portal creates one row each time a consultant saves a tab.
+  (same table and same JSON formats in all three; updated 24 Nov 2026 - see
+   "WHAT CHANGED ON 23 NOV 2026" below)
+  The Consultant Portal keeps ONE Draft row per consultant and tab and updates it on
+  every Save draft; Submit turns that row into Submitted (see PART 2).
+
+WHAT CHANGED ON 23 NOV 2026 (read this first)
+  1. The portal NO LONGER WRITES THE LIVE TABLES. Save draft / Submit write only:
+       - asc_portalsubmission  (one row per tab, JSON below),
+       - asc_auditlog          (Update / Submit / AcknowledgeConfidentiality),
+       - asc_attachment        (uploaded files only - a file cannot live in JSON).
+     asc_consultant, asc_contact, asc_shareholder, asc_office, asc_projectreference,
+     asc_operatorapproval (+ discipline/region rows), asc_bimproject, the financial/
+     legal/ESG child tables and the consultant junction tables are written ONLY by the
+     reviewer app when it Accepts. Accept = copy asc_after into the live tables.
+  2. "liveId" in asc_after rows is now null for everything the consultant adds in the
+     portal (the portal creates no live rows, so it has no GUID to stamp). Rows that
+     came from a seeded/older submission keep the liveId they already had. Match on
+     liveId when present; otherwise match on natural keys (contact email, shareholder
+     name, operator name, project name, BIM project name) or create a new live row.
+  3. Identity gains two keys when the consultant acknowledged the confidentiality
+     statement in that session:
+        "confidentialityAcknowledgedBy": "<display name>",
+        "confidentialityAcknowledgedOn": "<ISO datetime, UTC>"
+     The portal no longer writes asc_consultant.asc_confackn / asc_confacknby /
+     asc_confackndate - copy these two values there on Accept if you need them.
+  4. Attachments: files are asc_attachment rows (see "ATTACHMENTS" below). Project
+     files have NO project lookup; they are tagged in asc_name as
+     "<project name> | <file name>". The Attachments-tab JSON entries now also carry
+     "projectName" for project files.
+  5. A consultant who has no linked asc_consultant cannot save (the portal shows an
+     error); it no longer creates a consultant row. Create/link it in the admin app.
 
 COLUMNS
   asc_consultant_id     Lookup -> asc_consultant
@@ -44,13 +72,18 @@ CHOICE VALUES
 RULES
   1. Review queue = rows with status Submitted (751050001).
   2. Per consultant and tab, the NEWEST row by createdon is what the consultant sees.
-     A Submitted row locks that tab in the portal. Accepted / Rejected unlock it.
-  3. Never edit or delete old rows - they are the history.
+     Submitted, Accepted and Rejected rows LOCK that tab in the portal (read-only,
+     status pill Pending / Accepted / Rejected). Draft and Seeded rows are editable.
+     To let a consultant edit a tab again after review, write a NEW row for that tab
+     with status Seeded (asc_after = the data to show). Newest createdon wins.
+  3. Never edit or delete old rows - they are the history. (Only the PORTAL updates
+     its own Draft row in place, until it is submitted.)
   4. Reject: status = Rejected, set asc_reviewedby_id, asc_revieweddate and a
      required asc_rejectreason.
   5. Accept: status = Accepted, then copy asc_after into the live tables
-     (mapping: docs/portal-submission-automation-spec.md). The portal also writes the
-     live tables directly on every save, so the data may already be there.
+     (mapping: docs/portal-submission-automation-spec.md). Since 23 Nov 2026 the
+     portal does NOT write the live tables, so Accept is the only thing that updates
+     them. Set asc_reviewedby_id / asc_revieweddate as well.
   6. Do NOT change asc_after when accepting. The portal re-reads it as the starting
      point for the consultant's next edit.
 
@@ -58,7 +91,9 @@ asc_after FORMAT (a JSON string, one per tab)
   - Numbers and money are strings, e.g. "1000000".
   - Multi-select values are arrays of text (display names, not GUIDs).
   - Keys for conditional fields are MISSING when they do not apply.
-  - "id" is a temporary row id. "liveId" is the real Dataverse GUID or null.
+  - "id" is a temporary form row id (e.g. "projects-3"); it changes between sessions.
+    "liveId" is the real Dataverse GUID of an existing live row, or null (always null
+    for rows the consultant adds in the portal - see change 2 above).
   - Values below are examples.
 
 --- Identity (asc_tab 751050000) ---
@@ -69,8 +104,12 @@ asc_after FORMAT (a JSON string, one per tab)
   "alias": "SV",
   "disciplines": ["Architecture"],
   "sectors": ["Hospitality"],
-  "regions": ["Europe"]
+  "regions": ["Europe"],
+  "confidentialityAcknowledgedBy": "Jane Doe",
+  "confidentialityAcknowledgedOn": "2026-11-23T10:00:00.000Z"
 }
+    The two confidentiality keys are present only when the acknowledgement happened in
+    the session that created this row (they are missing otherwise).
 
 --- Financial (751050001) --- revenueByRegion holds only regions that were filled in
 {
@@ -173,11 +212,36 @@ asc_after FORMAT (a JSON string, one per tab)
 
 --- Attachments (751050010) --- metadata only, NOT the file bytes; a bare ARRAY
 [
-  { "documentType": "Certificate", "projectId": null, "name": "cert.pdf" }
+  { "documentType": "Certificate", "projectId": null, "name": "cert.pdf" },
+  { "documentType": "References", "projectId": "projects-3", "name": "plan.pdf", "projectName": "Lagoon Resort" }
 ]
+    projectId is the temporary form id; use projectName to find the project.
+
+ATTACHMENTS (the actual files) - table asc_attachment
+  The portal uploads each file as an asc_attachment row (+ the file in asc_attachedfile):
+    asc_consultant_id   always set (the consultant)
+    asc_name            "<file name>"  or, for a project file, "<project name> | <file name>"
+    asc_filename        the file name
+    asc_filesizemb, asc_uploadedon, asc_origin (self-service portal)
+    asc_documenttype_id lookup (project files use "References")
+    asc_projectreference_id  EMPTY for new project files (the portal creates no project
+                        row). Set it yourself on Accept if you create the live project.
+    asc_status          Draft (751050000) after Save draft; Submitted (751050001) after
+                        Submit. Accepted/Rejected/Seeded are set by the reviewer app and
+                        are never overwritten by the portal. A row with NO status (added
+                        from the app) is shown to the consultant and can be removed by them.
+    statecode           the consultant "removes" a file by DEACTIVATING the row
+                        (statecode 1, statuscode 2); the portal lists active rows only.
+                        Never hard-delete rows the consultant may still see.
+  The portal reads asc_attachment rows of the signed-in consultant (asc_consultant_id)
+  and, for the project popup, matches project files by the project name in asc_name.
+  Files added by the reviewer app should therefore set asc_consultant_id (and, for a
+  project file, name the row "<project name> | <file name>" with asc_filename = file
+  name) so they appear in the portal.
 
 asc_before FORMAT
-  Same shape as asc_after, built from the live tables when the row was created.
+  Same shape as asc_after, built from the LIVE tables when the row was created (so
+  it shows what the reviewer app last wrote there).
   Difference: its contacts and bimProjects are { "liveId": "...", "fields": { ... } }
   instead of flat rows. Use it to compare against asc_after.
 
@@ -190,7 +254,7 @@ READING IT IN POWER APPS
   Project references / Attachments are arrays: Table(ParseJSON(ThisItem.asc_after))
 
 KNOWN GAPS
-  - Attachments hold metadata only (no file bytes).
+  - Attachments JSON holds metadata only (no file bytes); the files are asc_attachment rows.
   - Offices, Project references and Attachments cannot yet be copied into the live
     tables (asc_office.asc_officeleaderid mismatch; asc_ProjectType has no rows).
   - No server-side check blocks consultant edits once a row is Submitted.
@@ -209,19 +273,25 @@ END-TO-END FLOW
   4. Invitee redeems the link and signs in. The portal reads the signed-in contact's
      asc_consultantid, then loads the NEWEST asc_portalsubmission row per tab for
      that consultant and shows its asc_after in the form.
-  5. Consultant edits and clicks Save draft -> portal creates a NEW row (status
-     Draft) with the full tab JSON in asc_after and the earlier live data in
-     asc_before. Submit for review -> status Submitted; the tab becomes read-only
-     in the portal ("Pending review").
+  5. Consultant edits and clicks Save draft -> the portal CREATES the tab's Draft row the
+     first time and UPDATES that same Draft row on later saves (full tab JSON in
+     asc_after; asc_before is set once, from the live tables, when the row is created).
+     Submit for review -> that row's status becomes Submitted (asc_submittedon set), the
+     tab becomes read-only in the portal ("Pending"), and the consultant's Draft files
+     become Submitted. Nothing is written to the live tables.
   6. Reviewer app shows asc_before vs asc_after, then Accepts or Rejects (Part 1,
-     rules 4-6).
+     rules 4-6). Accept copies asc_after into the live tables. The portal shows
+     Accepted / Rejected tabs locked (status pill); to reopen a tab write a new
+     Seeded row (rule 2).
 
 WHAT THE PORTAL SHOWS PER TAB (newest row by createdon, any status)
   Draft      -> asc_after loaded, editable
-  Submitted  -> asc_after loaded, LOCKED (read-only, no unlock action)
-  Rejected   -> asc_after loaded, editable (next save creates a new Draft row)
-  Accepted   -> asc_after loaded, editable (next save creates a new Draft row)
+  Submitted  -> asc_after loaded, LOCKED (pill "Pending")
+  Rejected   -> asc_after loaded, LOCKED (pill "Rejected")
+  Accepted   -> asc_after loaded, LOCKED (pill "Accepted")
   Seeded     -> asc_after loaded, editable (next save creates a new Draft row)
+  The status is read when the page loads; a reviewer action shows after the
+  consultant reloads / signs in again.
   no row     -> blank form
   If asc_after is empty or not valid JSON, that one tab simply shows blank.
 
@@ -254,9 +324,9 @@ RULES
   - Always create a NEW row; never edit or delete old rows. Newest createdon wins.
   - Seed all 9 tabs, or the missing ones show blank.
   - Keep keys exactly as in Part 1; a missing key shows blank.
-  - Include the real "liveId" GUID on contacts, shareholders, operatorApprovals and
-    bimProjects rows. Without it the
-    next consultant save creates duplicate live rows.
+  - "liveId" in seeded rows is optional now: the portal no longer writes live rows, so a
+    missing liveId cannot create duplicates there. Keep it when you have it (it lets you
+    update the right live row on Accept).
   - Use display names (not GUIDs) for choices/lookups, e.g. "region": "Europe".
   - Money/numbers are strings ("1000000"); multi-selects are arrays of text.
   - asc_after is a text column: build it with JSON() or by hand and write as text.
@@ -273,6 +343,7 @@ SECURITY / KNOWN LIMITS
   - Table permissions are Global scope: the portal's API returns all consultants'
     rows and filters to the signed-in consultant in the browser. Server-side
     isolation and a write-lock on Submitted rows are not built.
-  - The portal also still writes the live tables (asc_consultant etc.) directly on
-    every save. The reviewer app's Accept step is meant to copy asc_after into the
-    live tables.
+  - The portal does not write the live tables any more (since 23 Nov 2026); the reviewer
+    app's Accept step is the only thing that copies asc_after into them.
+  - asc_attachment permission is Global too: the portal lists only the signed-in
+    consultant's files, but the API can return/update others'.
